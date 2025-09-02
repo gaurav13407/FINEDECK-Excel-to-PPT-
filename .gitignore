@@ -1,0 +1,47 @@
+# -------------------------
+# Python
+# -------------------------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyd
+*.pdb
+*.egg-info/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+
+# Environment variables
+.env
+.env.local
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# -------------------------
+# OS-specific
+# -------------------------
+.DS_Store
+Thumbs.db
+
+# -------------------------
+# IDE configs
+# -------------------------
+.vscode/
+.idea/
+*.swp
+
+# -------------------------
+# Project-specific
+# -------------------------
+# Ignore example outputs
+examples/*.pptx
+examples/*.pdf
+# But keep sample inputs
+!examples/*.xlsx

@@ -1,0 +1,28 @@
+# Core data handling
+pandas
+numpy
+openpyxl
+
+# PowerPoint generation
+python-pptx
+
+# Visualization
+matplotlib
+plotly
+
+# GUI (you can choose one)
+tkinterweb  # lightweight Tkinter web support (Tkinter is built-in, no pip install needed)
+PyQt5       # if you prefer Qt-based GUI (heavier but powerful)
+
+# NLP (for Month 3 in compressed plan, AI/NLP integration)
+transformers
+torch
+sentencepiece
+
+# Web app/dashboard (for deployment in November)
+streamlit
+dash
+
+# Utils
+requests
+scipy
