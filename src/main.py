@@ -1,4 +1,4 @@
-from converter.excel_reader import read_excel
+from converter.excel_reader import read_excel_1
 from converter.ppt_writer import create_ppt,add_table_slide,save_ppt
 import os
 import pandas as pd
@@ -6,20 +6,24 @@ def main():
     file_path=os.path.join("Examples","Portfolio Allocation Data.xlsx")
 
     ## Read the PnL Sheet
-    sheets=pd.read_excel(file_path,sheet_name=None)
+    # df=pd.read_excel(file_path,sheet_name=None)
 
     ## Create PPT
     prs=create_ppt()
 
-    for sheet_name, df in sheets.items():
+    """for sheet_name, df in sheets.items():
         df = df.loc[:, ~df.columns.str.contains("^Unnamed")]  # drop junk cols
         prs = add_table_slide(prs, df, title=sheet_name)
+        """
 
     # Debug: print to confirm shape
-    print("✅ DataFrame loaded")
+    df=read_excel_1(file_path)
+    print(df)
+    print(" DataFrame loaded")
     print("Columns:", df.columns.tolist())
     print("Shape:", df.shape)
-    
+    print(f"Sheet: {df}, Columns: {df.columns.tolist()}, Shape: {df.shape}")
+
     
 
     ## Slide 1:full Portfolio
