@@ -11,19 +11,12 @@ def main():
     ## Create PPT
     prs=create_ppt()
 
-    """for sheet_name, df in sheets.items():
-        df = df.loc[:, ~df.columns.str.contains("^Unnamed")]  # drop junk cols
-        prs = add_table_slide(prs, df, title=sheet_name)
-        """
+   
 
     # Debug: print to confirm shape
     df=read_excel_1(file_path)
-    print(df)
-    print(" DataFrame loaded")
-    print("Columns:", df.columns.tolist())
-    print("Shape:", df.shape)
-    print(f"Sheet: {df}, Columns: {df.columns.tolist()}, Shape: {df.shape}")
-
+   
+    
     
 
     ## Slide 1:full Portfolio
@@ -35,6 +28,7 @@ def main():
 
     ## Save the PPT
     save_ppt(prs, "examples/demo_PPT/output_demo.pptx")
+    print("PPT Genreated Successfuly!")
     print(" PPT generated at examples/output_demo.pptx")
 
 if __name__=="__main__":
