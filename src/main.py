@@ -5,7 +5,7 @@ from converter.format_tables import add_dataframe_table_slide
 import os
 import pandas as pd
 def main():
-    file_path=os.path.join("Examples","Portfolio Allocation Data.xlsx")
+    file_path=os.path.join("Examples","Scenario Comparison (Bull_Bear_Base).xlsx")
 
     ## Read the PnL Sheet
     # df=pd.read_excel(file_path,sheet_name=None)

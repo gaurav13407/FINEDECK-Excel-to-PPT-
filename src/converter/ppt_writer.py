@@ -1,77 +1,139 @@
 from pptx import Presentation
-from pptx.util import Inches,Pt
+from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
+import pandas as pd
+import traceback
 
 def create_ppt():
     """Creates a blank PPT Presentation"""
     return Presentation()
 
 def add_table_slide(prs, df, title="Report"):
-    """Add a slide with a table from a pandas DataFrame"""
+    """
+    Robust add-table slide:
+    - Sanitizes DataFrame
+    - Skips truly empty frames
+    - Falls back to a simple textbox if table creation fails
+    """
+    # Defensive copy
+    df = df.copy()
+
+    # Debug info so you can see what's being passed
+    try:
+        print(f"DEBUG: Preparing slide '{title}' with shape: {df.shape}")
+        if not df.empty:
+            print(df.head().to_string())
+    except Exception:
+        pass
+
+    # If index is meaningful, make it a column (so it appears in PPT)
+    if df.index.name is not None or not all(df.index == range(len(df.index))):
+        df = df.reset_index()
+
+    # Drop "Unnamed" columns only if there are other named columns present
+    cols_str = df.columns.astype(str)
+    unnamed_mask = cols_str.str.match(r"^Unnamed", na=False)
+    if unnamed_mask.all():
+        # all columns unnamed -> keep as-is (maybe single column without header)
+        pass
+    else:
+        # drop only unnamed columns if some named columns exist
+        df = df.loc[:, ~cols_str.str.match(r"^Unnamed", na=False)]
+
+    # Replace NaN with empty strings (pptx doesn't like None)
+    df = df.fillna("")
+
+    # Final shape check
+    rows, cols = df.shape
+    if rows == 0 or cols == 0:
+        print(f"⚠️ Skipping empty DataFrame for slide: {title} (shape={df.shape})")
+        return prs
+
+    # Ensure columns are strings and non-empty
+    df.columns = [str(c) if str(c).strip() != "" else f"col_{i}" for i, c in enumerate(df.columns)]
+
+    # Add slide with title
     slide_layout = prs.slide_layouts[5]  # Title Only
     slide = prs.slides.add_slide(slide_layout)
-
-    # Add Title
     title_placeholder = slide.shapes.title
-    title_placeholder.text = title## Set title at the top of the slide
+    title_placeholder.text = title
 
-    # Table dimensions
-    """  
-    Creates a table shape on the slide.
-    rows+1 → adds an extra row for column headers.
-    (Inches(0.5), Inches(1.5), Inches(9), Inches(4)) → x, y, width, height of the table.
-    """
-    rows, cols = df.shape
-    table = slide.shapes.add_table(
-        rows + 1, cols, Inches(0.5), Inches(1.5), Inches(9), Inches(4)
-    ).table
+    try:
+        # Create table (rows + header)
+        table = slide.shapes.add_table(rows + 1, cols, Inches(0.5), Inches(1.5), Inches(9), Inches(4)).table
 
-    # Add Headers And Foramte header
-    ##Fills the header row (row 0) with DataFrame column names.
-    for col_idx, col_name in enumerate(df.columns):
-        cell=table.cell(0,col_idx)
-        cell.text=str(col_name)
+        # Header formatting
+        for col_idx, col_name in enumerate(df.columns):
+            cell = table.cell(0, col_idx)
+            cell.text = str(col_name)
+            p = cell.text_frame.paragraphs[0]
+            p.font.bold = True
+            p.font.size = Pt(12)
+            p.alignment = PP_ALIGN.CENTER
+            try:
+                cell.fill.solid()
+                cell.fill.fore_color.rgb = RGBColor(200, 200, 200)
+            except Exception:
+                pass
 
-        #Bold,centered gray background
-        p=cell.text_frame.paragraphs[0]
-        p.font.bold=True
-        p.font.size=Pt(12)
-        p.alignment=PP_ALIGN.CENTER
-        cell.fill.solid()
-        cell.fill.fore_color.rgb=RGBColor(200,200,200)
+        # Fill data rows
+        for r in range(rows):
+            for c in range(cols):
+                val = df.iat[r, c]
+                # numeric pretty-format
+                if isinstance(val, (int, float)) and not isinstance(val, bool):
+                    text = f"{val:,.0f}"
+                else:
+                    text = str(val)
+                cell = table.cell(r + 1, c)
+                cell.text = text
+                p = cell.text_frame.paragraphs[0]
+                try:
+                    if isinstance(val, (int, float)) and not isinstance(val, bool):
+                        p.alignment = PP_ALIGN.RIGHT
+                    else:
+                        p.alignment = PP_ALIGN.LEFT
+                except Exception:
+                    pass
+                p.font.size = Pt(11)
 
-    # Add Data or Fill In the data
-    """ 
-    Loops through the DataFrame and fills each table cell with its values.
-    df.iloc[row_idx, col_idx] → picks a specific cell from the DataFrame.
-    """
-    for row_idx in range(rows):
-        for col_idx in range(cols):
-            val=df.iloc[row_idx,col_idx]
+        # Safe column width calculation
+        if cols > 0:
+            try:
+                width_per_col = Inches(9.0 / cols)
+                for col in table.columns:
+                    col.width = width_per_col
+            except Exception:
+                # ignore width errors
+                pass
 
-            #Formate numbers with commas if numeric
-            if isinstance(val,(int,float)):
-                text=f"{val:,.0f}"
-            else:
-                text=str(val)
-
-            cell=table.cell(row_idx+1,col_idx)
-            cell.text=text
-
-            ## Align Text
-            p=cell.text_frame.paragraphs[0]
-            if isinstance(val,(int,float)):
-                p.alignment=PP_ALIGN.RIGHT
-            else:
-                p.alignment=PP_ALIGN.LEFT
-            p.font.size=Pt(11)
-    ## AUTO FILL columns width
-    for col in table.columns:
-        col.width=Inches(9.0/cols)
+    except Exception as e:
+        # Fallback: if table creation fails, add readable text box
+        print("Fancy table failed:", str(e))
+        traceback.print_exc()
+        left, top, width, height = Inches(0.5), Inches(1.5), Inches(9), Inches(4)
+        txBox = slide.shapes.add_textbox(left, top, width, height)
+        tf = txBox.text_frame
+        tf.word_wrap = True
+        try:
+            tf.text = f"{title}\n\n"
+        except Exception:
+            tf.text = title + "\n\n"
+        max_rows = min(rows, 20)
+        for r in range(max_rows):
+            row_vals = [str(df.iat[r, c]) for c in range(cols)]
+            line = " | ".join(row_vals)
+            p = tf.add_paragraph()
+            p.text = line
+            p.font.size = Pt(10)
+        if rows > max_rows:
+            p = tf.add_paragraph()
+            p.text = "... (truncated)"
 
     return prs
 
 def save_ppt(prs, output_path="examples/demo_PPT/output_demo.pptx"):
     """Save the PPTX to file"""
     prs.save(output_path)
+    print(f"PPT saved to: {output_path}")
