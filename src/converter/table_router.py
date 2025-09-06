@@ -7,7 +7,7 @@ def add_smart_table_slides(prs:Presentation,df,title:str="Report")->Any:
     If Anything fails ,fall back to ppt_writer function.
     """
     try:
-        from converter.format_tables import add_dataframe_table_slide
+        from src.converter.format_tables import add_dataframe_table_slide
         return add_dataframe_table_slide(prs,df,title=title)
     except Exception as e:
         print(f"{e} Fancy table failed:{e}\n Falling back to basic table.")

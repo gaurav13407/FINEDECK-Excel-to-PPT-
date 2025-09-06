@@ -363,7 +363,7 @@ def create_summary_from_excel(file_path: str, return_freq: int = 252, prefer_she
 
 if __name__ == "__main__":
     import sys
-    path = sys.argv[1] if len(sys.argv) > 1 else r"examples\Scenario Comparison (Bull_Bear_Base).xlsx"
+    path = sys.argv[1] if len(sys.argv) > 1 else r"C:\Users\gaura\OneDrive\Desktop\Big Projects\FinDeck(Excel to PPT Project)\examples\Risk Metrics Data.xlsx"
     res = create_summary_from_excel(path)
     print("Summary added to", path)
     print("Tables prepared:", list(res["tables"].keys()))
