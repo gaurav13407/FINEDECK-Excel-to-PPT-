@@ -1,3 +1,5 @@
+import sys
+sys.path.append(r"C:\Users\gaura\OneDrive\Desktop\Big Projects\FinDeck(Excel to PPT Project)")
 import logging
 import os
 from datetime import datetime

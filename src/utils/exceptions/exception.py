@@ -1,6 +1,7 @@
 import sys
+sys.path.append(r"C:\Users\gaura\OneDrive\Desktop\Big Projects\FinDeck(Excel to PPT Project)")
 from typing import Any
-from logs.logger import logging
+from src.logs.logger import logging
 
 class CustomException(Exception):
     def __init__(self, error_message: Any, error_details: Any = sys):
