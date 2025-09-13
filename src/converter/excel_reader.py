@@ -19,8 +19,10 @@ def excel_reader(path: str, sheet : str | int| None=None)-> pd.DataFrame:
             sheet_page=sheet
 
         raw_df=pd.read_excel(path,sheet_name=sheet_page)
+        print(raw_df)
+        print("\n")
         header_row=find_columns(raw_df,required_keyword=None)
-
+        logging.info("Loading the raw data from excel")
         if header_row>=raw_df.shape[0]-1:
             header_value=raw_df.iloc[header_row].fillna("").tolist()
             df=pd.DataFrame(columns=header_value)
@@ -28,6 +30,7 @@ def excel_reader(path: str, sheet : str | int| None=None)-> pd.DataFrame:
         #promote that row to header
         df=raw_df.iloc[header_row+1:].reset_index(drop=True)
         df.columns=raw_df.iloc[header_row].fillna("").tolist()
+        logging.info("Cleaning the df.columns")
         df=clean_columns(df)
 
         # drop rows to header and get data below it
@@ -36,6 +39,7 @@ def excel_reader(path: str, sheet : str | int| None=None)-> pd.DataFrame:
         # try to coerc numeric columns where it make sense
         for col in df.columns:
             try:
+                logging.info("Now droping the uncessary columns")
                 sample=df[col].astype(str).str.strip().replace({"nan":""})
                 non_empty=sample[sample!=""]
                 if len(non_empty)==0:
@@ -46,7 +50,7 @@ def excel_reader(path: str, sheet : str | int| None=None)-> pd.DataFrame:
             except Exception as e:
                 continue
             
-        
+        logging.info("returning the df after cleaning it")
         
         return df
 
@@ -69,9 +73,10 @@ def find_columns(df:pd.DataFrame,required_keyword=None)->int :
             #convert at least 1 or 2 matches depending on sheet shape
             tokens=row.astype(str).str.lower().fillna("")
             matches=sum(any(k in cell for k in required_keyword)for cell in tokens)
-
+        
             if matches>=1:
                 return idx
+            logging.info("Now returning the index of the header where the excel file is started")
         return 0
     except Exception as e:
         raise CustomException(e,sys)
@@ -95,6 +100,8 @@ def clean_columns(df:pd.DataFrame)->pd.DataFrame:
     return df
 
 if __name__=="__main__":
-    file_path = r"examples\finance_sample.xlsx"
+    file_path = r"examples\Scenario Comparison (Bull_Bear_Base).xlsx"
+    
     aa=excel_reader(path=file_path,sheet=None)
+    
     print(aa)
