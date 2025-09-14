@@ -10,3 +10,8 @@ from __future__ import annotations
 
 def formate_number(v):
     pass
+
+
+
+def make_ppt(p):
+    pass
