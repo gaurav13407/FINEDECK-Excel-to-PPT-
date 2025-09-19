@@ -19,7 +19,20 @@ def excel_reader(path: str, sheet : str | int| None=None)-> pd.DataFrame:
             sheet_page=sheet
 
         raw_df=pd.read_excel(path,sheet_name=sheet_page)
-        print(raw_df)
+
+        has_unnamed = any(
+        isinstance(c, str) and c.strip().lower().startswith("unnamed")
+        for c in raw_df.columns
+            )
+
+        if not has_unnamed:
+        # No Unnamed headers => skip promotion entirely.
+            logging.info("No 'Unnamed' columns detected — skipping header promotion.")
+            # Light sanitize columns (trim and remove numeric prefixes), but do NOT promote/alter header rows.
+            df = clean_columns(raw_df)   # make sure your clean_columns does light sanitization in this case
+            df = df.dropna(how="all").reset_index(drop=True)
+            return df
+        # print(raw_df)
         print("\n")
         header_row=find_columns(raw_df,required_keyword=None)
         logging.info("Loading the raw data from excel")
@@ -38,7 +51,7 @@ def excel_reader(path: str, sheet : str | int| None=None)-> pd.DataFrame:
 
         # try to coerc numeric columns where it make sense
         for col in df.columns:
-            try:
+            try:    
                 logging.info("Now droping the uncessary columns")
                 sample=df[col].astype(str).str.strip().replace({"nan":""})
                 non_empty=sample[sample!=""]
@@ -80,28 +93,56 @@ def find_columns(df:pd.DataFrame,required_keyword=None)->int :
         return 0
     except Exception as e:
         raise CustomException(e,sys)
+    
+def promote_first_row_if_header(df:pd.DataFrame)-> pd.DataFrame:
+    """ 
+    If the first row looks like real header (not 'unnamed',mostly text),
+    promote it to be the Dataframe's column names.
+    """
+    if df.empty:
+        return df
+    
+    first_row=df.iloc[0].astype(str).str.strip()
+    non_empty=[c for c in first_row if c and not c.lower().startswith("unnamed")]
+
+    # heuirestic: if at least half the columns are non empyt text-> treat it as a header
+    if len(non_empty) >=(len(df.columns)//2):
+        df=df[1:].reset_index(drop=True)
+        df.columns=first_row.tolist()
+    return df
 
 def clean_columns(df:pd.DataFrame)->pd.DataFrame:
     #drop fully empty columns
+    has_unnamed=any(isinstance(c,str)and c.strip().lower().startswith("unnamed")
+                    for c in df.columns
+                )
+    
     df=df.dropna(axis=1,how="all")
+    
+    
+    if not has_unnamed:
+        return df
+    else:
+        #drop columns whoes name starts with Unnamed(after header promotion)
+        df=df.iloc[:,[not (isinstance(c,str) and c.strip().lower().startswith("unnamed"))for c in df.columns]]
 
-    #drop columns whoes name starts with Unnamed(after header promotion)
-    df=df.iloc[:,[not (isinstance(c,str) and c.strip().lower().startswith("unnamed"))for c in df.columns]]
+        #strip whitespace from column names
+        new_cols=[]
+        for c in df.columns:
+            if isinstance(c,str):
+                c=c.strip()
+                # shorten long name like '2.Portfolio Allocation Data'-> Portfolio Allocation Data
+                c=re.sub(r'^\d+\.\s*','',c)
+            new_cols.append(c)
+        df.columns=new_cols
+        return df
 
-    #strip whitespace from column names
-    new_cols=[]
-    for c in df.columns:
-        if isinstance(c,str):
-            c=c.strip()
-            # shorten long name like '2.Portfolio Allocation Data'-> Portfolio Allocation Data
-            c=re.sub(r'^\d+\.\s*','',c)
-        new_cols.append(c)
-    df.columns=new_cols
-    return df
 
 if __name__=="__main__":
-    file_path = r"examples\Scenario Comparison (Bull_Bear_Base).xlsx"
+    file_path = r"examples\Portfolio Allocation Data.xlsx"
     
     aa=excel_reader(path=file_path,sheet=None)
     
     print(aa)
+
+    

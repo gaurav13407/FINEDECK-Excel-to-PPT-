@@ -15,3 +15,7 @@ def formate_number(v):
 
 def make_ppt(p):
     pass
+
+def show_ppt(p):
+    pass
+#dsdsd
