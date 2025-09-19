@@ -139,10 +139,10 @@ def clean_columns(df:pd.DataFrame)->pd.DataFrame:
 
 
 if __name__=="__main__":
-    file_path = r"examples\Portfolio Allocation Data.xlsx"
-    
+    file_path = r"examples\finance_sample.xlsx"
+    raw_df=pd.read_excel(file_path)
     aa=excel_reader(path=file_path,sheet=None)
-    
+    print(raw_df)
     print(aa)
 
     
