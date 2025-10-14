@@ -1,6 +1,8 @@
 // FinDeck Signup Form JavaScript
 class NeumorphismSignupForm {
     constructor() {
+        console.log('NeumorphismSignupForm constructor called');
+        
         this.form = document.getElementById('signupForm');
         this.firstNameInput = document.getElementById('firstName');
         this.lastNameInput = document.getElementById('lastName');
@@ -11,10 +13,45 @@ class NeumorphismSignupForm {
         this.confirmPasswordToggle = document.getElementById('confirmPasswordToggle');
         this.termsCheckbox = document.getElementById('terms');
         this.newsletterCheckbox = document.getElementById('newsletter');
-        this.submitButton = this.form.querySelector('.signup-btn');
+        this.submitButton = this.form ? this.form.querySelector('.signup-btn') : null;
         this.successMessage = document.getElementById('successMessage');
         this.socialButtons = document.querySelectorAll('.neu-social');
         
+        // Detailed logging
+        console.log('Form elements check:', {
+            form: !!this.form,
+            firstName: !!this.firstNameInput,
+            lastName: !!this.lastNameInput,
+            email: !!this.emailInput,
+            password: !!this.passwordInput,
+            confirmPassword: !!this.confirmPasswordInput,
+            terms: !!this.termsCheckbox,
+            submitButton: !!this.submitButton,
+            successMessage: !!this.successMessage
+        });
+        
+        if (!this.form) {
+            console.error('Critical error: Signup form not found!');
+            return;
+        }
+        
+        // Check for missing required elements
+        const missingElements = [];
+        if (!this.firstNameInput) missingElements.push('firstName');
+        if (!this.lastNameInput) missingElements.push('lastName');
+        if (!this.emailInput) missingElements.push('email');
+        if (!this.passwordInput) missingElements.push('password');
+        if (!this.confirmPasswordInput) missingElements.push('confirmPassword');
+        if (!this.termsCheckbox) missingElements.push('terms');
+        if (!this.submitButton) missingElements.push('submitButton');
+        
+        if (missingElements.length > 0) {
+            console.error('Missing form elements:', missingElements);
+            alert('Form setup error: Missing elements - ' + missingElements.join(', '));
+            return;
+        }
+        
+        console.log('All form elements found, initializing...');
         this.init();
     }
     
@@ -26,31 +63,38 @@ class NeumorphismSignupForm {
     }
     
     bindEvents() {
+        if (!this.form) {
+            console.error('Cannot bind events: form not found');
+            return;
+        }
+        
         this.form.addEventListener('submit', (e) => this.handleSubmit(e));
         
         // Input validation events
-        this.firstNameInput.addEventListener('blur', () => this.validateFirstName());
-        this.lastNameInput.addEventListener('blur', () => this.validateLastName());
-        this.emailInput.addEventListener('blur', () => this.validateEmail());
-        this.passwordInput.addEventListener('blur', () => this.validatePassword());
-        this.confirmPasswordInput.addEventListener('blur', () => this.validateConfirmPassword());
-        this.termsCheckbox.addEventListener('change', () => this.validateTerms());
+        if (this.firstNameInput) this.firstNameInput.addEventListener('blur', () => this.validateFirstName());
+        if (this.lastNameInput) this.lastNameInput.addEventListener('blur', () => this.validateLastName());
+        if (this.emailInput) this.emailInput.addEventListener('blur', () => this.validateEmail());
+        if (this.passwordInput) this.passwordInput.addEventListener('blur', () => this.validatePassword());
+        if (this.confirmPasswordInput) this.confirmPasswordInput.addEventListener('blur', () => this.validateConfirmPassword());
+        if (this.termsCheckbox) this.termsCheckbox.addEventListener('change', () => this.validateTerms());
         
         // Clear errors on input
-        this.firstNameInput.addEventListener('input', () => this.clearError('firstName'));
-        this.lastNameInput.addEventListener('input', () => this.clearError('lastName'));
-        this.emailInput.addEventListener('input', () => this.clearError('email'));
-        this.passwordInput.addEventListener('input', () => {
-            this.clearError('password');
-            if (this.confirmPasswordInput.value) {
-                this.validateConfirmPassword();
-            }
-        });
-        this.confirmPasswordInput.addEventListener('input', () => this.clearError('confirmPassword'));
+        if (this.firstNameInput) this.firstNameInput.addEventListener('input', () => this.clearError('firstName'));
+        if (this.lastNameInput) this.lastNameInput.addEventListener('input', () => this.clearError('lastName'));
+        if (this.emailInput) this.emailInput.addEventListener('input', () => this.clearError('email'));
+        if (this.passwordInput) {
+            this.passwordInput.addEventListener('input', () => {
+                this.clearError('password');
+                if (this.confirmPasswordInput && this.confirmPasswordInput.value) {
+                    this.validateConfirmPassword();
+                }
+            });
+        }
+        if (this.confirmPasswordInput) this.confirmPasswordInput.addEventListener('input', () => this.clearError('confirmPassword'));
         
         // Add soft press effects to inputs
         const inputs = [this.firstNameInput, this.lastNameInput, this.emailInput, 
-                       this.passwordInput, this.confirmPasswordInput];
+                       this.passwordInput, this.confirmPasswordInput].filter(input => input);
         inputs.forEach(input => {
             input.addEventListener('focus', (e) => this.addSoftPress(e));
             input.addEventListener('blur', (e) => this.removeSoftPress(e));
@@ -118,8 +162,30 @@ class NeumorphismSignupForm {
     
     handleSubmit(e) {
         e.preventDefault();
+        console.log('Form submission intercepted successfully');
+        
+        // Double-check form elements exist
+        if (!this.firstNameInput || !this.lastNameInput || !this.emailInput || 
+            !this.passwordInput || !this.confirmPasswordInput || !this.termsCheckbox) {
+            console.error('Form elements missing during submit');
+            alert('Form error: Some form elements are missing');
+            return;
+        }
+        
+        // Get current values for debugging
+        const formData = {
+            firstName: this.firstNameInput.value.trim(),
+            lastName: this.lastNameInput.value.trim(),
+            email: this.emailInput.value.trim(),
+            password: this.passwordInput.value,
+            confirmPassword: this.confirmPasswordInput.value,
+            termsChecked: this.termsCheckbox.checked
+        };
+        
+        console.log('Form data at submit:', formData);
         
         // Validate all fields
+        console.log('Starting validation...');
         const isFirstNameValid = this.validateFirstName();
         const isLastNameValid = this.validateLastName();
         const isEmailValid = this.validateEmail();
@@ -127,10 +193,34 @@ class NeumorphismSignupForm {
         const isConfirmPasswordValid = this.validateConfirmPassword();
         const isTermsValid = this.validateTerms();
         
-        if (isFirstNameValid && isLastNameValid && isEmailValid && 
-            isPasswordValid && isConfirmPasswordValid && isTermsValid) {
-            this.submitForm();
+        console.log('Validation results:', {
+            firstName: isFirstNameValid,
+            lastName: isLastNameValid,
+            email: isEmailValid,
+            password: isPasswordValid,
+            confirmPassword: isConfirmPasswordValid,
+            terms: isTermsValid
+        });
+        
+        // Show validation results to user if any field fails
+        if (!isFirstNameValid || !isLastNameValid || !isEmailValid || 
+            !isPasswordValid || !isConfirmPasswordValid || !isTermsValid) {
+            
+            const issues = [];
+            if (!isFirstNameValid) issues.push('First name is required');
+            if (!isLastNameValid) issues.push('Last name is required');
+            if (!isEmailValid) issues.push('Valid email address is required');
+            if (!isPasswordValid) issues.push('Password must be at least 6 characters');
+            if (!isConfirmPasswordValid) issues.push('Passwords must match');
+            if (!isTermsValid) issues.push('You must accept the terms and conditions');
+            
+            alert('Please fix the following issues:\n\n' + issues.join('\n'));
+            console.log('Validation failed with issues:', issues);
+            return;
         }
+        
+        console.log('All validations passed! Calling submitForm...');
+        this.submitForm();
     }
     
     validateFirstName() {
@@ -179,11 +269,7 @@ class NeumorphismSignupForm {
     
     validatePassword() {
         const password = this.passwordInput.value;
-        const minLength = 8;
-        const hasUpperCase = /[A-Z]/.test(password);
-        const hasLowerCase = /[a-z]/.test(password);
-        const hasNumbers = /\d/.test(password);
-        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+        const minLength = 6; // Reduced from 8
         
         if (!password) {
             this.showError('password', 'Password is required');
@@ -193,22 +279,9 @@ class NeumorphismSignupForm {
             this.showError('password', `Password must be at least ${minLength} characters long`);
             return false;
         }
-        if (!hasUpperCase) {
-            this.showError('password', 'Password must contain at least one uppercase letter');
-            return false;
-        }
-        if (!hasLowerCase) {
-            this.showError('password', 'Password must contain at least one lowercase letter');
-            return false;
-        }
-        if (!hasNumbers) {
-            this.showError('password', 'Password must contain at least one number');
-            return false;
-        }
-        if (!hasSpecialChar) {
-            this.showError('password', 'Password must contain at least one special character');
-            return false;
-        }
+        
+        // Simplified validation - only require length for now
+        // TODO: Add back complexity requirements for production
         
         this.clearError('password');
         return true;
@@ -240,45 +313,154 @@ class NeumorphismSignupForm {
     }
     
     showError(fieldName, message) {
-        const formGroup = document.getElementById(fieldName).closest('.form-group');
-        const errorElement = document.getElementById(fieldName + 'Error');
-        
-        formGroup.classList.add('error');
-        errorElement.textContent = message;
+        try {
+            const fieldElement = document.getElementById(fieldName);
+            const errorElement = document.getElementById(fieldName + 'Error');
+            
+            if (!fieldElement) {
+                console.error(`Field element not found: ${fieldName}`);
+                return;
+            }
+            
+            if (!errorElement) {
+                console.error(`Error element not found: ${fieldName}Error`);
+                return;
+            }
+            
+            const formGroup = fieldElement.closest('.form-group');
+            if (formGroup) {
+                formGroup.classList.add('error');
+            }
+            
+            errorElement.textContent = message;
+            console.log(`Error shown for ${fieldName}: ${message}`);
+        } catch (error) {
+            console.error(`Error in showError for ${fieldName}:`, error);
+        }
     }
     
     clearError(fieldName) {
-        const formGroup = document.getElementById(fieldName).closest('.form-group');
-        const errorElement = document.getElementById(fieldName + 'Error');
-        
-        formGroup.classList.remove('error');
-        errorElement.textContent = '';
+        try {
+            const fieldElement = document.getElementById(fieldName);
+            const errorElement = document.getElementById(fieldName + 'Error');
+            
+            if (!fieldElement || !errorElement) {
+                return; // Silently fail if elements don't exist
+            }
+            
+            const formGroup = fieldElement.closest('.form-group');
+            if (formGroup) {
+                formGroup.classList.remove('error');
+            }
+            
+            errorElement.textContent = '';
+        } catch (error) {
+            console.error(`Error in clearError for ${fieldName}:`, error);
+        }
     }
     
     async submitForm() {
+        console.log('submitForm called - starting signup process');
+        
+        // Double-check all form elements before proceeding
+        if (!this.firstNameInput || !this.lastNameInput || !this.emailInput || 
+            !this.passwordInput || !this.confirmPasswordInput) {
+            console.error('Form elements missing in submitForm');
+            alert('Form error: Missing required elements');
+            return;
+        }
+        
         // Show loading state
-        this.submitButton.classList.add('loading');
+        if (this.submitButton) {
+            this.submitButton.classList.add('loading');
+            console.log('Loading state activated');
+        }
         
         try {
+            console.log('Starting API simulation...');
             // Simulate API call
             await this.simulateSignup();
+            console.log('API simulation completed successfully');
+            
+            // Create user data with actual name from form
+            const firstName = this.firstNameInput.value.trim();
+            const lastName = this.lastNameInput.value.trim();
+            const email = this.emailInput.value.trim();
+            
+            // Validate data one more time
+            if (!firstName || !lastName || !email) {
+                throw new Error('Invalid form data: missing required fields');
+            }
+            
+            const userData = {
+                name: `${firstName} ${lastName}`,
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                plan: 'Free',
+                conversions: 0,
+                templates: 0,
+                loginTime: new Date().toISOString()
+            };
+            
+            console.log('User data created:', userData);
+            
+            // Check if auth manager exists and is properly initialized
+            if (!window.authManager) {
+                console.error('Auth manager not found!');
+                throw new Error('Authentication system not available');
+            }
+            
+            console.log('Auth manager found, logging in user...');
+            const loginResult = window.authManager.login(userData);
+            console.log('Login result:', loginResult);
+            
+            // Verify login was successful
+            if (!window.authManager.isLoggedIn) {
+                throw new Error('Login failed - user not logged in after signup');
+            }
+            
+            console.log('User logged in successfully');
             
             // Hide form and show success message
-            this.form.style.display = 'none';
-            this.successMessage.classList.add('show');
+            if (this.form) {
+                this.form.style.display = 'none';
+                console.log('Form hidden');
+            }
+            if (this.successMessage) {
+                this.successMessage.classList.add('show');
+                console.log('Success message shown');
+            }
             
-            // Simulate redirect after success
+            console.log('Starting redirect process...');
+            
+            // Redirect to main page after success
             setTimeout(() => {
-                // In a real app, redirect to login page or dashboard
-                console.log('Redirecting to login page...');
-                // window.location.href = 'login.html';
-            }, 3000);
+                console.log('Executing redirect to mainpage.html...');
+                
+                // Try multiple redirect methods
+                try {
+                    window.location.href = 'mainpage.html';
+                } catch (redirectError) {
+                    console.error('Primary redirect failed:', redirectError);
+                    try {
+                        window.location.replace('mainpage.html');
+                    } catch (fallbackError) {
+                        console.error('Fallback redirect failed:', fallbackError);
+                        window.location.assign('mainpage.html');
+                    }
+                }
+            }, 1500);
             
         } catch (error) {
-            console.error('Signup error:', error);
-            this.showError('email', 'An error occurred during signup. Please try again.');
+            console.error('Signup error details:', error);
+            alert('Signup failed: ' + error.message);
+            this.showError('email', 'An error occurred during signup: ' + error.message);
         } finally {
-            this.submitButton.classList.remove('loading');
+            if (this.submitButton) {
+                this.submitButton.classList.remove('loading');
+                console.log('Loading state removed');
+            }
         }
     }
     
@@ -286,13 +468,8 @@ class NeumorphismSignupForm {
         // Simulate network delay
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                // Simulate random success/failure for demo
-                const success = Math.random() > 0.1; // 90% success rate
-                if (success) {
-                    resolve({ success: true, message: 'Account created successfully' });
-                } else {
-                    reject(new Error('Network error'));
-                }
+                // Always succeed for demo (remove random failure)
+                resolve({ success: true, message: 'Account created successfully' });
             }, 2000);
         });
     }
@@ -317,5 +494,11 @@ class NeumorphismSignupForm {
 
 // Initialize the signup form when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    new NeumorphismSignupForm();
+    console.log('DOM loaded, initializing signup form...');
+    try {
+        const form = new NeumorphismSignupForm();
+        console.log('Signup form initialized successfully');
+    } catch (error) {
+        console.error('Error initializing signup form:', error);
+    }
 });

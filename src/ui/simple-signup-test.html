@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Signup Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 500px; margin: 0 auto; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { padding: 10px; width: 100%; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
+        button { padding: 12px 24px; background: #007bff; color: white; border: none; cursor: pointer; border-radius: 4px; width: 100%; }
+        button:hover { background: #0056b3; }
+        .error { color: red; margin-top: 5px; }
+        .success { color: green; margin-top: 10px; font-weight: bold; }
+        .checkbox-group { display: flex; align-items: center; gap: 10px; }
+        .checkbox-group input { width: auto; }
+    </style>
+</head>
+<body>
+    <h1>Simple Signup Test</h1>
+    <p>This is a minimal signup form to test the basic functionality.</p>
+    
+    <form id="simpleSignupForm">
+        <div class="form-group">
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" value="John" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" value="Doe" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" value="john@example.com" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" value="123456" required>
+        </div>
+        
+        <div class="form-group">
+            <div class="checkbox-group">
+                <input type="checkbox" id="terms" checked required>
+                <label for="terms">I agree to the terms and conditions</label>
+            </div>
+        </div>
+        
+        <button type="submit">Create Account & Login</button>
+    </form>
+    
+    <div id="messages"></div>
+    
+    <!-- Load the auth manager -->
+    <script src="assets/js/auth.js"></script>
+    
+    <script>
+        console.log('Simple signup test loaded');
+        
+        // Wait for auth manager to initialize
+        function waitForAuthManager() {
+            return new Promise((resolve) => {
+                const checkAuthManager = () => {
+                    if (window.authManager) {
+                        console.log('Auth manager found');
+                        resolve();
+                    } else {
+                        console.log('Waiting for auth manager...');
+                        setTimeout(checkAuthManager, 100);
+                    }
+                };
+                checkAuthManager();
+            });
+        }
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('DOM loaded');
+            
+            // Wait for auth manager
+            await waitForAuthManager();
+            
+            const form = document.getElementById('simpleSignupForm');
+            const messages = document.getElementById('messages');
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                console.log('Form submitted');
+                
+                messages.innerHTML = '<p style="color: blue;">Processing signup...</p>';
+                
+                // Get form data
+                const firstName = document.getElementById('firstName').value.trim();
+                const lastName = document.getElementById('lastName').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                const terms = document.getElementById('terms').checked;
+                
+                console.log('Form data:', { firstName, lastName, email, password: '***', terms });
+                
+                // Basic validation
+                if (!firstName || !lastName || !email || !password || !terms) {
+                    messages.innerHTML = '<p class="error">Please fill all fields and accept terms</p>';
+                    return;
+                }
+                
+                // Create user data
+                const userData = {
+                    name: firstName + ' ' + lastName,
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    plan: 'Free',
+                    conversions: 0,
+                    templates: 0,
+                    loginTime: new Date().toISOString()
+                };
+                
+                console.log('Created user data:', userData);
+                
+                // Try to login with auth manager
+                try {
+                    if (!window.authManager) {
+                        throw new Error('Auth manager not available');
+                    }
+                    
+                    console.log('Calling authManager.login...');
+                    const loginResult = window.authManager.login(userData);
+                    console.log('Login result:', loginResult);
+                    
+                    // Check if login was successful
+                    if (window.authManager.isLoggedIn) {
+                        console.log('Login successful! Current user:', window.authManager.currentUser);
+                        messages.innerHTML = '<p class="success">Account created and logged in successfully!</p>';
+                        
+                        // Test redirect after 2 seconds
+                        setTimeout(() => {
+                            console.log('Redirecting to mainpage.html...');
+                            messages.innerHTML += '<p style="color: blue;">Redirecting to main page...</p>';
+                            
+                            try {
+                                window.location.href = 'mainpage.html';
+                            } catch (redirectError) {
+                                console.error('Redirect failed:', redirectError);
+                                messages.innerHTML += '<p class="error">Redirect failed: ' + redirectError.message + '</p>';
+                                messages.innerHTML += '<p><a href="mainpage.html">Click here to go to main page manually</a></p>';
+                            }
+                        }, 2000);
+                        
+                    } else {
+                        throw new Error('Login failed - user not logged in after authManager.login()');
+                    }
+                    
+                } catch (error) {
+                    console.error('Signup/login error:', error);
+                    messages.innerHTML = '<p class="error">Error: ' + error.message + '</p>';
+                }
+            });
+            
+            console.log('Simple signup form ready');
+        });
+    </script>
+</body>
+</html>

@@ -8,6 +8,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/dashboard.css">
+    
+    <!-- Authentication CSS -->
+    <link href="assets/css/auth.css" rel="stylesheet">
 </head>
 <body>
     <!-- Header -->
@@ -431,6 +434,17 @@
         function showTemplateSettings() {
             alert('Template Manager - Coming Soon!');
         }
+    </script>
+    
+    <!-- Authentication JS -->
+    <script src="assets/js/auth.js"></script>
+    <script>
+        // Require authentication for this page
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.authManager && !window.authManager.requireAuth()) {
+                return; // Will redirect to login if not authenticated
+            }
+        });
     </script>
 </body>
 </html>

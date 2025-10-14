@@ -195,16 +195,46 @@ class NeumorphismLoginForm {
         this.setLoading(true);
         
         try {
-            // Simulate soft authentication
+            // Simulate authentication
             await new Promise(resolve => setTimeout(resolve, 2000));
             
-            // Show neumorphic success
+            // Create user data (in real app, this would come from server)
+            // For now, we'll extract name from email but in a real app this would come from server
+            const userData = {
+                name: this.extractNameFromEmail(this.emailInput.value),
+                email: this.emailInput.value,
+                plan: 'Free',
+                conversions: 0,
+                templates: 0,
+                loginTime: new Date().toISOString()
+            };
+            
+            // Use auth manager to login
+            if (window.authManager) {
+                window.authManager.login(userData);
+            }
+            
+            // Show success
             this.showNeumorphicSuccess();
+            
+            // Redirect to dashboard or redirect URL
+            setTimeout(() => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const redirectUrl = urlParams.get('redirect') || 'mainpage.html';
+                window.location.href = redirectUrl;
+            }, 2500);
+            
         } catch (error) {
             this.showError('password', 'Login failed. Please try again.');
         } finally {
             this.setLoading(false);
         }
+    }
+    
+    extractNameFromEmail(email) {
+        // Extract name from email (simple logic for demo)
+        const username = email.split('@')[0];
+        return username.charAt(0).toUpperCase() + username.slice(1).replace(/[._]/g, ' ');
     }
     
     async handleSocialLogin(provider, button) {
@@ -256,11 +286,7 @@ class NeumorphismLoginForm {
             
         }, 300);
         
-        // Simulate redirect
-        setTimeout(() => {
-            console.log('Redirecting to dashboard...');
-            // window.location.href = '/dashboard';
-        }, 2500);
+        // Note: Redirect is now handled in handleSubmit method
     }
 }
 

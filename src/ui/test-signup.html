@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Signup Form</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; }
+        input { padding: 8px; width: 300px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>Test Signup Form</h1>
+    
+    <form id="testSignupForm">
+        <div class="form-group">
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" required>
+        </div>
+        
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" required>
+        </div>
+        
+        <div class="form-group">
+            <input type="checkbox" id="terms" required>
+            <label for="terms">I agree to terms</label>
+        </div>
+        
+        <button type="submit">Create Account</button>
+    </form>
+    
+    <div id="messages"></div>
+    
+    <!-- Authentication JS -->
+    <script src="assets/js/auth.js"></script>
+    
+    <script>
+        console.log('Test signup form loaded');
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded');
+            
+            const form = document.getElementById('testSignupForm');
+            const messages = document.getElementById('messages');
+            
+            if (!form) {
+                console.error('Form not found!');
+                return;
+            }
+            
+            console.log('Form found, adding event listener');
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                console.log('Form submitted!');
+                
+                messages.innerHTML = '<p class="success">Form submission detected! Processing...</p>';
+                
+                // Get form data
+                const firstName = document.getElementById('firstName').value;
+                const lastName = document.getElementById('lastName').value;
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const terms = document.getElementById('terms').checked;
+                
+                console.log('Form data:', { firstName, lastName, email, password, terms });
+                
+                // Basic validation
+                if (!firstName || !lastName || !email || !password || !terms) {
+                    messages.innerHTML = '<p class="error">Please fill all fields and accept terms</p>';
+                    return;
+                }
+                
+                // Create user data
+                const userData = {
+                    name: firstName + ' ' + lastName,
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    plan: 'Free',
+                    conversions: 0,
+                    templates: 0,
+                    loginTime: new Date().toISOString()
+                };
+                
+                console.log('User data created:', userData);
+                
+                // Try to use auth manager
+                if (window.authManager) {
+                    console.log('Auth manager found, logging in user...');
+                    window.authManager.login(userData);
+                    messages.innerHTML = '<p class="success">Account created and logged in! Redirecting...</p>';
+                    
+                    setTimeout(() => {
+                        console.log('Redirecting to mainpage.html');
+                        window.location.href = 'mainpage.html';
+                    }, 2000);
+                } else {
+                    console.error('Auth manager not found!');
+                    messages.innerHTML = '<p class="error">Auth manager not available</p>';
+                }
+            });
+            
+            console.log('Event listener added successfully');
+        });
+    </script>
+</body>
+</html>
