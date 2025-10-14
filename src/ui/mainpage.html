@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinDeck - Excel to PowerPoint Converter</title>
+    
+    <!-- Google Fonts - Match Landing Page -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="assets/css/mainpage.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <h2>FinDeck</h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="dashboard.html" class="nav-link">Dashboard</a>
+                <a href="templates.html" class="nav-link">Templates</a>
+                <a href="help.html" class="nav-link">Help</a>
+            </nav>
+            <div class="user-menu">
+                <div class="profile-dropdown">
+                    <button class="profile-btn neu-button-small" id="profileBtn">
+                        <img src="https://via.placeholder.com/32x32/e59d02/ffffff?text=JD" alt="Profile" class="profile-avatar">
+                        <span class="profile-name">John Doe</span>
+                        <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6,9 12,15 18,9"/>
+                        </svg>
+                    </button>
+                    
+                    <div class="dropdown-menu" id="profileDropdown">
+                        <div class="dropdown-header">
+                            <div class="user-info">
+                                <img src="https://via.placeholder.com/48x48/e59d02/ffffff?text=JD" alt="Profile" class="user-avatar">
+                                <div class="user-details">
+                                    <h4>John Doe</h4>
+                                    <p>john.doe@example.com</p>
+                                    <span class="user-plan">Pro Plan</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="dropdown-divider"></div>
+                        
+                        <div class="dropdown-section">
+                            <a href="#" class="dropdown-item" onclick="openModal('profileModal')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                                Profile Settings
+                            </a>
+                            
+                            <a href="#" class="dropdown-item" onclick="openModal('accountModal')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
+                                </svg>
+                                Account Settings
+                            </a>
+                            
+                            <a href="#" class="dropdown-item" onclick="openModal('billingModal')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                    <line x1="1" y1="10" x2="23" y2="10"/>
+                                </svg>
+                                Billing & Plans
+                            </a>
+                            
+                            <a href="templates.html" class="dropdown-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+                                </svg>
+                                Template Manager
+                            </a>
+                            
+                            <a href="#" class="dropdown-item" onclick="openModal('usageModal')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 3v18h18"/>
+                                    <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+                                </svg>
+                                Usage Statistics
+                            </a>
+                        </div>
+                        
+                        <div class="dropdown-divider"></div>
+                        
+                        <div class="dropdown-section">
+                            <a href="help.html" class="dropdown-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                                    <circle cx="12" cy="17" r="1"/>
+                                </svg>
+                                Help & Support
+                            </a>
+                            
+                            <a href="login.html" class="dropdown-item logout">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                                    <polyline points="16,17 21,12 16,7"/>
+                                    <line x1="21" y1="12" x2="9" y2="12"/>
+                                </svg>
+                                Sign Out
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Page Title -->
+            <div class="page-header">
+                <h1>Excel to PowerPoint Converter</h1>
+                <p>Transform your spreadsheets into beautiful presentations instantly</p>
+            </div>
+
+            <!-- Converter Card -->
+            <div class="converter-card">
+                <div class="converter-header">
+                    <div class="step-indicator">
+                        <div class="step active" id="step1">
+                            <div class="step-number">1</div>
+                            <span>Upload Excel</span>
+                        </div>
+                        <div class="step-line"></div>
+                        <div class="step" id="step2">
+                            <div class="step-number">2</div>
+                            <span>Processing</span>
+                        </div>
+                        <div class="step-line"></div>
+                        <div class="step" id="step3">
+                            <div class="step-number">3</div>
+                            <span>Download PPT</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Section -->
+                <div class="upload-section" id="uploadSection">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                        </div>
+                        <h3>Drop your Excel file here</h3>
+                        <p>or click to browse files</p>
+                        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" multiple hidden>
+                        <button class="browse-btn neu-button" onclick="document.getElementById('fileInput').click()">
+                            Browse Files
+                        </button>
+                    </div>
+                    
+                    <div class="file-info">
+                        <h4>Supported Formats:</h4>
+                        <div class="format-list">
+                            <span class="format-tag">.XLSX</span>
+                            <span class="format-tag">.XLS</span>
+                            <span class="format-tag">.CSV</span>
+                        </div>
+                        <p class="file-limit">Maximum file size: 50MB</p>
+                    </div>
+                </div>
+
+                <!-- File List Section -->
+                <div class="file-list-section" id="fileListSection" style="display: none;">
+                    <h3>Selected Files</h3>
+                    <div class="file-list" id="fileList"></div>
+                    
+                    <div class="conversion-options">
+                        <h4>Conversion Options</h4>
+                        <div class="options-grid">
+                            <div class="option-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="includeCharts" checked>
+                                    <div class="neu-checkbox">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                            <polyline points="20 6 9 17 4 12"/>
+                                        </svg>
+                                    </div>
+                                    Include Charts & Graphs
+                                </label>
+                            </div>
+                            
+                            <div class="option-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="autoFormat" checked>
+                                    <div class="neu-checkbox">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                            <polyline points="20 6 9 17 4 12"/>
+                                        </svg>
+                                    </div>
+                                    Auto-format Tables
+                                </label>
+                            </div>
+                            
+                            <div class="option-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="brandTemplate">
+                                    <div class="neu-checkbox">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                            <polyline points="20 6 9 17 4 12"/>
+                                        </svg>
+                                    </div>
+                                    Apply Brand Template
+                                </label>
+                            </div>
+                            
+                            <div class="option-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="addSummary">
+                                    <div class="neu-checkbox">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                            <polyline points="20 6 9 17 4 12"/>
+                                        </svg>
+                                    </div>
+                                    Generate Summary Slide
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="convert-btn neu-button" id="convertBtn">
+                        <span class="btn-text">Convert to PowerPoint</span>
+                        <div class="btn-loader">
+                            <div class="neu-spinner"></div>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Processing Section -->
+                <div class="processing-section" id="processingSection" style="display: none;">
+                    <div class="processing-animation">
+                        <div class="progress-circle">
+                            <svg viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="45" stroke="#282828" stroke-width="8" fill="transparent"/>
+                                <circle cx="50" cy="50" r="45" stroke="#e59d02" stroke-width="8" fill="transparent" 
+                                        stroke-dasharray="283" stroke-dashoffset="283" id="progressCircle"/>
+                            </svg>
+                            <div class="progress-text">
+                                <span id="progressPercentage">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="processing-steps">
+                        <div class="processing-step" id="analyzingStep">
+                            <div class="step-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 11H1v3h8v3l3-4-3-4v2z"/>
+                                    <path d="M22 6l-3-3v2H8v2h11v2l3-3z"/>
+                                </svg>
+                            </div>
+                            <span>Analyzing Excel data...</span>
+                        </div>
+                        
+                        <div class="processing-step" id="convertingStep">
+                            <div class="step-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+                                </svg>
+                            </div>
+                            <span>Converting to PowerPoint...</span>
+                        </div>
+                        
+                        <div class="processing-step" id="formattingStep">
+                            <div class="step-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                            </div>
+                            <span>Applying formatting...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="processing-info">
+                        <p>Please wait while we convert your Excel file to a beautiful PowerPoint presentation.</p>
+                        <p class="processing-time">Estimated time: <span id="estimatedTime">2-3 minutes</span></p>
+                    </div>
+                </div>
+
+                <!-- Download Section -->
+                <div class="download-section" id="downloadSection" style="display: none;">
+                    <div class="success-animation">
+                        <div class="success-icon neu-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <h3>Conversion Complete!</h3>
+                    <p>Your PowerPoint presentation is ready for download.</p>
+                    
+                    <div class="download-options">
+                        <button class="download-btn neu-button primary" id="downloadBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Download PowerPoint
+                        </button>
+                        
+                        <button class="preview-btn neu-button secondary" id="previewBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            Preview Slides
+                        </button>
+                    </div>
+                    
+                    <div class="file-details">
+                        <div class="detail-item">
+                            <span class="detail-label">File size:</span>
+                            <span class="detail-value" id="fileSize">2.4 MB</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Slides created:</span>
+                            <span class="detail-value" id="slideCount">12 slides</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Charts included:</span>
+                            <span class="detail-value" id="chartCount">5 charts</span>
+                        </div>
+                    </div>
+                    
+                    <button class="new-conversion-btn neu-button outline" id="newConversionBtn">
+                        Start New Conversion
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recent Conversions -->
+            <div class="recent-conversions" id="recentConversions" style="display: none;">
+                <h3>Recent Conversions</h3>
+                <div class="conversions-list">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Profile Settings Modal -->
+    <div class="modal-overlay" id="profileModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Profile Settings</h2>
+                <button class="close-btn" onclick="closeModal('profileModal')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="profile-section">
+                    <div class="avatar-section">
+                        <img src="https://via.placeholder.com/100x100/e59d02/ffffff?text=JD" alt="Profile" class="profile-image">
+                        <button class="change-avatar-btn neu-button secondary">Change Avatar</button>
+                    </div>
+                    
+                    <div class="profile-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>First Name</label>
+                                <input type="text" class="neu-input-field" value="John">
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <input type="text" class="neu-input-field" value="Doe">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" class="neu-input-field" value="john.doe@example.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Job Title</label>
+                            <input type="text" class="neu-input-field" value="Financial Analyst">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Company</label>
+                            <input type="text" class="neu-input-field" value="Tech Corp">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Time Zone</label>
+                            <select class="neu-input-field">
+                                <option>UTC-5 (Eastern Time)</option>
+                                <option>UTC-8 (Pacific Time)</option>
+                                <option>UTC+0 (GMT)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="neu-button secondary" onclick="closeModal('profileModal')">Cancel</button>
+                <button class="neu-button primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Settings Modal -->
+    <div class="modal-overlay" id="accountModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Account Settings</h2>
+                <button class="close-btn" onclick="closeModal('accountModal')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h3>Security</h3>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Change Password</h4>
+                            <p>Update your password to keep your account secure</p>
+                        </div>
+                        <button class="neu-button secondary">Change</button>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Two-Factor Authentication</h4>
+                            <p>Add an extra layer of security to your account</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3>Preferences</h3>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Email Notifications</h4>
+                            <p>Receive updates about your conversions and account</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Auto-save Conversions</h4>
+                            <p>Automatically save your conversion history</p>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Default Template</h4>
+                            <p>Choose your preferred PowerPoint template</p>
+                        </div>
+                        <select class="neu-input-field">
+                            <option>Corporate Blue</option>
+                            <option>Professional Dark</option>
+                            <option>Minimal White</option>
+                            <option>Custom Brand Template</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="settings-section danger-zone">
+                    <h3>Danger Zone</h3>
+                    <div class="setting-item">
+                        <div class="setting-info">
+                            <h4>Delete Account</h4>
+                            <p>Permanently delete your account and all data</p>
+                        </div>
+                        <button class="neu-button danger">Delete Account</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Billing Settings Modal -->
+    <div class="modal-overlay" id="billingModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Billing & Plans</h2>
+                <button class="close-btn" onclick="closeModal('billingModal')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="current-plan">
+                    <div class="plan-card active">
+                        <div class="plan-header">
+                            <h3>Pro Plan</h3>
+                            <span class="plan-badge">Current</span>
+                        </div>
+                        <div class="plan-price">
+                            <span class="price">$29</span>
+                            <span class="period">/month</span>
+                        </div>
+                        <div class="plan-features">
+                            <div class="feature">✓ Unlimited conversions</div>
+                            <div class="feature">✓ Custom templates</div>
+                            <div class="feature">✓ Priority support</div>
+                            <div class="feature">✓ Advanced formatting</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="billing-section">
+                    <h3>Payment Method</h3>
+                    <div class="payment-method">
+                        <div class="card-info">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                <line x1="1" y1="10" x2="23" y2="10"/>
+                            </svg>
+                            <div class="card-details">
+                                <h4>Visa ending in 4242</h4>
+                                <p>Expires 12/25</p>
+                            </div>
+                        </div>
+                        <button class="neu-button secondary">Update</button>
+                    </div>
+                </div>
+                
+                <div class="billing-section">
+                    <h3>Billing History</h3>
+                    <div class="invoice-list">
+                        <div class="invoice-item">
+                            <div class="invoice-info">
+                                <h4>October 2025</h4>
+                                <p>Pro Plan - $29.00</p>
+                            </div>
+                            <div class="invoice-actions">
+                                <span class="status paid">Paid</span>
+                                <button class="neu-button-small">Download</button>
+                            </div>
+                        </div>
+                        
+                        <div class="invoice-item">
+                            <div class="invoice-info">
+                                <h4>September 2025</h4>
+                                <p>Pro Plan - $29.00</p>
+                            </div>
+                            <div class="invoice-actions">
+                                <span class="status paid">Paid</span>
+                                <button class="neu-button-small">Download</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Usage Statistics Modal -->
+    <div class="modal-overlay" id="usageModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Usage Statistics</h2>
+                <button class="close-btn" onclick="closeModal('usageModal')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="stats-overview">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3>127</h3>
+                            <p>Total Conversions</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <polyline points="12,6 12,12 16,14"/>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3>24.5h</h3>
+                            <p>Time Saved</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 3v18h18"/>
+                                <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+                            </svg>
+                        </div>
+                        <div class="stat-info">
+                            <h3>1,247</h3>
+                            <p>Slides Created</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="usage-chart">
+                    <h3>Monthly Usage</h3>
+                    <div class="chart-placeholder">
+                        <div class="chart-bar" style="height: 60%"></div>
+                        <div class="chart-bar" style="height: 80%"></div>
+                        <div class="chart-bar" style="height: 45%"></div>
+                        <div class="chart-bar" style="height: 90%"></div>
+                        <div class="chart-bar" style="height: 70%"></div>
+                        <div class="chart-bar" style="height: 85%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/mainpage.js"></script>
+</body>
+</html>

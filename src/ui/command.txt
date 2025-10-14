@@ -1,0 +1,7 @@
+# Navigate to src/ui directory
+cd "c:\Users\gaura\OneDrive\Desktop\Big Projects\FinDeck(Excel to PPT Project)\src\ui"
+
+# Start server
+python -m http.server 8000
+
+# Then visit: http://localhost:8000
