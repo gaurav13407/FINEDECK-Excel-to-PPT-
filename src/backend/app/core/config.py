@@ -37,6 +37,21 @@ class Settings(BaseSettings):
 
     #CORS Setting for frontend
     cors_origins:list=["http://localhost:3000", "http://127.0.0.1:5500","https://www.findeck.live"]
+    # Backblaze B2 Storage Settings
+    use_b2_storage: bool = False
+    b2_application_key_id: str
+    b2_application_key: str
+    b2_bucket_name: str = "findeck-files"
+    b2_endpoint: str = "s3.us-east-005.backblazeb2.com"
+
+    # File Cleanup Settings
+    cleanup_enabled: bool = True
+    file_retention_hours: int = 24
+    cleanup_interval_hours: int = 6
+
+
+
+
 
     class Config:
         env_file=".env"

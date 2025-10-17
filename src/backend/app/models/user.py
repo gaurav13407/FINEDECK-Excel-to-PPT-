@@ -16,14 +16,21 @@ from enum import Enum
 ## MongoDB uses ObjectedID,but APIs use strings
 class PyObjectId(ObjectId):
     @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
+    def __get_pydantic_core_schema__(cls, source_type, handler):
+        from pydantic_core import core_schema
+        return core_schema.no_info_plain_validator_function(cls.validate)
 
     @classmethod
-    def validate(cls,v):
-        if not ObjectId.is_valid(v):
-            raise ValueError("Invalid ObjectId")
-        return ObjectId(v)
+    def validate(cls, v):
+        if isinstance(v, ObjectId):
+            return v
+        if isinstance(v, str) and ObjectId.is_valid(v):
+            return ObjectId(v)
+        raise ValueError("Invalid ObjectId")
+    
+    @classmethod
+    def __get_validators__(cls):
+        yield cls.validate
     
 class UserCreate(BaseModel):
     name:str=Field(...,min_length=2,max_length=100,description="User's full name")
@@ -183,11 +190,76 @@ class TemplateAccess(BaseModel):
     premium_templates:bool=False #Enterprise
     custom_template_upload:bool=False #Enterprise
     template_upload:bool=False # Enterprise only
+
+
+
+class SubscriptionDetails(BaseModel):
+    plan:SubscriptionPlan=SubscriptionPlan.BASIC
+    status:SubscriptionStatus=SubscriptionStatus.TRIAL
+    price_per_month:float=Field(...,description="Monthly price in USD")
+    presentations_limit:int=Field(...,description="Monthly presentation limit")
+
+    #New: Credit System
+    monthly_credits_limit:int=Field(...,description="Monthly credit limit")
+    monthly_credits_used:int=Field(0,description="Credits used this month")
+    credits_reset_date:Optional[datetime]=Field(...,description="Date when credits reset")
+
+    ai_features_enabled:bool=False
+    started_at:datetime
+    expires_at:Optional[datetime]=None
+    auto_renew:bool=True
+
+## Add to UsageSats model
+class UsageStats(BaseModel):
+    current_month_usage:int
+    remaining_presentations:int
+    usage_percentage:float
+    ai_requests_used:int=0
+
+    # New credit fields
+    monthly_credits_used:int=0
+    monthly_credits_limit:int
+    remaining_credits:int=0
+    credits_usage_percentage:float=0.0
+
+
+
+# New: Credits Businedd logic Functions
+def has_credits_remaning(user:UserInDB,credits_needed:int=1)->bool:
+    """Checks if user has enough credits to create a presentation"""
+    config=PLAN_CONFIGS[user.subscription.plan]
+    total_used=user.subscription.monthly_credits_used+credits_needed
+    return total_used <= config["monthly_credits_limit"]
+
+
+def deduct_credits(user:UserInDB,credits_used:int)-> bool:
+    """Deduct credits from user's subscription"""
+    if has_credits_remaning(user,credits_used):
+        user.subscription.monthly_credits_used += credits_used
+        return True
+    return False
+
+
+def get_credit_usage_stats(user:UserInDB)->dict:
+    """Get user's credit usage stats"""
+    config=PLAN_CONFIGS[user.subscription.plan]
+    limit=config["monthly_credits_limit"]
+    used=user.subscription.monthly_credits_used
+    return {
+        "credits_used":used,
+        "credits_limit":limit,
+        "credits_remaining":limit - used,
+        "usage_percentage":(used / limit * 100) if limit > 0 else 0
+    }
+
+
+
 PLAN_CONFIGS={
     SubscriptionPlan.BASIC:{
         "price":25.00,
         "presentations_limit":7,
         "ai_features":False,
+        "monthly_credits_limit":10,
         "template_access":{
             "basic_templates":True,
             "professional_templates":False,
@@ -203,6 +275,7 @@ PLAN_CONFIGS={
         "price":49.99,
         "presentations_limit":15,
         "ai_features":False,
+        "monthly_credits_limit":50,
         "template_access":{
             "basic_templates":True,
             "professional_templates":True,
@@ -217,6 +290,7 @@ PLAN_CONFIGS={
         "price":99.99,
         "presentations_limit":1000,
         "ai_features":True,
+        "monthly_credits_limit":1000,
         "template_access":{
             "basic_templates":True,
             "professional_templates":True,
