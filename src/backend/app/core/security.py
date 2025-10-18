@@ -70,16 +70,27 @@ async def get_current_user_from_token(token: str):
     # Verify the token first
     payload = verify_token(token)
     if payload is None:
+        print("🔍 JWT verification failed - invalid token")
         return None
     
-    # Extract user_id from payload
-    user_id = payload.get("sub")  # "sub" is standard JWT field for subject (user_id)
+    print(f"🔍 JWT payload: {payload}")
+    
+    # Extract user_id from payload (use user_id field, not sub which contains email)
+    user_id = payload.get("user_id")  # This contains the actual user ID
     if user_id is None:
+        print("🔍 JWT missing user_id field")
         return None
+    
+    print(f"🔍 Extracted user_id: {user_id}")
     
     # Get user from database
     try:
         user = await get_user_by_id(user_id)
+        if user:
+            print(f"🔍 User found: {user.name}")
+        else:
+            print(f"🔍 User not found for ID: {user_id}")
         return user
-    except Exception:
+    except Exception as e:
+        print(f"🔍 Error getting user: {e}")
         return None

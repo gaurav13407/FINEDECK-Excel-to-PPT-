@@ -91,16 +91,29 @@ async def get_user_by_id(user_id:str)->Optional[UserInDB]:
 async def authenticate_user(email:str,password:str)->Optional[UserInDB]:
     """Authenticate user credentials"""
     
+    print(f"🔍 authenticate_user called:")
+    print(f"   - Email: {email}")
+    print(f"   - Password length: {len(password) if password else 0}")
+    
     user=await get_user_by_email(email)
     if not user:
+        print(f"   - User not found for email: {email}")
         return None
     
-    if not verify_password(password,user.password_hash):
+    print(f"   - User found: {user.name} (Active: {user.is_active})")
+    print(f"   - Stored hash starts with: {user.password_hash[:20]}...")
+    
+    password_valid = verify_password(password,user.password_hash)
+    print(f"   - Password verification: {'Valid' if password_valid else 'Invalid'}")
+    
+    if not password_valid:
+        print(f"   - Authentication failed: Invalid password")
         return None
     
     user_collection=get_collection("users")
     await user_collection.update_one({"_id":ObjectId(str(user.id))},{"$set":{"last_login":datetime.utcnow()}})
 
+    print(f"   - Authentication successful!")
     return await get_user_by_id(str(user.id))
 
 

@@ -14,6 +14,9 @@ class FinDeckApp {
             'text/csv' // .csv
         ];
         
+        // Initialize API service
+        this.apiService = window.APIService ? new window.APIService() : null;
+        
         this.init();
     }
 
@@ -115,7 +118,7 @@ class FinDeckApp {
         }
     }
 
-    handleFiles(files) {
+    async handleFiles(files) {
         if (!files || files.length === 0) return;
 
         const validFiles = [];
@@ -138,11 +141,85 @@ class FinDeckApp {
         }
 
         if (validFiles.length > 0) {
-            this.uploadedFiles = [...this.uploadedFiles, ...validFiles];
+            // Upload files to backend
+            await this.uploadFilesToBackend(validFiles);
+        }
+    }
+
+    async uploadFilesToBackend(files) {
+        if (!this.apiService) {
+            this.showNotification('Error', 'API service not available. Please refresh the page.', 'error');
+            return;
+        }
+
+        this.showUploadProgress();
+
+        try {
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                this.updateUploadProgress(i + 1, files.length, `Uploading ${file.name}...`);
+                
+                const response = await this.apiService.uploadFile(file);
+                
+                if (response.success) {
+                    // Add file metadata from backend response
+                    const fileWithId = {
+                        ...file,
+                        id: response.data.id,
+                        url: response.data.url,
+                        uploaded: true
+                    };
+                    this.uploadedFiles.push(fileWithId);
+                } else {
+                    throw new Error(response.message || `Failed to upload ${file.name}`);
+                }
+            }
+
+            this.hideUploadProgress();
             this.displayUploadedFiles();
             this.updateStepIndicator(2);
             this.showFileListSection();
+            this.showNotification('Success', `Successfully uploaded ${files.length} file(s)!`, 'success');
+
+        } catch (error) {
+            console.error('Upload error:', error);
+            this.hideUploadProgress();
+            this.showNotification('Error', error.message || 'Failed to upload files. Please try again.', 'error');
         }
+    }
+
+    showUploadProgress() {
+        const uploadSection = document.getElementById('uploadSection');
+        if (uploadSection) {
+            uploadSection.innerHTML = `
+                <div class="upload-progress-container">
+                    <h3>Uploading Files...</h3>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="uploadProgress"></div>
+                    </div>
+                    <p class="progress-text" id="uploadProgressText">Preparing upload...</p>
+                </div>
+            `;
+        }
+    }
+
+    updateUploadProgress(current, total, message) {
+        const progressBar = document.getElementById('uploadProgress');
+        const progressText = document.getElementById('uploadProgressText');
+        
+        const percentage = (current / total) * 100;
+        
+        if (progressBar) {
+            progressBar.style.width = `${percentage}%`;
+        }
+        
+        if (progressText) {
+            progressText.textContent = message || `Uploading ${current} of ${total} files...`;
+        }
+    }
+
+    hideUploadProgress() {
+        // Progress will be hidden when we transition to file list section
     }
 
     validateFile(file) {
@@ -549,17 +626,60 @@ class FinDeckApp {
     }
 
     // Conversion functionality
-    startConversion() {
+    async startConversion() {
         if (this.uploadedFiles.length === 0) {
             this.showNotification('Error', 'Please upload at least one file to convert.', 'error');
+            return;
+        }
+
+        if (!this.apiService) {
+            this.showNotification('Error', 'API service not available. Please refresh the page.', 'error');
             return;
         }
 
         this.updateStepIndicator(4);
         this.showConversionProgress();
         
-        // Simulate conversion process
-        this.simulateConversion();
+        // Start real conversion process
+        await this.performConversion();
+    }
+
+    async performConversion() {
+        try {
+            const conversionResults = [];
+            
+            for (let i = 0; i < this.uploadedFiles.length; i++) {
+                const file = this.uploadedFiles[i];
+                
+                this.updateConversionProgress(
+                    (i / this.uploadedFiles.length) * 100,
+                    `Converting ${file.name}...`
+                );
+                
+                // Convert each file
+                const result = await this.apiService.convertExcelToPPT(file.id || file.name);
+                
+                if (result.success) {
+                    conversionResults.push({
+                        originalFile: file,
+                        convertedFile: result.data
+                    });
+                } else {
+                    throw new Error(result.message || `Failed to convert ${file.name}`);
+                }
+            }
+            
+            this.updateConversionProgress(100, 'Conversion complete!');
+            this.conversionResults = conversionResults;
+            
+            setTimeout(() => {
+                this.showConversionResults();
+            }, 1000);
+            
+        } catch (error) {
+            console.error('Conversion error:', error);
+            this.showConversionError(error.message || 'Failed to convert files. Please try again.');
+        }
     }
 
     showConversionProgress() {
@@ -571,83 +691,172 @@ class FinDeckApp {
                     <div class="progress-container">
                         <div class="progress-bar" id="conversionProgress"></div>
                     </div>
-                    <p class="progress-text">Processing ${this.uploadedFiles.length} file(s)...</p>
+                    <p class="progress-text" id="conversionProgressText">Processing ${this.uploadedFiles.length} file(s)...</p>
                 </div>
             `;
         }
     }
 
-    simulateConversion() {
+    updateConversionProgress(percentage, message) {
         const progressBar = document.getElementById('conversionProgress');
-        const progressText = document.querySelector('.progress-text');
+        const progressText = document.getElementById('conversionProgressText');
         
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += Math.random() * 15;
-            
-            if (progress >= 100) {
-                progress = 100;
-                clearInterval(interval);
-                this.showConversionResults();
-            }
-            
-            if (progressBar) {
-                progressBar.style.width = `${progress}%`;
-            }
-            
-            if (progressText) {
-                progressText.textContent = `Processing... ${Math.round(progress)}%`;
-            }
-        }, 500);
+        if (progressBar) {
+            progressBar.style.width = `${percentage}%`;
+        }
+        
+        if (progressText) {
+            progressText.textContent = message || `Processing... ${Math.round(percentage)}%`;
+        }
+    }
+
+    showConversionError(errorMessage) {
+        const resultsSection = document.getElementById('resultsSection');
+        if (resultsSection) {
+            resultsSection.innerHTML = `
+                <div class="conversion-error">
+                    <div class="error-header">
+                        <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="15" y1="9" x2="9" y2="15"/>
+                            <line x1="9" y1="9" x2="15" y2="15"/>
+                        </svg>
+                        <h3>Conversion Failed</h3>
+                        <p>${errorMessage}</p>
+                    </div>
+                    
+                    <div class="error-actions">
+                        <button class="neu-button primary" onclick="finDeckApp.startConversion()">
+                            Try Again
+                        </button>
+                        <button class="neu-button secondary" onclick="finDeckApp.resetProcess()">
+                            Start Over
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        this.showNotification('Error', errorMessage, 'error');
     }
 
     showConversionResults() {
         const resultsSection = document.getElementById('resultsSection');
-        if (resultsSection) {
-            resultsSection.innerHTML = `
-                <div class="conversion-results">
-                    <div class="results-header">
-                        <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                            <polyline points="22,4 12,14.01 9,11.01"/>
+        if (!resultsSection || !this.conversionResults) return;
+
+        const downloadLinks = this.conversionResults.map((result, index) => {
+            const convertedFile = result.convertedFile;
+            return `
+                <div class="download-item">
+                    <div class="file-info">
+                        <svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
                         </svg>
-                        <h3>Conversion Complete!</h3>
-                        <p>Successfully converted ${this.uploadedFiles.length} file(s) to PowerPoint.</p>
+                        <span>${convertedFile.filename || result.originalFile.name.replace(/\.[^/.]+$/, '.pptx')}</span>
                     </div>
-                    
-                    <div class="results-actions">
-                        <button class="neu-button primary download-btn" onclick="finDeckApp.downloadResults()">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                <polyline points="7,10 12,15 17,10"/>
-                                <line x1="12" y1="15" x2="12" y2="3"/>
-                            </svg>
-                            Download PowerPoint Files
-                        </button>
-                        
-                        <button class="neu-button secondary" onclick="finDeckApp.resetProcess()">
-                            Convert More Files
-                        </button>
-                    </div>
+                    <button class="neu-button-small primary" onclick="finDeckApp.downloadSingleFile(${index})">
+                        Download
+                    </button>
                 </div>
             `;
-        }
+        }).join('');
+
+        resultsSection.innerHTML = `
+            <div class="conversion-results">
+                <div class="results-header">
+                    <svg class="success-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22,4 12,14.01 9,11.01"/>
+                    </svg>
+                    <h3>Conversion Complete!</h3>
+                    <p>Successfully converted ${this.uploadedFiles.length} file(s) to PowerPoint.</p>
+                </div>
+                
+                <div class="download-list">
+                    ${downloadLinks}
+                </div>
+                
+                <div class="results-actions">
+                    <button class="neu-button primary download-btn" onclick="finDeckApp.downloadAllResults()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7,10 12,15 17,10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Download All Files
+                    </button>
+                    
+                    <button class="neu-button secondary" onclick="finDeckApp.resetProcess()">
+                        Convert More Files
+                    </button>
+                </div>
+            </div>
+        `;
         
         this.showNotification('Success', 'Files converted successfully!', 'success');
     }
 
-    downloadResults() {
-        // Simulate download
-        this.showNotification('Download', 'Starting download...', 'info');
+    async downloadSingleFile(index) {
+        if (!this.conversionResults || !this.conversionResults[index]) {
+            this.showNotification('Error', 'File not found.', 'error');
+            return;
+        }
+
+        const result = this.conversionResults[index];
+        const convertedFile = result.convertedFile;
         
-        // In a real application, you would trigger the actual download
-        setTimeout(() => {
-            this.showNotification('Success', 'Files downloaded successfully!', 'success');
-        }, 2000);
+        try {
+            this.showNotification('Download', `Downloading ${convertedFile.filename}...`, 'info');
+            
+            // Create download link
+            if (convertedFile.url) {
+                const link = document.createElement('a');
+                link.href = convertedFile.url;
+                link.download = convertedFile.filename || result.originalFile.name.replace(/\.[^/.]+$/, '.pptx');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                this.showNotification('Success', 'File downloaded successfully!', 'success');
+            } else {
+                throw new Error('Download URL not available');
+            }
+            
+        } catch (error) {
+            console.error('Download error:', error);
+            this.showNotification('Error', 'Failed to download file. Please try again.', 'error');
+        }
+    }
+
+    async downloadAllResults() {
+        if (!this.conversionResults || this.conversionResults.length === 0) {
+            this.showNotification('Error', 'No files to download.', 'error');
+            return;
+        }
+
+        this.showNotification('Download', 'Starting downloads...', 'info');
+        
+        // Download each file
+        for (let i = 0; i < this.conversionResults.length; i++) {
+            try {
+                await this.downloadSingleFile(i);
+                // Small delay between downloads
+                await new Promise(resolve => setTimeout(resolve, 500));
+            } catch (error) {
+                console.error(`Failed to download file ${i}:`, error);
+            }
+        }
+    }
+
+    // Legacy method for backward compatibility
+    downloadResults() {
+        this.downloadAllResults();
     }
 
     resetProcess() {
         this.uploadedFiles = [];
+        this.conversionResults = [];
         this.currentStep = 1;
         this.updateUIState();
         this.showNotification('Info', 'Process reset. You can upload new files.', 'info');

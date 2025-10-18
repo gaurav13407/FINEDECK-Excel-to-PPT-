@@ -40,8 +40,18 @@ async def signup(user_data: UserCreate,db=Depends(get_db)):
 @router.post("/login", response_model=Token)
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     """Login with email and password to get JWT token"""
+    
+    # Debug logging
+    print(f"🔍 Login attempt:")
+    print(f"   - Email/Username: {form_data.username}")
+    print(f"   - Password provided: {'Yes' if form_data.password else 'No'}")
+    print(f"   - Password length: {len(form_data.password) if form_data.password else 0}")
+    
     user=await authenticate_user(form_data.username,form_data.password)
+    print(f"   - Authentication result: {'Success' if user else 'Failed'}")
+    
     if not user:
+        print(f"❌ Authentication failed for {form_data.username}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",

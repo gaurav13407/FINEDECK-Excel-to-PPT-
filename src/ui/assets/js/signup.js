@@ -377,33 +377,51 @@ class NeumorphismSignupForm {
         }
         
         try {
-            console.log('Starting API simulation...');
-            // Simulate API call
-            await this.simulateSignup();
-            console.log('API simulation completed successfully');
+            console.log('Starting real API signup...');
             
-            // Create user data with actual name from form
+            // Check if API service is available
+            if (!window.apiService) {
+                throw new Error('API service not loaded. Please refresh the page and try again.');
+            }
+            
+            // Get form data
             const firstName = this.firstNameInput.value.trim();
             const lastName = this.lastNameInput.value.trim();
             const email = this.emailInput.value.trim();
+            const password = this.passwordInput.value;
             
             // Validate data one more time
-            if (!firstName || !lastName || !email) {
+            if (!firstName || !lastName || !email || !password) {
                 throw new Error('Invalid form data: missing required fields');
             }
             
+            // Prepare user data for API
             const userData = {
                 name: `${firstName} ${lastName}`,
+                email: email,
+                password: password
+            };
+            
+            console.log('Calling real API signup...');
+            
+            // Call real API signup
+            const response = await window.apiService.signup(userData);
+            console.log('API signup successful:', response);
+            
+            // Create user data for local auth manager
+            const localUserData = {
+                name: userData.name,
                 firstName: firstName,
                 lastName: lastName,
                 email: email,
                 plan: 'Free',
                 conversions: 0,
                 templates: 0,
-                loginTime: new Date().toISOString()
+                loginTime: new Date().toISOString(),
+                id: response.id || 'temp-id'
             };
             
-            console.log('User data created:', userData);
+            console.log('User data created:', localUserData);
             
             // Check if auth manager exists and is properly initialized
             if (!window.authManager) {

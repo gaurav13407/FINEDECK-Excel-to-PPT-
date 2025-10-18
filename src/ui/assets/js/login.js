@@ -195,18 +195,29 @@ class NeumorphismLoginForm {
         this.setLoading(true);
         
         try {
-            // Simulate authentication
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            // Check if API service is available
+            if (!window.apiService) {
+                throw new Error('API service not loaded. Please refresh the page and try again.');
+            }
             
-            // Create user data (in real app, this would come from server)
-            // For now, we'll extract name from email but in a real app this would come from server
+            // Call real API login
+            console.log('Attempting login with real API...');
+            const response = await window.apiService.login(this.emailInput.value, this.passwordInput.value);
+            console.log('Login successful:', response);
+            
+            // Get user profile from the API
+            const userProfile = await window.apiService.getCurrentUser();
+            console.log('User profile retrieved:', userProfile);
+            
+            // Create user data for local auth manager
             const userData = {
-                name: this.extractNameFromEmail(this.emailInput.value),
-                email: this.emailInput.value,
-                plan: 'Free',
-                conversions: 0,
+                name: userProfile.name,
+                email: userProfile.email,
+                plan: userProfile.subscription?.plan || 'Free',
+                conversions: userProfile.subscription?.monthly_credits_used || 0,
                 templates: 0,
-                loginTime: new Date().toISOString()
+                loginTime: new Date().toISOString(),
+                id: userProfile.id
             };
             
             // Use auth manager to login
