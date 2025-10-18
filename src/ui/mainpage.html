@@ -31,7 +31,13 @@
             <div class="user-menu">
                 <div class="profile-dropdown">
                     <button class="profile-btn neu-button-small" id="profileBtn">
-                        <img id="profileAvatar" src="https://via.placeholder.com/32x32/e59d02/ffffff?text=U" alt="Profile" class="profile-avatar">
+                        <div class="profile-avatar-container">
+                            <svg class="default-avatar" id="profileAvatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="50" cy="50" r="50" fill="var(--accent-color)"/>
+                                <circle cx="50" cy="35" r="15" fill="white"/>
+                                <path d="M50,55 C35,55 25,65 25,75 L25,85 Q25,90 30,90 L70,90 Q75,90 75,85 L75,75 C75,65 65,55 50,55 Z" fill="white"/>
+                            </svg>
+                        </div>
                         <span class="profile-name" id="profileName">User</span>
                         <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="6,9 12,15 18,9"/>
@@ -41,7 +47,13 @@
                     <div class="dropdown-menu" id="profileDropdown">
                         <div class="dropdown-header">
                             <div class="user-info">
-                                <img id="userAvatar" src="https://via.placeholder.com/48x48/e59d02/ffffff?text=U" alt="Profile" class="user-avatar">
+                                <div class="user-avatar-container">
+                                    <svg class="default-avatar large" id="userAvatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                        <circle cx="50" cy="50" r="50" fill="var(--accent-color)"/>
+                                        <circle cx="50" cy="35" r="15" fill="white"/>
+                                        <path d="M50,55 C35,55 25,65 25,75 L25,85 Q25,90 30,90 L70,90 Q75,90 75,85 L75,75 C75,65 65,55 50,55 Z" fill="white"/>
+                                    </svg>
+                                </div>
                                 <div class="user-details">
                                     <h4 id="userName">User</h4>
                                     <p id="userEmail">user@example.com</p>
@@ -237,7 +249,7 @@
                         </div>
                     </div>
                     
-                    <button class="convert-btn neu-button" id="convertBtn">
+                    <button class="convert-btn neu-button" id="convertBtn" onclick="window.finDeckApp && window.finDeckApp.startConversion()">
                         <span class="btn-text">Convert to PowerPoint</span>
                         <div class="btn-loader">
                             <div class="neu-spinner"></div>

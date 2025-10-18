@@ -282,17 +282,9 @@ async def get_file_by_id(file_id: str, user_id: str) -> Optional[FileRecord]:
         if not file_record:
             return None
             
-        return FileRecord(
-            id=str(file_record["_id"]),
-            filename=file_record["filename"],
-            file_size=file_record["file_size"],
-            file_type=file_record["file_type"],
-            user_id=str(file_record["user_id"]),
-            upload_date=file_record["upload_date"],
-            status=file_record["status"],
-            storage_path=file_record.get("storage_path"),
-            download_url=file_record.get("download_url")
-        )
+        # Use model_validate to handle field mapping automatically
+        return FileRecord.model_validate(file_record)
+        
     except Exception as e:
         raise Exception(f"Get file by ID error: {str(e)}")
     

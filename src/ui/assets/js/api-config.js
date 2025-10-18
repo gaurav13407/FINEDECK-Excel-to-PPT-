@@ -105,4 +105,6 @@ class APIConfig {
 }
 
 // Create global API instance
+console.log('📡 Loading API Config...');
 window.apiConfig = new APIConfig();
+console.log('✅ API Config loaded successfully:', window.apiConfig);

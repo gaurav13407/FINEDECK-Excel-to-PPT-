@@ -52,7 +52,7 @@ async def convert_excel_to_ppt(
     """
     try:
         # Get the uploaded file
-        file_doc = await get_file_by_id(file_id)
+        file_doc = await get_file_by_id(file_id, str(current_user.id))
         if not file_doc:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,

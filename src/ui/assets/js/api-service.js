@@ -3,9 +3,14 @@
  * Handles all communication with the FastAPI backend
  */
 
+console.log('📡 Loading API Service...');
+
 class APIService {
     constructor() {
+        console.log('🔧 Creating APIService instance...');
+        console.log('   - window.apiConfig available:', !!window.apiConfig);
         this.api = window.apiConfig;
+        console.log('✅ APIService instance created');
     }
 
     // =================
@@ -150,6 +155,16 @@ class APIService {
 
         if (!response.ok) {
             const errorData = await response.json();
+            console.log('❌ Upload failed:', {
+                status: response.status,
+                statusText: response.statusText,
+                error: errorData,
+                token: localStorage.getItem('authToken') ? 'Present' : 'Missing'
+            });
+            
+            if (response.status === 401) {
+                throw new Error('Authentication failed');
+            }
             throw new Error(errorData.detail || 'File upload failed');
         }
 
@@ -256,4 +271,11 @@ class APIService {
 }
 
 // Create global API service instance
-window.apiService = new APIService();
+console.log('🔧 Creating global APIService instance...');
+try {
+    window.APIService = APIService; // Export the class
+    window.apiService = new APIService(); // Create an instance
+    console.log('✅ Global APIService created successfully');
+} catch (error) {
+    console.error('❌ Error creating APIService:', error);
+}

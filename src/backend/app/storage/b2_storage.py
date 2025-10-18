@@ -264,8 +264,8 @@ class LocalStorage:
         with open(file_path, "wb") as f:
             f.write(file_data)
         
-        # Return the relative path
-        return str(file_path.relative_to(self.base_path))
+        # Return the absolute path for direct file access
+        return str(file_path.absolute())
 
     async def upload_excel_file(self,file_content:bytes,user_id:str,original_filename:str)->Tuple[str,str]:
         """Upload excel file to local storage"""
