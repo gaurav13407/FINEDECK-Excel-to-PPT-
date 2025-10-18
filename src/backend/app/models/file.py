@@ -59,7 +59,7 @@ class FileUpload(BaseModel):
 
 class FileRecord(BaseModel):
     """Complete file record in DB storage"""
-    id:Optional[str]=Field(default=None,alias="_id")
+    id:PyObjectId=Field(default_factory=PyObjectId,alias="_id")
     user_id:PyObjectId=Field(...,description="User who uploaded the file")
     filename:str
     original_filename:str
@@ -121,7 +121,7 @@ class FileRecord(BaseModel):
     
 class FileResponse(BaseModel):
     """Response model for file operations"""
-    id:str
+    id:str=Field(alias="_id")
     filename:str
     file_size:int
     file_type:FileType
@@ -137,6 +137,13 @@ class FileResponse(BaseModel):
     credits_used:int
     error_message:Optional[str]=None
     progress_percentage:int
+
+    model_config = {
+        "from_attributes": True,
+        "arbitrary_types_allowed": True,
+        "populate_by_name": True,
+        "json_encoders": {ObjectId: str}
+    }
 
 
 class ConversionJob(BaseModel):

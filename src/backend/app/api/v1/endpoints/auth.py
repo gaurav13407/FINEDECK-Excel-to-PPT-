@@ -29,7 +29,7 @@ async def signup(user_data: UserCreate,db=Depends(get_db)):
         )
     try:
         new_user=await create_user(user_data)
-        return UserResponse.from_orm(new_user)
+        return UserResponse.model_validate(new_user)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -71,7 +71,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     return Token(
         access_token=access_token,
         token_type="bearer",
-        user=UserResponse.from_orm(user)
+        user=UserResponse.model_validate(user)
     )
 
 
@@ -86,7 +86,7 @@ async def refresh_token(current_user=Depends(get_current_active_user)):
     return Token(
         access_token=access_token,
         token_type="bearer",
-        user=UserResponse.from_orm(current_user)
+        user=UserResponse.model_validate(current_user)
     )
 
 @router.get("/me", response_model=UserResponse)
@@ -94,7 +94,7 @@ async def get_current_user_profile(
     current_user=Depends(get_current_active_user)
 ):
     """Get current authenticated user's profile"""
-    return UserResponse.from_orm(current_user)
+    return UserResponse.model_validate(current_user)
 
 
 @router.post("/logout")

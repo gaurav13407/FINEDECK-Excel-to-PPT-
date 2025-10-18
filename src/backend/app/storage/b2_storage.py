@@ -254,6 +254,19 @@ class LocalStorage:
         self.base_path=Path(base_path)
         self.base_path.mkdir(parents=True,exist_ok=True)
 
+    async def upload_file(self, file_data: bytes, filename: str) -> str:
+        """Upload file to local storage (generic method)"""
+        # Create directory structure
+        file_path = self.base_path / filename
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Write file
+        with open(file_path, "wb") as f:
+            f.write(file_data)
+        
+        # Return the relative path
+        return str(file_path.relative_to(self.base_path))
+
     async def upload_excel_file(self,file_content:bytes,user_id:str,original_filename:str)->Tuple[str,str]:
         """Upload excel file to local storage"""
         now=datetime.utcnow()

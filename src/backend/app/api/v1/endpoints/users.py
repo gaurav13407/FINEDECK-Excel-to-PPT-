@@ -21,14 +21,14 @@ from models.user import(
     PresentationUsage,SubscriptionResponse
 )
 from api.deps import get_current_active_user,get_db,get_pagination_params
-router=APIRouter(prefix="/users",tags=["User"])
+router=APIRouter(tags=["User"])  # Remove prefix from here, it's added in api.py
 
 @router.get("/me",response_model=UserResponse)
 async def get_current_user_profile(
     current_user=Depends(get_current_active_user)
 ):
     """Get current user profile"""
-    return UserResponse.from_orm(current_user)
+    return UserResponse.model_validate(current_user)
 
 @router.put("/me",response_model=UserResponse)
 async def update_user_profile_endpoint(
@@ -45,7 +45,7 @@ async def update_user_profile_endpoint(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="User not found"
             )
-        return UserResponse.from_orm(update_user)
+        return UserResponse.model_validate(update_user)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

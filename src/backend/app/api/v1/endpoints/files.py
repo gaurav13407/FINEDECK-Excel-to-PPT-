@@ -24,7 +24,7 @@ from api.deps import(
     get_current_active_user,get_db,validate_file_upload as validate_file_upload_dep,
     get_pagination_params,require_credits
 )
-router=APIRouter(prefix="/files",tags=["Files"])
+router=APIRouter(tags=["Files"])  # Remove prefix from here, it's added in api.py
 
 @router.post("/upload",response_model=FileResponse,status_code=status.HTTP_201_CREATED)
 async def upload_excel_file(
@@ -33,21 +33,29 @@ async def upload_excel_file(
     db=Depends(get_db)
 ):
     """Upload Excel file with validation"""
+    print(f"🔄 File upload request received:")
+    print(f"   - Filename: {file.filename}")
+    print(f"   - Content type: {file.content_type}")
+    print(f"   - User: {current_user.email}")
+    
     try:
         # Read file data
         file_data = await file.read()
+        print(f"   - File size: {len(file_data)} bytes")
         
         # Determine file type
         file_type = FileType.EXCEL
         if file.filename and file.filename.lower().endswith('.csv'):
             file_type = FileType.CSV
         
+        print(f"   - Detected file type: {file_type}")
+        
         # Create FileUpload object
         upload_request = FileUpload(
             filename=file.filename or "unknown.xlsx",
             file_size=len(file_data),
             file_type=file_type,
-            template_category=TemplateCategory.BUSINESS  # Default category
+            template_category=TemplateCategory.BASIC  # Default category
         )
         
         # Call service with correct signature
@@ -57,7 +65,7 @@ async def upload_excel_file(
             upload_request=upload_request
         )
         
-        return FileResponse.from_orm(uploaded_file)
+        return FileResponse.model_validate(uploaded_file)
     
     except Exception as e:
         raise HTTPException(
@@ -81,7 +89,7 @@ async def list_user_files(
             limit=pagination["limit"],
             status_filter=status_filter
         )
-        return [FileResponse.from_orm(f) for f in files]
+        return [FileResponse.model_validate(f) for f in files]
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -103,7 +111,7 @@ async def get_file_details(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="File not found"
             )
-        return FileResponse.from_orm(file)
+        return FileResponse.model_validate(file)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

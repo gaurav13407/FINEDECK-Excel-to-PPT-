@@ -77,7 +77,7 @@ async def upload_file(user_id:str,file_data:bytes,upload_request:FileUpload)->Op
         )
         if not is_valid:
             raise Exception(error_msg)
-        storage_client=get_storage_client(use_b2=True)
+        storage_client=get_storage_client(use_b2=False)
 
         file_ext=Path(upload_request.filename).suffix
         unique_filename=f"{user_id}/{datetime.now(UTC).strftime('%Y/%m/%d')}/{ObjectId()}{file_ext}"
