@@ -10,7 +10,7 @@
 import hashlib
 import secrets
 from jose import JWTError,jwt
-from datetime import datetime,timedelta
+from datetime import datetime,timedelta,UTC
 from typing import Optional
 from .config import settings
 
@@ -43,9 +43,9 @@ def create_access_token(data:dict,expires_delta:Optional[timedelta]=None)->str:
     to_encode=data.copy()
 
     if expires_delta:
-        expire=datetime.utcnow()+expires_delta
+        expire=datetime.now(UTC)+expires_delta
     else:
-        expire=datetime.utcnow()+timedelta(minutes=settings.jwt_expiration_minutes)
+        expire=datetime.now(UTC)+timedelta(minutes=settings.jwt_expiration_minutes)
     to_encode.update({"exp":expire})
     encoded_jwt=jwt.encode(to_encode,settings.jwt_secret,algorithm=settings.jwt_algorithm)
     return encoded_jwt
@@ -61,4 +61,25 @@ def verify_token(token:str)-> Optional[dict]:
         return payload
     except JWTError:
         # TOken is invalid, expired, or malformed
+        return None
+
+async def get_current_user_from_token(token: str):
+    """Get user from database using JWT token"""
+    from services.user_service import get_user_by_id
+    
+    # Verify the token first
+    payload = verify_token(token)
+    if payload is None:
+        return None
+    
+    # Extract user_id from payload
+    user_id = payload.get("sub")  # "sub" is standard JWT field for subject (user_id)
+    if user_id is None:
+        return None
+    
+    # Get user from database
+    try:
+        user = await get_user_by_id(user_id)
+        return user
+    except Exception:
         return None

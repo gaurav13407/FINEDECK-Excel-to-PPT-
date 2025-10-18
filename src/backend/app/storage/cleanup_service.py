@@ -13,7 +13,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
 from .b2_storage import get_storage_client
-from ..core.config import settings
+from core.config import settings
 
 logger=logging.getLogger(__name__)
 

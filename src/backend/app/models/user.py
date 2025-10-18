@@ -52,13 +52,27 @@ class UserResponse(BaseModel):
     last_login:Optional[datetime]=None
     presentations_created:int=0
     # presentations_limit:int=7
-    class Config:
-        validate_by_name = True  # Updated for Pydantic V2
-        arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
+    
+    model_config = {
+        "from_attributes": True,
+        "arbitrary_types_allowed": True,
+        "populate_by_name": True,
+        "json_encoders": {ObjectId: str}
+    }
 
 class UserInDB(UserResponse):
     password_hash:str=Field(...,description="Hashed password")
+
+class UserUpdate(BaseModel):
+    """Model for updating user profile information"""
+    name: Optional[str] = Field(None, min_length=2, max_length=100, description="Updated full name")
+    email: Optional[EmailStr] = Field(None, description="Updated email address")
+    is_active: Optional[bool] = Field(None, description="Account status")
+    
+    model_config = {
+        "from_attributes": True,
+        "populate_by_name": True
+    }
 
 class Token(BaseModel):
     access_token:str
@@ -66,6 +80,7 @@ class Token(BaseModel):
     user:UserResponse
 
 class SubscriptionPlan(str,Enum):
+    FREE="free"
     BASIC="basic"
     PRO="pro"
     ENTERPRISE="enterprise"
@@ -75,16 +90,6 @@ class SubscriptionStatus(str,Enum):
     CANCELLED="cancelled"
     PAST_DUE="past_due"
     TRIAL="trial"
-
-class SubscriptionDetails(BaseModel):
-    plan:SubscriptionPlan=SubscriptionPlan.BASIC
-    status:SubscriptionStatus=SubscriptionStatus.TRIAL
-    price_per_month:float=Field(...,description="Monthly price in USD")
-    presentations_limit:int=Field(...,description="Monthly presentation limit")
-    ai_features_enabled:bool=False
-    started_at:datetime
-    expires_at:Optional[datetime]=None
-    auto_renew:bool=True
 
 
 class SubscriptionUpdate(BaseModel):
@@ -302,3 +307,7 @@ PLAN_CONFIGS={
         "features":["100 presentations/month"," all templates", "AI features"," priority support"]
     },
 }
+
+# Rebuild models to resolve forward references
+UserResponse.model_rebuild()
+UserInDB.model_rebuild()

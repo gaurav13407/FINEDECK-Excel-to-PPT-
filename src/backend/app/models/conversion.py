@@ -89,12 +89,14 @@ class PowerPointTemplate(BaseModel):
     created_at:datetime=Field(default_factory=datetime.utcnow)
     updated_at:datetime=Field(default_factory=datetime.utcnow)
 
-    class Config:
-        populate_by_name=True
-        json_encoders={
-            ObjectId:str,
-            datetime:lambda v:v.isoformat()
+    model_config = {
+        "from_attributes": True,
+        "populate_by_name": True,
+        "json_encoders": {
+            ObjectId: str,
+            datetime: lambda v: v.isoformat()
         }
+    }
 
 class ConversionSettings(BaseModel):
     """user-specific conversion configurations"""
@@ -130,8 +132,9 @@ class ConversionSettings(BaseModel):
     compress_images: bool = Field(default=True)
     quality_level: str = Field(default="high", pattern="^(low|medium|high|ultra)$")
 
-    class Config:
-        json_schema_extra = {
+    model_config = {
+        "from_attributes": True,
+        "json_schema_extra": {
             "example": {
                 "preferred_layout": "title_content",
                 "data_mapping_strategy": "row_to_slide",
@@ -142,6 +145,7 @@ class ConversionSettings(BaseModel):
                 "primary_color": "#1f4e79"
             }
         }
+    }
 
 
 class ConversionResult(BaseModel):
@@ -180,12 +184,14 @@ class ConversionResult(BaseModel):
     completed_at:datetime
     expires_at:datetime=Field(default_factory=lambda:datetime.utcnow()+timedelta(hours=24))
 
-    class Config:
-        populate_by_name=True
-        json_encoders={
-            ObjectId:str,
-            datetime:lambda v:v.isoformat()
+    model_config = {
+        "from_attributes": True,
+        "populate_by_name": True,
+        "json_encoders": {
+            ObjectId: str,
+            datetime: lambda v: v.isoformat()
         }
+    }
 
 
 

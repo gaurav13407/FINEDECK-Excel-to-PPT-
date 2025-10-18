@@ -108,12 +108,14 @@ class FileRecord(BaseModel):
     created_at:datetime=Field(default_factory=datetime.utcnow)
     updated_at:datetime=Field(default_factory=datetime.utcnow)
 
-    class Config:
-        populate_by_name=True
-        json_encoders={
-            ObjectId:str,
-            datetime:lambda v:v.isoformat()
+    model_config = {
+        "from_attributes": True,
+        "populate_by_name": True,
+        "json_encoders": {
+            ObjectId: str,
+            datetime: lambda v: v.isoformat()
         }
+    }
 
 
     
@@ -161,13 +163,14 @@ class ConversionJob(BaseModel):
     conversion_config:Dict[str,Any]=Field(default_factory=dict)
     template_config:Dict[str,Any]=Field(default_factory=dict)
 
-
-    class Config:
-        populate_by_name=True
-        json_encoders={
-            ObjectId:str,
-            datetime:lambda v:v.isoformat()
+    model_config = {
+        "from_attributes": True,
+        "populate_by_name": True,
+        "json_encoders": {
+            ObjectId: str,
+            datetime: lambda v: v.isoformat()
         }
+    }
 
 
 class FileUsageStats(BaseModel):
@@ -187,6 +190,7 @@ class FileUsageStats(BaseModel):
 def validate_template_access(template_category:TemplateCategory,user_subscription:str)->bool:
     """Validate if user can access requested template category"""
     access_map={
+        "free":[TemplateCategory.BASIC],
         "basic":[TemplateCategory.BASIC],
         "pro":[TemplateCategory.BASIC,TemplateCategory.PROFESSIONAL],
         "enterprise":[TemplateCategory.BASIC,TemplateCategory.PROFESSIONAL,TemplateCategory.PREMIUM,TemplateCategory.CUSTOM]

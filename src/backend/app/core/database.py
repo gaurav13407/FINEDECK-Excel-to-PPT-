@@ -31,9 +31,11 @@ async def connect_to_mongo():
 async def close_mongo_connection():
     global client,database
     try:
-        if database:
-            await database.client.close()
+        if client is not None:
+            client.close()
             print("✅ MongoDB connection closed")
+            client = None
+            database = None
     except Exception as e:
         print(f"❌ MongoDB disconnection error: {e}")
         raise e
