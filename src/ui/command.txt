@@ -4,6 +4,6 @@ cd "c:\Users\gaura\OneDrive\Desktop\Big Projects\FinDeck(Excel to PPT Project)\s
 # Start server
 python -m http.server 8000
 
-# Then visit: http://localhost:800a0
+# Then visit: http://localhost:8000
 
 file:///c:/Users/gaura/OneDrive/Desktop/Big%20Projects/FinDeck(Excel%20to%20PPT%20Project)/src/ui/index.html

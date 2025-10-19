@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Index - Instant Bootstrap Template</title>
+  <title>FinDeck</title>
   <meta name="description" content="">
   <meta name="keywords" content="">
 
@@ -59,19 +59,19 @@
           <li><a href="#pricing">Pricing</a></li>
           <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
             <ul>
-              <li><a href="#">Dropdown 1</a></li>
-              <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
+              <li><a href="#about">Dropdown 1</a></li>
+              <!-- <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
                 <ul>
                   <li><a href="#">Deep Dropdown 1</a></li>
                   <li><a href="#">Deep Dropdown 2</a></li>
                   <li><a href="#">Deep Dropdown 3</a></li>
                   <li><a href="#">Deep Dropdown 4</a></li>
                   <li><a href="#">Deep Dropdown 5</a></li>
-                </ul>
+                </ul> -->
               </li>
-              <li><a href="#">Dropdown 2</a></li>
-              <li><a href="#">Dropdown 3</a></li>
-              <li><a href="#">Dropdown 4</a></li>
+              <li><a href="#features">Dropdown 2</a></li>
+              <li><a href="#services">Dropdown 3</a></li>
+              <li><a href="#pricing">Dropdown 4</a></li>
             </ul>
           </li>
           <li><a href="#contact">Contact</a></li>
@@ -208,8 +208,8 @@
               </div>
 
               <div class="mt-5" data-aos="fade-up" data-aos-delay="600">
-                <a href="#" class="btn btn-primary me-3">Learn More</a>
-                <a href="#" class="btn btn-outline-primary">Contact Us</a>
+                <a href="#features" class="btn btn-primary me-3">Learn More</a>
+                <a href="#contact" class="btn btn-outline-primary">Contact Us</a>
               </div>
             </div>
           </div>
@@ -461,7 +461,7 @@
                       </div>
                     </div>
 
-                    <a href="#" class="btn-primary">Try Automation <i class="bi bi-arrow-right"></i></a>
+                    <a href="#" id="try-automation-btn" class="btn-primary">Try Automation <i class="bi bi-arrow-right"></i></a>
                   </div>
                 </div>
 
@@ -528,7 +528,7 @@
                       </div>
                     </div>
 
-                    <a href="#" class="btn-primary">Explore Charts <i class="bi bi-arrow-right"></i></a>
+                    <a href="#" id="explore-charts-btn" class="btn-primary">Explore Charts <i class="bi bi-arrow-right"></i></a>
                   </div>
                 </div>
 
@@ -595,7 +595,7 @@
                       </div>
                     </div>
 
-                    <a href="#" class="btn-primary">Experience Speed <i class="bi bi-arrow-right"></i></a>
+                    <a href="#" id="experience-speed-btn" class="btn-primary">Experience Speed <i class="bi bi-arrow-right"></i></a>
                   </div>
                 </div>
 
@@ -662,7 +662,7 @@
                       </div>
                     </div>
 
-                    <a href="#" class="btn-primary">Save Time Now <i class="bi bi-arrow-right"></i></a>
+                    <a href="#" id="save-time-btn" class="btn-primary">Save Time Now <i class="bi bi-arrow-right"></i></a>
                   </div>
                 </div>
 
@@ -711,7 +711,7 @@
               </div>
               <h2 class="section-heading mb-4">From Excel to Investor-Ready Decks</h2>
               <p class="section-description mb-4">I help you automate the painful Excel → PowerPoint workflow. From data cleaning and chart generation to slide design and brand templates—so you spend time on insights, not formatting.</p>
-              <a href="#" class="cta-button" data-aos="fade-right" data-aos-delay="200">
+              <a href="#pricing" class="cta-button" data-aos="fade-right" data-aos-delay="200">
                 View Packages
               </a>
             </div>
@@ -844,7 +844,7 @@
             </div>
 
             <div class="cta-buttons d-flex flex-wrap gap-3">
-              <a href="#" class="btn btn-primary">Try Demo</a>
+              <a href="#" id="try-demo-btn" class="btn btn-primary">Try Demo</a>
               <a href="#" class="btn btn-outline">See How It Works</a>
             </div>
           </div>
@@ -1067,7 +1067,7 @@
               <i class="bi bi-chat-dots-fill"></i>
               <h3>Still have questions?</h3>
               <p>We’re here to help you set up your first automated presentation. Reach out to our support team anytime.</p>
-              <a href="#" class="btn btn-primary">Contact Us</a>
+              <a href="#contact" class="btn btn-primary">Contact Us</a>
             </div>
           </div>
         </div>
@@ -1330,5 +1330,70 @@
   </script>
 
 </body>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var tryDemoBtn = document.getElementById('try-demo-btn');
+    if (tryDemoBtn) {
+      tryDemoBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (window.authManager && window.authManager.isLoggedIn) {
+          window.location.href = 'mainpage.html';
+        } else {
+          window.location.href = 'login.html';
+        }
+      });
+    }
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var speedBtn = document.getElementById('experience-speed-btn');
+    var saveTimeBtn = document.getElementById('save-time-btn');
+    function handleRedirect(e) {
+      e.preventDefault();
+      if (window.authManager && window.authManager.isLoggedIn) {
+        window.location.href = 'mainpage.html';
+      } else {
+        window.location.href = 'login.html';
+      }
+    }
+    if (speedBtn) speedBtn.addEventListener('click', handleRedirect);
+    if (saveTimeBtn) saveTimeBtn.addEventListener('click', handleRedirect);
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var chartsBtn = document.getElementById('explore-charts-btn');
+    if (chartsBtn) {
+      chartsBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (window.authManager && window.authManager.isLoggedIn) {
+          window.location.href = 'templates.html';
+        } else {
+          window.location.href = 'login.html';
+        }
+      });
+    }
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var tryBtn = document.getElementById('try-automation-btn');
+    if (tryBtn) {
+      tryBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (window.authManager && window.authManager.isLoggedIn) {
+          window.location.href = 'mainpage.html';
+        } else {
+          window.location.href = 'login.html';
+        }
+      });
+    }
+  });
+</script>
 
 </html>

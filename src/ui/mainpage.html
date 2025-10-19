@@ -4,14 +4,146 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FinDeck - Excel to PowerPoint Converter</title>
+    <!-- Favicon -->
+    <link href="assets/img/favicon.png" rel="icon">
+    <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
     
     <!-- Google Fonts - Match Landing Page -->
     <link href="https://fonts.googleapis.com" rel="preconnect">
     <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
     
+    <!-- Inline critical CSS for header, nav, and hero (page-header) -->
+    <style>
+    /* Critical CSS: Header, Nav, Hero */
+    body {
+        margin: 0;
+        font-family: 'Roboto', 'Raleway', Arial, sans-serif;
+        background: #f7f7f9;
+        color: #222;
+    }
+    .header {
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        padding: 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+    .header-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 32px;
+        height: 72px;
+    }
+    .logo h2 {
+        margin: 0;
+        font-family: 'Raleway', sans-serif;
+        font-weight: 800;
+        font-size: 2rem;
+        color: #e59d02;
+        letter-spacing: 1px;
+    }
+    .nav-menu {
+        display: flex;
+        gap: 32px;
+    }
+    .nav-link {
+        color: #222;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 1.1rem;
+        padding: 8px 0;
+        border-bottom: 2px solid transparent;
+        transition: border-color 0.2s, color 0.2s;
+    }
+    .nav-link:hover, .nav-link.active {
+        color: #e59d02;
+        border-bottom: 2px solid #e59d02;
+    }
+    .user-menu {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+    .profile-btn {
+        display: flex;
+        align-items: center;
+        background: #fff;
+        border: none;
+        cursor: pointer;
+        padding: 6px 12px;
+        border-radius: 24px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        font-size: 1rem;
+        font-family: inherit;
+        transition: box-shadow 0.2s;
+    }
+    .profile-btn:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .profile-avatar-container {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-right: 10px;
+        background: #e59d02;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .profile-name {
+        margin-right: 8px;
+        font-weight: 600;
+        color: #222;
+    }
+    .dropdown-arrow {
+        width: 18px;
+        height: 18px;
+        margin-left: 2px;
+        stroke: #888;
+    }
+    .page-header {
+        text-align: center;
+        margin-top: 48px;
+        margin-bottom: 32px;
+    }
+    .page-header h1 {
+        font-family: 'Raleway', sans-serif;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #222;
+        margin-bottom: 8px;
+    }
+    .page-header p {
+        font-size: 1.2rem;
+        color: #666;
+        margin: 0;
+    }
+    @media (max-width: 700px) {
+        .header-container {
+            flex-direction: column;
+            height: auto;
+            padding: 0 12px;
+        }
+        .nav-menu {
+            gap: 16px;
+        }
+        .page-header {
+            margin-top: 32px;
+            margin-bottom: 20px;
+        }
+        .page-header h1 {
+            font-size: 1.5rem;
+        }
+    }
+    </style>
+    <!-- End critical CSS -->
     <link rel="stylesheet" href="assets/css/mainpage.css">
-    
     <!-- Authentication CSS -->
     <link href="assets/css/auth.css" rel="stylesheet">
 </head>
@@ -140,7 +272,7 @@
                 <h1>Excel to PowerPoint Converter</h1>
                 <p>Transform your spreadsheets into beautiful presentations instantly</p>
             </div>
-
+           
             <!-- Converter Card -->
             <div class="converter-card">
                 <div class="converter-header">
@@ -175,7 +307,7 @@
                         <h3>Drop your Excel file here</h3>
                         <p>or click to browse files</p>
                         <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" multiple hidden>
-                        <button class="browse-btn neu-button" onclick="document.getElementById('fileInput').click()">
+                        <button class="browse-btn neu-button">
                             Browse Files
                         </button>
                     </div>
@@ -682,6 +814,43 @@
     <!-- Main Page JS -->
     <script src="assets/js/mainpage.js"></script>
     
+    <!-- Minimal SPA navigation for Home link -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var homeLink = document.querySelector('a.nav-link[href="index.html"]');
+        if (homeLink) {
+            homeLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                fetch('index.html')
+                    .then(function(response) { return response.text(); })
+                    .then(function(html) {
+                        var parser = new DOMParser();
+                        var doc = parser.parseFromString(html, 'text/html');
+                        var newBody = doc.body;
+                        document.body.replaceWith(newBody);
+                        window.history.pushState({}, '', 'index.html');
+                        // Optionally, re-execute scripts if needed
+                    })
+                    .catch(function() {
+                        window.location.href = 'index.html'; // fallback
+                    });
+            });
+        }
+        // Handle browser back/forward navigation
+        window.addEventListener('popstate', function() {
+            if (window.location.pathname.endsWith('index.html')) {
+                fetch('index.html')
+                    .then(function(response) { return response.text(); })
+                    .then(function(html) {
+                        var parser = new DOMParser();
+                        var doc = parser.parseFromString(html, 'text/html');
+                        var newBody = doc.body;
+                        document.body.replaceWith(newBody);
+                    });
+            }
+        });
+    });
+    </script>
     <script>
         // Function to handle logout
         function handleLogout(event) {

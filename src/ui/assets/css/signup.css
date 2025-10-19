@@ -1,3 +1,20 @@
+/* Force input background and text color for all states, including autofill */
+.neu-input input,
+.neu-input input:focus,
+.neu-input input:active {
+    background: transparent !important;
+    color: #f8f8f8 !important;
+}
+
+.neu-input input:-webkit-autofill,
+.neu-input input:-webkit-autofill:focus,
+.neu-input input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 100px #282828 inset !important;
+    box-shadow: 0 0 0 100px #282828 inset !important;
+    -webkit-text-fill-color: #f8f8f8 !important;
+    color: #f8f8f8 !important;
+    border-radius: 15px !important;
+}
 /* FinDeck Signup Page Styles - Matching Landing Page Theme */
 
 /* CSS Variables - Matching Landing Page */
