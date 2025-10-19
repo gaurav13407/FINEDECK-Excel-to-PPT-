@@ -1219,8 +1219,8 @@
               <li><a href="#">Home</a></li>
               <li><a href="#">About us</a></li>
               <li><a href="#">Services</a></li>
-              <li><a href="#">Terms of service</a></li>
-              <li><a href="#">Privacy policy</a></li>
+              <li><a href="#" id="termsLink">Terms of service</a></li>
+              <li><a href="#" id="privacyLink">Privacy policy</a></li>
             </ul>
           </div>
 
@@ -1287,6 +1287,16 @@
 
   </footer>
 
+  <!-- Modal for Terms/Privacy -->
+  <div id="legalModal" class="legal-modal">
+    <div class="legal-modal-content">
+      <button class="legal-modal-close" id="legalModalClose" aria-label="Close">&times;</button>
+      <div id="legalModalBody">
+        <!-- Content will be injected here -->
+      </div>
+    </div>
+  </div>
+
   <!-- Scroll Top -->
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
@@ -1332,6 +1342,156 @@
 </body>
 
 <script>
+// Modal logic for Terms/Privacy (shared with login/signup)
+const termsLink = document.getElementById('termsLink');
+const privacyLink = document.getElementById('privacyLink');
+const legalModal = document.getElementById('legalModal');
+const legalModalClose = document.getElementById('legalModalClose');
+const legalModalBody = document.getElementById('legalModalBody');
+
+const termsContent = `
+  <h2>Terms of Service — FinDeck</h2>
+  <p>Welcome to FinDeck, a web-based application that converts Excel files into PowerPoint presentations. By using our service, you agree to these Terms of Service. Please read them carefully before using FinDeck.</p>
+
+  <h3>1. Acceptance of Terms</h3>
+  <p>By accessing or using FinDeck (“the Service”), you agree to be bound by these Terms. If you do not agree, you may not use the Service.</p>
+
+  <h3>2. Use of the Service</h3>
+  <p>FinDeck allows you to upload Excel files for the purpose of converting them into PowerPoint presentations. You agree not to use the Service for illegal, abusive, or unauthorized purposes. You retain full ownership of your uploaded and converted files. FinDeck only processes them temporarily to complete the conversion.</p>
+
+  <h3>3. File Storage and Deletion</h3>
+  <p>Uploaded and converted files are stored temporarily in our secure database. All files (including backups, metadata, and conversion results) are automatically deleted after 24 hours of upload. Once deleted, your data cannot be recovered. FinDeck does not use uploaded files for training, analytics, or third-party sharing.</p>
+
+  <h3>4. Intellectual Property</h3>
+  <p>All rights to FinDeck’s brand name, logo, design, and source code belong to [Your Name or Company Name]. You may not copy, modify, or redistribute any part of the Service without written permission.</p>
+
+  <h3>5. Availability</h3>
+  <p>We aim to keep the Service available 24/7 but cannot guarantee uninterrupted access. We reserve the right to pause operations for maintenance or technical improvements.</p>
+
+  <h3>6. Disclaimer of Warranties</h3>
+  <p>The Service is provided “as is” without any express or implied warranties. We do not guarantee the accuracy, completeness, or format consistency of the converted presentations.</p>
+
+  <h3>7. Limitation of Liability</h3>
+  <p>FinDeck and its developers are not responsible for any loss of data, profit, or business interruptions caused by using or being unable to use the Service.</p>
+
+  <h3>8. Changes to Terms</h3>
+  <p>We may modify these Terms periodically. Updates will be reflected by the “Last Updated” date shown on this page.</p>
+
+  <h3>9. Contact</h3>
+  <p>For any concerns or inquiries, contact us at: <a href="mailto:gaurav13407@outlook.com">gaurav13407@outlook.com</a></p>
+`;
+const privacyContent = `
+  <h2>Privacy Policy — FinDeck</h2>
+  <p>FinDeck respects your privacy and is committed to protecting your personal data and uploaded files. This Privacy Policy explains how we handle, store, and delete user data.</p>
+
+  <h3>1. Information We Collect</h3>
+  <p>We collect the following data:</p>
+  <ul>
+    <li>Uploaded Excel files (temporarily stored for conversion)</li>
+    <li>Basic system data such as browser type, operating system, and IP address (for analytics and debugging)</li>
+  </ul>
+
+  <h3>2. How We Use Your Data</h3>
+  <p>To convert Excel files into PowerPoint presentations and to ensure service reliability and improve functionality. We do not share, sell, or use your data for advertising or profiling.</p>
+
+  <h3>3. File Storage and Automatic Deletion</h3>
+  <p>Uploaded and generated files are automatically deleted from our database within 24 hours after upload. We do not retain any backups or copies of your files after deletion. Once deleted, files are permanently removed and cannot be recovered.</p>
+
+  <h3>4. Security</h3>
+  <p>We use encryption and secure connections (HTTPS) to protect file transfers. However, no digital service is entirely risk-free — use FinDeck at your own discretion.</p>
+
+  <h3>5. Cookies</h3>
+  <p>FinDeck may use cookies to improve user experience. You can disable them through your browser settings.</p>
+
+  <h3>6. Third-Party Services</h3>
+  <p>If we integrate third-party APIs (e.g., file storage or analytics), those services have their own privacy policies. FinDeck does not control how they handle data.</p>
+
+  <h3>7. User Rights</h3>
+  <p>You can contact us anytime to request deletion of any data related to your session or ask questions about how your information is handled.</p>
+
+  <h3>8. Policy Updates</h3>
+  <p>We may update this Privacy Policy occasionally. Updates will be reflected by the “Last Updated” date.</p>
+
+  <h3>9. Contact</h3>
+  <p>For any concerns or inquiries, contact us at: <a href="mailto:gaurav13407@outlook.com">gaurav13407@outlook.com</a></p>
+`;
+
+function openModal(content) {
+  legalModalBody.innerHTML = content;
+  legalModal.style.display = 'block';
+}
+function closeModal() {
+  legalModal.style.display = 'none';
+}
+if (termsLink) termsLink.addEventListener('click', function(e) {
+  e.preventDefault();
+  openModal(termsContent);
+});
+if (privacyLink) privacyLink.addEventListener('click', function(e) {
+  e.preventDefault();
+  openModal(privacyContent);
+});
+if (legalModalClose) legalModalClose.addEventListener('click', closeModal);
+window.addEventListener('click', function(e) {
+  if (e.target === legalModal) closeModal();
+});
+
+</script>
+
+<style>
+/* Modal styles (match login/signup) */
+.legal-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  background: rgba(40,40,40,0.7);
+  justify-content: center;
+  align-items: center;
+}
+.legal-modal-content {
+  background: #222;
+  color: #f8f8f8;
+  margin: 5vh auto;
+  padding: 2rem;
+  border-radius: 18px;
+  max-width: 680px;
+  /* enforce consistent typography regardless of page-level inherits */
+  font-family: var(--default-font, "Roboto", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  position: relative;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.legal-modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #f8f8f8;
+  font-size: 2rem;
+  cursor: pointer;
+}
+.legal-links { text-align: center; margin-top: 1.5rem; font-size: 0.95rem; }
+.legal-links a { color: #ffb86b; text-decoration: underline; margin: 0 1rem; cursor: pointer; }
+.legal-links a:hover { color: #ffd59a; }
+.terms-wrapper .checkbox-label a { margin: 0 0.35rem; color: #ffb86b; font-weight: 600; }
+.legal-modal-content p { margin-bottom: 1.1rem; }
+.legal-modal-content { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.08) transparent; }
+.legal-modal-content::-webkit-scrollbar { width: 10px; }
+.legal-modal-content::-webkit-scrollbar-track { background: transparent; }
+.legal-modal-content::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.06); border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
+.legal-modal-content::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.10); }
+.legal-modal-content a, .legal-modal-content a[href^="mailto:"] { color: #ffb86b; font-weight: 600; text-decoration: none; }
+.legal-modal-content a:hover { color: #ffd59a; text-decoration: underline; }
+</style>
   document.addEventListener('DOMContentLoaded', function() {
     var tryDemoBtn = document.getElementById('try-demo-btn');
     if (tryDemoBtn) {
