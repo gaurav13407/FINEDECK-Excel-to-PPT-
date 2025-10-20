@@ -27,93 +27,7 @@
                 <a href="help.html" class="nav-link active">Help</a>
             </nav>
             <div class="user-menu">
-                <div class="profile-dropdown">
-                    <button class="profile-btn neu-button-small" id="profileBtn">
-                        <img src="https://via.placeholder.com/32x32/e59d02/ffffff?text=JD" alt="Profile" class="profile-avatar">
-                        <span class="profile-name">John Doe</span>
-                        <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="6,9 12,15 18,9"/>
-                        </svg>
-                    </button>
-                    
-                    <div class="dropdown-menu" id="profileDropdown">
-                        <div class="dropdown-header">
-                            <div class="user-info">
-                                <img src="https://via.placeholder.com/48x48/e59d02/ffffff?text=JD" alt="Profile" class="user-avatar">
-                                <div class="user-details">
-                                    <h4>John Doe</h4>
-                                    <p>john.doe@example.com</p>
-                                    <span class="user-plan">Pro Plan</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="dropdown-divider"></div>
-                        
-                        <div class="dropdown-section">
-                            <a href="#" class="dropdown-item" onclick="openModal('profileModal')">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="12" cy="7" r="4"/>
-                                </svg>
-                                Profile Settings
-                            </a>
-                            
-                            <a href="#" class="dropdown-item" onclick="openModal('accountModal')">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="3"/>
-                                    <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
-                                </svg>
-                                Account Settings
-                            </a>
-                            
-                            <a href="#" class="dropdown-item" onclick="openModal('billingModal')">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-                                    <line x1="1" y1="10" x2="23" y2="10"/>
-                                </svg>
-                                Billing & Plans
-                            </a>
-                            
-                            <a href="#" class="dropdown-item" onclick="showTemplateSettings()">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
-                                </svg>
-                                Template Manager
-                            </a>
-                            
-                            <a href="#" class="dropdown-item" onclick="openModal('usageModal')">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M3 3v18h18"/>
-                                    <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
-                                </svg>
-                                Usage Statistics
-                            </a>
-                        </div>
-                        
-                        <div class="dropdown-divider"></div>
-                        
-                        <div class="dropdown-section">
-                            <a href="help.html" class="dropdown-item">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                                    <circle cx="12" cy="17" r="1"/>
-                                </svg>
-                                Help & Support
-                            </a>
-                            
-                            <a href="login.html" class="dropdown-item logout">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                                    <polyline points="16,17 21,12 16,7"/>
-                                    <line x1="21" y1="12" x2="9" y2="12"/>
-                                </svg>
-                                Sign Out
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                <a href="login.html" class="nav-link login-cta">Login / Sign up</a>
             </div>
         </div>
     </header>
@@ -400,7 +314,7 @@
                         </div>
                         <h3>Email Support</h3>
                         <p>Get detailed help via email</p>
-                        <a href="mailto:support@findeck.com" class="contact-link">support@findeck.com</a>
+                        <a href="mailto:support@findeck.com" class="contact-link">gaurav13407@outlook.com</a>
                     </div>
 
                     <div class="contact-card">
@@ -422,7 +336,7 @@
                         </div>
                         <h3>Phone Support</h3>
                         <p>Talk to us directly (Pro users)</p>
-                        <a href="tel:+1-800-FINDECK" class="contact-link">+1-800-FINDECK</a>
+                        <a href="tel:+91 92587 52769" class="contact-link">+91 92587 52769</a>
                     </div>
                 </div>
             </div>
@@ -615,6 +529,76 @@
                 closeSupportModal();
             }
         }
+
+        // Populate user info (header + dropdown) from authManager or localStorage
+        function populateHelpUserInfo(user) {
+            try {
+                const headerName = document.getElementById('headerProfileName');
+                const headerAvatar = document.getElementById('headerProfileAvatar');
+                const dropdownName = document.getElementById('dropdownUserName');
+                const dropdownEmail = document.getElementById('dropdownUserEmail');
+                const dropdownAvatar = document.getElementById('dropdownUserAvatar');
+                const dropdownPlan = document.getElementById('dropdownUserPlan');
+
+                if (!user) {
+                    if (headerName) headerName.textContent = 'John Doe';
+                    if (dropdownName) dropdownName.textContent = 'John Doe';
+                    if (dropdownEmail) dropdownEmail.textContent = 'john.doe@example.com';
+                    if (headerAvatar) headerAvatar.src = 'assets/img/default-avatar.svg';
+                    if (dropdownAvatar) dropdownAvatar.src = 'assets/img/default-avatar.svg';
+                    if (dropdownPlan) dropdownPlan.textContent = 'Pro Plan';
+                    return;
+                }
+
+                if (headerName) headerName.textContent = user.name || (user.firstName ? user.firstName + ' ' + (user.lastName || '') : 'User');
+                if (dropdownName) dropdownName.textContent = user.name || (user.firstName ? user.firstName + ' ' + (user.lastName || '') : 'User');
+                if (dropdownEmail) dropdownEmail.textContent = user.email || '';
+                if (headerAvatar) headerAvatar.src = user.avatarUrl || 'assets/img/default-avatar.svg';
+                if (dropdownAvatar) dropdownAvatar.src = user.avatarUrl || 'assets/img/default-avatar.svg';
+                if (dropdownPlan) dropdownPlan.textContent = user.plan ? (user.plan + ' Plan') : 'Free Plan';
+            } catch (err) {
+                console.warn('Failed to populate help user info:', err);
+            }
+        }
+
+        // Try to load user now and whenever auth state changes
+        function loadHelpUser() {
+            // Prefer authManager
+            if (window.authManager && typeof window.authManager.getCurrentUser === 'function') {
+                const user = window.authManager.getCurrentUser();
+                if (user) {
+                    populateHelpUserInfo(user);
+                    return;
+                }
+            }
+
+            // Fallback to localStorage
+            try {
+                const userStr = localStorage.getItem('user');
+                if (userStr) {
+                    const user = JSON.parse(userStr);
+                    populateHelpUserInfo(user);
+                    return;
+                }
+            } catch (err) { /* ignore */ }
+
+            // Optional API fetch
+            if (window.APIService) {
+                const svc = new window.APIService();
+                svc.get('/api/user').then(resp => {
+                    if (resp && resp.data) populateHelpUserInfo(resp.data);
+                }).catch(() => {});
+            }
+        }
+
+        // Listen for auth state changes
+        window.addEventListener('authStateChanged', (e) => {
+            const user = e.detail && e.detail.user ? e.detail.user : null;
+            populateHelpUserInfo(user);
+        });
+
+        // Run on load
+        document.addEventListener('DOMContentLoaded', loadHelpUser);
     </script>
 </body>
 </html>

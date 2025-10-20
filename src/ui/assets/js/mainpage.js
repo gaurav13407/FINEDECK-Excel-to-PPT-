@@ -658,6 +658,22 @@ class FinDeckApp {
             });
         });
 
+        // Watch profile modal visibility and populate when shown
+        const profileModal = document.getElementById('profileModal');
+        if (profileModal && typeof loadAndPopulateProfile === 'function') {
+            const obs = new MutationObserver((mutations) => {
+                mutations.forEach(m => {
+                    if (m.attributeName === 'style' || m.attributeName === 'class') {
+                        const disp = window.getComputedStyle(profileModal).display;
+                        if (disp !== 'none') {
+                            try { loadAndPopulateProfile(); } catch (e) { console.warn('profile load failed', e); }
+                        }
+                    }
+                });
+            });
+            obs.observe(profileModal, { attributes: true, attributeFilter: ['style', 'class'] });
+        }
+
         // Initialize close buttons
         const closeButtons = document.querySelectorAll('.close-btn, .modal-close');
         closeButtons.forEach(btn => {
@@ -1099,8 +1115,90 @@ class FinDeckApp {
     }
 }
 
+// --- Profile modal population helpers ---
+function populateProfileModalFromUser(user) {
+    if (!user) return;
+    try {
+        const [first, ...rest] = (user.name || '').split(' ');
+        const last = rest.join(' ') || '';
+        document.getElementById('profileFirstName').value = first || '';
+        document.getElementById('profileLastName').value = last || '';
+        document.getElementById('profileEmail').value = user.email || '';
+        document.getElementById('profileJobTitle').value = user.jobTitle || user.title || '';
+        document.getElementById('profileCompany').value = user.company || '';
+        if (user.timezone) {
+            const tzSelect = document.getElementById('profileTimeZone');
+            if (tzSelect) {
+                for (let i = 0; i < tzSelect.options.length; i++) {
+                    if (tzSelect.options[i].value === user.timezone) {
+                        tzSelect.selectedIndex = i;
+                        break;
+                    }
+                }
+            }
+        }
+        // Update avatar image if element exists
+        const avatarEl = document.querySelector('.profile-image');
+        if (avatarEl) {
+            avatarEl.src = user.avatarUrl || 'assets/img/default-avatar.svg';
+        }
+    } catch (err) {
+        console.warn('Failed to populate profile modal:', err);
+    }
+}
+
+function loadAndPopulateProfile() {
+    // Prefer authManager if available
+    if (window.authManager && typeof window.authManager.getCurrentUser === 'function') {
+        const user = window.authManager.getCurrentUser();
+        if (user) {
+            populateProfileModalFromUser(user);
+            return;
+        }
+    }
+
+    // Fallback to localStorage
+    try {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            const user = JSON.parse(userStr);
+            populateProfileModalFromUser(user);
+            return;
+        }
+    } catch (err) {
+        console.warn('No user in localStorage or failed to parse');
+    }
+
+    // Optionally fetch from API if APIService exists
+    if (window.APIService) {
+        const svc = new window.APIService();
+        svc.get('/api/user').then(resp => {
+            if (resp && resp.data) populateProfileModalFromUser(resp.data);
+        }).catch(() => {});
+    }
+}
+
+// Open profile modal and ensure it is populated
+function openProfileModal() {
+    loadAndPopulateProfile();
+    const modal = document.getElementById('profileModal');
+    if (modal) modal.style.display = 'block';
+}
+
+// Expose closeModal if not already present
+if (typeof closeModal !== 'function') {
+    function closeModal(id) {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    }
+}
+
 // Global functions for backward compatibility
 function openModal(modalId) {
+    // If opening profile modal, ensure it's populated first
+    if (modalId === 'profileModal' && typeof loadAndPopulateProfile === 'function') {
+        loadAndPopulateProfile();
+    }
     if (window.finDeckApp) {
         window.finDeckApp.openModal(modalId);
     }

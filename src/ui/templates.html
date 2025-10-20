@@ -32,8 +32,8 @@
             <div class="user-menu">
                 <div class="profile-dropdown">
                     <button class="profile-btn neu-button-small" id="profileBtn">
-                        <img src="https://via.placeholder.com/32x32/e59d02/ffffff?text=JD" alt="Profile" class="profile-avatar">
-                        <span class="profile-name">John Doe</span>
+                        <img id="headerProfileAvatar" src="assets/img/default-avatar.svg" alt="Profile" class="profile-avatar">
+                        <span id="headerProfileName" class="profile-name">User</span>
                         <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="6,9 12,15 18,9"/>
                         </svg>
@@ -42,11 +42,11 @@
                     <div class="dropdown-menu" id="profileDropdown">
                         <div class="dropdown-header">
                             <div class="user-info">
-                                <img src="https://via.placeholder.com/48x48/e59d02/ffffff?text=JD" alt="Profile" class="user-avatar">
+                                <img id="dropdownUserAvatar" src="assets/img/default-avatar.svg" alt="Profile" class="user-avatar">
                                 <div class="user-details">
-                                    <h4>John Doe</h4>
-                                    <p>john.doe@example.com</p>
-                                    <span class="user-plan">Pro Plan</span>
+                                    <h4 id="dropdownUserName">User</h4>
+                                    <p id="dropdownUserEmail"></p>
+                                    <span id="dropdownUserPlan" class="user-plan">Free Plan</span>
                                 </div>
                             </div>
                         </div>

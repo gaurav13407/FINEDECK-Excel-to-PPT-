@@ -152,7 +152,7 @@ class AuthManager {
             <div class="user-menu-container">
                 <div class="user-dropdown">
                     <button class="user-btn" id="userMenuBtn">
-                        <img src="https://via.placeholder.com/32x32/e59d02/ffffff?text=${this.getUserInitials()}" 
+                        <img src="assets/img/default-avatar.svg" 
                              alt="Profile" class="user-avatar">
                         <span class="user-name">${this.currentUser.name || 'User'}</span>
                         <i class="bi bi-chevron-down dropdown-arrow"></i>
@@ -160,8 +160,8 @@ class AuthManager {
                     
                     <div class="user-dropdown-menu" id="userDropdownMenu">
                         <div class="user-info">
-                            <img src="https://via.placeholder.com/48x48/e59d02/ffffff?text=${this.getUserInitials()}" 
-                                 alt="Profile" class="user-avatar-large">
+                       <img src="assets/img/default-avatar.svg" 
+                           alt="Profile" class="user-avatar-large">
                             <div class="user-details">
                                 <h4>${this.currentUser.name || 'User'}</h4>
                                 <p>${this.currentUser.email || ''}</p>

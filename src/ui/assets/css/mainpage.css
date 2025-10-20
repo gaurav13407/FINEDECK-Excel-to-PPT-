@@ -32,6 +32,14 @@ body {
     line-height: 1.6;
 }
 
+/* Custom scrollbar to match site background */
+* { scrollbar-width: thin; scrollbar-color: rgba(229,157,2,0.6) var(--card-bg); }
+/* Webkit */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--card-bg); }
+::-webkit-scrollbar-thumb { background: linear-gradient(180deg, rgba(229,157,2,0.9), rgba(229,157,2,0.6)); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, rgba(229,157,2,1), rgba(229,157,2,0.8)); }
+
 /* Header */
 .header {
     background: rgba(25, 25, 25, 0.95);
@@ -115,8 +123,7 @@ body {
     width: auto !important;
     height: auto !important;
     box-shadow: 
-        4px 4px 8px rgba(0, 0, 0, 0.3) !important,
-        -4px -4px 8px rgba(50, 50, 50, 0.1) !important;
+        4px 4px 8px rgba(0, 0, 0, 0.3), -4px -4px 8px rgba(50, 50, 50, 0.1) !important;
 }
 
 .profile-btn:hover {
@@ -242,9 +249,7 @@ body {
     background: var(--secondary-bg) !important;
     border: 1px solid rgba(229, 157, 2, 0.2);
     border-radius: 15px;
-    box-shadow: 
-        8px 8px 20px rgba(0, 0, 0, 0.4) !important,
-        -4px -4px 10px rgba(50, 50, 50, 0.1) !important;
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.4), -4px -4px 10px rgba(50, 50, 50, 0.1) !important;
     z-index: 1000;
     margin-top: 8px;
     display: none;
@@ -1156,9 +1161,7 @@ body .converter-card {
     max-height: 80vh;
     overflow-y: auto;
     box-shadow: 
-        8px 8px 16px rgba(0, 0, 0, 0.6) !important,
-        -8px -8px 16px rgba(50, 50, 50, 0.1) !important,
-        inset 2px 2px 4px rgba(229, 157, 2, 0.1) !important;
+        8px 8px 16px rgba(0, 0, 0, 0.6), -8px -8px 16px rgba(50, 50, 50, 0.1), inset 2px 2px 4px rgba(229, 157, 2, 0.1) !important;
 }
 
 .modal-header {
@@ -1239,6 +1242,40 @@ body .converter-card {
 .profile-form {
     flex: 1;
     min-width: 300px;
+}
+
+/* Make form inputs match the site's card background (avoid white boxes) */
+.neu-input-field,
+.neu-input-field[type="text"],
+.neu-input-field[type="email"],
+.neu-input-field[type="password"],
+.neu-input-field textarea,
+.neu-input-field select {
+    background: var(--card-bg) !important; /* match card */
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+    padding: 14px 16px !important;
+    border-radius: 12px !important;
+    font-size: 0.95rem !important;
+    outline: none !important;
+    box-shadow: inset 4px 4px 8px rgba(0,0,0,0.45), inset -4px -4px 8px rgba(229,157,2,0.06);
+}
+
+/* If inputs live inside a .neu-input wrapper, keep the wrapper styles and make inner inputs transparent so the wrapper shows */
+.neu-input .neu-input-field,
+.neu-input input.neu-input-field {
+    background: transparent !important;
+    color: var(--text-primary) !important;
+    padding: 20px 24px !important;
+}
+
+/* For selects, ensure caret and text are visible and no default white background */
+.neu-input-field select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: none;
+    color: var(--text-primary) !important;
 }
 
 .form-row {
@@ -1517,8 +1554,7 @@ input:checked + .toggle-slider:before {
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 
-        4px 4px 8px rgba(0, 0, 0, 0.3) !important,
-        -4px -4px 8px rgba(50, 50, 50, 0.1) !important;
+        4px 4px 8px rgba(0, 0, 0, 0.3), -4px -4px 8px rgba(50, 50, 50, 0.1) !important;
 }
 
 .neu-button-small:hover {
@@ -1542,8 +1578,7 @@ input:checked + .toggle-slider:before {
     align-items: center;
     gap: 15px;
     box-shadow: 
-        4px 4px 8px rgba(0, 0, 0, 0.3) !important,
-        -4px -4px 8px rgba(50, 50, 50, 0.1) !important;
+        4px 4px 8px rgba(0, 0, 0, 0.3), -4px -4px 8px rgba(50, 50, 50, 0.1) !important;
 }
 
 .stat-icon {

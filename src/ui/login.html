@@ -30,6 +30,42 @@
                 <h2>Welcome back</h2>
                 <p>Please sign in to continue</p>
             </div>
+            <!-- Add presentational profile dropdown (matches Help layout) -->
+            <div class="user-menu" style="position:absolute; top:24px; right:24px;">
+                <div class="profile-dropdown">
+                    <button class="profile-btn neu-button-small" id="profileBtn">
+                        <img id="headerProfileAvatar" src="assets/img/default-avatar.svg" alt="Profile" class="profile-avatar">
+                        <span id="headerProfileName" class="profile-name">User</span>
+                        <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6,9 12,15 18,9"/>
+                        </svg>
+                    </button>
+                    <div class="dropdown-menu" id="profileDropdown" style="display:none;">
+                        <div class="dropdown-header">
+                            <div class="user-info">
+                                <img id="dropdownUserAvatar" src="assets/img/default-avatar.svg" alt="Profile" class="user-avatar">
+                                <div class="user-details">
+                                    <h4 id="dropdownUserName">User</h4>
+                                    <p id="dropdownUserEmail"></p>
+                                    <span id="dropdownUserPlan" class="user-plan">Free Plan</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-section">
+                            <a href="#" class="dropdown-item" onclick="safeOpenModal('profileModal')">Profile Settings</a>
+                            <a href="#" class="dropdown-item" onclick="safeOpenModal('accountModal')">Account Settings</a>
+                            <a href="#" class="dropdown-item" onclick="safeOpenModal('billingModal')">Billing & Plans</a>
+                            <a href="#" class="dropdown-item" onclick="showTemplateSettings()">Template Manager</a>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <div class="dropdown-section">
+                            <a href="help.html" class="dropdown-item">Help & Support</a>
+                            <a href="login.html" class="dropdown-item logout">Sign Out</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             <form class="login-form" id="loginForm" action="mainpage.html" method="get" novalidate>
                 <div class="form-group">
@@ -251,6 +287,73 @@
     legalModalClose.addEventListener('click', closeModal);
     window.addEventListener('click', function(e) {
         if (e.target === legalModal) closeModal();
+    });
+    </script>
+    <script>
+    // Safe helpers for the presentational profile dropdown on the login page
+    function safeOpenModal(id) {
+        if (typeof openModal === 'function') {
+            try { openModal(id); } catch (e) { console.warn('openModal failed', e); }
+        } else {
+            console.log('Modal not available:', id);
+        }
+    }
+
+    function toggleProfileDropdown() {
+        const dropdown = document.getElementById('profileDropdown');
+        const btn = document.getElementById('profileBtn');
+        if (!dropdown || !btn) return;
+        if (dropdown.style.display === 'block') {
+            dropdown.style.display = 'none';
+            btn.setAttribute('aria-expanded', 'false');
+        } else {
+            dropdown.style.display = 'block';
+            btn.setAttribute('aria-expanded', 'true');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('profileBtn');
+        if (btn) btn.addEventListener('click', function(e) { e.stopPropagation(); toggleProfileDropdown(); });
+
+        document.addEventListener('click', function(e) {
+            const profile = document.querySelector('.profile-dropdown');
+            if (profile && !profile.contains(e.target)) {
+                const dropdown = document.getElementById('profileDropdown');
+                if (dropdown) dropdown.style.display = 'none';
+                if (btn) btn.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // Populate user display if authManager/localStorage available
+        function populateLoginProfile(user) {
+            try {
+                const headerName = document.getElementById('headerProfileName');
+                const headerAvatar = document.getElementById('headerProfileAvatar');
+                const dropdownName = document.getElementById('dropdownUserName');
+                const dropdownEmail = document.getElementById('dropdownUserEmail');
+                const dropdownAvatar = document.getElementById('dropdownUserAvatar');
+                const dropdownPlan = document.getElementById('dropdownUserPlan');
+
+                if (!user) return;
+                if (headerName) headerName.textContent = user.name || 'User';
+                if (dropdownName) dropdownName.textContent = user.name || 'User';
+                if (dropdownEmail) dropdownEmail.textContent = user.email || '';
+                if (headerAvatar) headerAvatar.src = user.avatarUrl || 'assets/img/default-avatar.svg';
+                if (dropdownAvatar) dropdownAvatar.src = user.avatarUrl || 'assets/img/default-avatar.svg';
+                if (dropdownPlan) dropdownPlan.textContent = user.plan ? (user.plan + ' Plan') : 'Free Plan';
+            } catch (err) { console.warn(err); }
+        }
+
+        if (window.authManager && typeof window.authManager.getCurrentUser === 'function') {
+            const user = window.authManager.getCurrentUser();
+            if (user) populateLoginProfile(user);
+        } else {
+            try {
+                const userStr = localStorage.getItem('user');
+                if (userStr) populateLoginProfile(JSON.parse(userStr));
+            } catch (err) {}
+        }
     });
     </script>
 </body>

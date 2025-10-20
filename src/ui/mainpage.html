@@ -164,11 +164,7 @@
                 <div class="profile-dropdown">
                     <button class="profile-btn neu-button-small" id="profileBtn">
                         <div class="profile-avatar-container">
-                            <svg class="default-avatar" id="profileAvatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                                <circle cx="50" cy="50" r="50" fill="var(--accent-color)"/>
-                                <circle cx="50" cy="35" r="15" fill="white"/>
-                                <path d="M50,55 C35,55 25,65 25,75 L25,85 Q25,90 30,90 L70,90 Q75,90 75,85 L75,75 C75,65 65,55 50,55 Z" fill="white"/>
-                            </svg>
+                            <img id="profileAvatar" src="assets/img/default-avatar.svg" alt="Profile" class="default-avatar" />
                         </div>
                         <span class="profile-name" id="profileName">User</span>
                         <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -180,11 +176,7 @@
                         <div class="dropdown-header">
                             <div class="user-info">
                                 <div class="user-avatar-container">
-                                    <svg class="default-avatar large" id="userAvatar" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="50" cy="50" r="50" fill="var(--accent-color)"/>
-                                        <circle cx="50" cy="35" r="15" fill="white"/>
-                                        <path d="M50,55 C35,55 25,65 25,75 L25,85 Q25,90 30,90 L70,90 Q75,90 75,85 L75,75 C75,65 65,55 50,55 Z" fill="white"/>
-                                    </svg>
+                                    <img id="userAvatar" src="assets/img/default-avatar.svg" alt="Profile" class="default-avatar large" />
                                 </div>
                                 <div class="user-details">
                                     <h4 id="userName">User</h4>
@@ -519,7 +511,7 @@
             <div class="modal-body">
                 <div class="profile-section">
                     <div class="avatar-section">
-                        <img src="https://via.placeholder.com/100x100/e59d02/ffffff?text=JD" alt="Profile" class="profile-image">
+                        <img src="assets/img/default-avatar.svg" alt="Profile" class="profile-image">
                         <button class="change-avatar-btn neu-button secondary">Change Avatar</button>
                     </div>
                     
@@ -527,35 +519,35 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label>First Name</label>
-                                <input type="text" class="neu-input-field" value="John">
+                                <input id="profileFirstName" type="text" class="neu-input-field" value="">
                             </div>
                             <div class="form-group">
                                 <label>Last Name</label>
-                                <input type="text" class="neu-input-field" value="Doe">
+                                <input id="profileLastName" type="text" class="neu-input-field" value="">
                             </div>
                         </div>
                         
                         <div class="form-group">
                             <label>Email Address</label>
-                            <input type="email" class="neu-input-field" value="john.doe@example.com">
+                            <input id="profileEmail" type="email" class="neu-input-field" value="">
                         </div>
                         
                         <div class="form-group">
                             <label>Job Title</label>
-                            <input type="text" class="neu-input-field" value="Financial Analyst">
+                            <input id="profileJobTitle" type="text" class="neu-input-field" value="">
                         </div>
                         
                         <div class="form-group">
                             <label>Company</label>
-                            <input type="text" class="neu-input-field" value="Tech Corp">
+                            <input id="profileCompany" type="text" class="neu-input-field" value="">
                         </div>
                         
                         <div class="form-group">
                             <label>Time Zone</label>
-                            <select class="neu-input-field">
-                                <option>UTC-5 (Eastern Time)</option>
-                                <option>UTC-8 (Pacific Time)</option>
-                                <option>UTC+0 (GMT)</option>
+                            <select id="profileTimeZone" class="neu-input-field">
+                                <option value="UTC-5">UTC-5 (Eastern Time)</option>
+                                <option value="UTC-8">UTC-8 (Pacific Time)</option>
+                                <option value="UTC+0">UTC+0 (GMT)</option>
                             </select>
                         </div>
                     </div>
@@ -882,13 +874,13 @@
                     
                     // Update profile button
                     document.getElementById('profileName').textContent = user.name || 'User';
-                    document.getElementById('profileAvatar').src = `https://via.placeholder.com/32x32/e59d02/ffffff?text=${initials}`;
+                    document.getElementById('profileAvatar').src = 'assets/img/default-avatar.svg';
                     
                     // Update dropdown user info
                     document.getElementById('userName').textContent = user.name || 'User';
                     document.getElementById('userEmail').textContent = user.email || 'user@example.com';
                     document.getElementById('userPlan').textContent = (user.plan || 'Free') + ' Plan';
-                    document.getElementById('userAvatar').src = `https://via.placeholder.com/48x48/e59d02/ffffff?text=${initials}`;
+                    document.getElementById('userAvatar').src = 'assets/img/default-avatar.svg';
                 }
             }
         }
