@@ -47,6 +47,11 @@ class FinDeckApp {
         this.initializeModals();
         this.initializeStepIndicator();
         this.initializeProgressTracking();
+        // Load billing/subscription info
+        this.subscriptionData = null;
+        this.loadSubscriptionInfo();
+        // Wire update subscription button
+        this.initSubscriptionButtons();
     }
 
     initializeEventListeners() {
@@ -550,24 +555,48 @@ class FinDeckApp {
         // Get user info from localStorage or API
         const userInfo = this.getUserInfo();
         this.updateProfileDisplay(userInfo);
+        // Listen for auth changes so profile and plan update immediately
+        window.addEventListener('authStateChanged', (e) => {
+            try {
+                const newUser = e && e.detail && e.detail.user ? e.detail.user : this.getUserInfo();
+                this.updateProfileDisplay(newUser);
+                // refresh subscription info when auth changes
+                this.loadSubscriptionInfo();
+            } catch (err) { console.warn('authStateChanged handler error', err); }
+        });
     }
 
     getUserInfo() {
-        // Try to get user info from localStorage first
-        const storedUser = localStorage.getItem('currentUser');
-        if (storedUser) {
-            try {
-                return JSON.parse(storedUser);
-            } catch (e) {
-                console.error('Error parsing stored user info:', e);
+        // Prefer the global auth manager if available
+        try {
+            if (window.authManager && typeof window.authManager.getCurrentUser === 'function') {
+                const u = window.authManager.getCurrentUser();
+                if (u) return u;
             }
+        } catch (err) { /* ignore */ }
+
+        // Next, try finDeckAuth stored session structure
+        try {
+            const authData = localStorage.getItem('finDeckAuth');
+            if (authData) {
+                const parsed = JSON.parse(authData);
+                if (parsed && parsed.user) return parsed.user;
+            }
+        } catch (err) { /* ignore */ }
+
+        // Fallback to legacy/currentUser key
+        try {
+            const storedUser = localStorage.getItem('currentUser');
+            if (storedUser) return JSON.parse(storedUser);
+        } catch (e) {
+            console.error('Error parsing stored user info:', e);
         }
-        
+
         // Default user info
         return {
             name: 'Guest User',
-            email: 'guest@findeck.app',
-            plan: 'PRO Plan',
+            email: '',
+            plan: 'AI Pro',
             avatar: null // No custom avatar, will use default
         };
     }
@@ -582,7 +611,20 @@ class FinDeckApp {
         if (profileName) profileName.textContent = userInfo.name;
         if (userName) userName.textContent = userInfo.name;
         if (userEmail) userEmail.textContent = userInfo.email;
-        if (userPlan) userPlan.textContent = userInfo.plan;
+        if (userPlan) {
+            const p = userInfo.plan || '';
+            userPlan.textContent = p + (p.toLowerCase().includes('plan') ? '' : ' Plan');
+        }
+
+        // Update mainpage-specific plan labels only (avoid global catch-alls)
+        try {
+            const mainHeaderPlan = document.getElementById('userPlan');
+            const mainDropdownPlan = document.getElementById('dropdownUserPlan');
+            const text = (userInfo.plan || '');
+            const out = text + (text.toLowerCase().includes('plan') ? '' : ' Plan');
+            if (mainHeaderPlan) mainHeaderPlan.textContent = out;
+            if (mainDropdownPlan) mainDropdownPlan.textContent = out;
+        } catch (err) { /* ignore DOM issues */ }
 
         // Update avatars (default SVG avatars are already in HTML)
         // If user has custom avatar, we could update it here
@@ -590,6 +632,202 @@ class FinDeckApp {
             this.updateCustomAvatar(userInfo.avatar);
         }
         // Default SVG avatars are already set in HTML and styled with CSS
+    }
+
+    // -----------------
+    // Billing / Plans
+    // -----------------
+
+    async loadSubscriptionInfo() {
+        // Guard
+        if (!this.apiService || typeof this.apiService.getUserSubscription !== 'function') {
+            console.warn('Billing: API service not available or method missing');
+            return;
+        }
+
+        try {
+            const sub = await this.apiService.getUserSubscription();
+            console.log('Billing: fetched subscription', sub);
+            this.subscriptionData = sub && (sub.data || sub) || null;
+            this.renderSubscription(sub);
+
+            // Optionally fetch invoices / billing history
+            if (typeof this.apiService.getUserUsage === 'function') {
+                const usage = await this.apiService.getUserUsage();
+                console.log('Billing: fetched usage', usage);
+                // usage may contain invoices or usage metrics depending on API
+                this.renderInvoices(usage.invoices || usage.billing || []);
+            }
+        } catch (err) {
+            console.warn('Billing: failed to load subscription info', err);
+        }
+    }
+
+    renderSubscription(sub) {
+        if (!sub) return;
+
+        // Sub might be nested under data
+        const data = sub.data || sub;
+        const planNameEl = document.getElementById('currentPlanName');
+        const planPriceEl = document.getElementById('currentPlanPrice');
+        const planPeriodEl = document.getElementById('currentPlanPeriod');
+        const planTimeEl = document.getElementById('planTimeRemainingDays');
+        const planFeaturesEl = document.getElementById('planFeatures');
+        const planBadgeEl = document.getElementById('planBadge');
+
+        // Map backend plan keys to UI labels and prices
+        const planMap = {
+            free: { label: 'Free', price: 0, period: '/month', credits: 1, features: ['1 conversion'] },
+            basic: { label: 'Basic', price: 25, period: '/month', credits: 5, features: ['5 conversions', 'Standard templates'] },
+            pro: { label: 'Pro', price: 49, period: '/month', credits: 15, features: ['15 conversions', 'Premium templates', 'Brand kit'] },
+            ai: { label: 'AI Pro', price: 99, period: '/month', credits: 'unlimited', features: ['Unlimited conversions', 'AI features', 'Priority support'] }
+        };
+
+        // Determine key: prefer explicit plan_key or plan_name/name and normalize it
+        let rawKey = (data.plan_key || data.plan_name || data.name || '') || '';
+        let planKey = ('' + rawKey).toLowerCase().trim();
+
+        // Normalize common separators and remove non-alphanumeric
+        planKey = planKey.replace(/[_\-\s]+/g, ''); // remove underscores/hyphens/spaces
+        planKey = planKey.replace(/[^a-z0-9]/g, ''); // remove any remaining non-alphanum
+
+        // Handle common aliases
+        const aiAliases = new Set(['ai', 'aipro', 'ai_pro', 'ai-pro', 'ai pro', 'ai_pro', 'aip', 'aipror', 'aiproplan']);
+        if (!planKey || !planMap[planKey]) {
+            if (aiAliases.has(planKey) || /^(ai|aipro|aip)/.test(rawKey.toLowerCase())) {
+                planKey = 'ai';
+            } else if (/^(pro|proplan)$/.test(planKey)) {
+                planKey = 'pro';
+            } else if (/^(basic|starter|standard)$/.test(planKey)) {
+                planKey = 'basic';
+            } else if (/^(free|trial)$/.test(planKey)) {
+                planKey = 'free';
+            } else {
+                // default to ai to show AI Pro if ambiguous
+                planKey = 'ai';
+            }
+        }
+
+        const mapped = planMap[planKey] || planMap.ai;
+
+        if (planNameEl) planNameEl.textContent = mapped.label;
+
+        // Update mainpage-specific header and dropdown plan labels
+        const headerPlanText = mapped.label || '';
+        try {
+            const mainHeaderPlan = document.getElementById('userPlan');
+            const mainDropdownPlan = document.getElementById('dropdownUserPlan');
+            const out = headerPlanText + (headerPlanText.toLowerCase().includes('plan') ? '' : ' Plan');
+            if (mainHeaderPlan) mainHeaderPlan.textContent = out;
+            if (mainDropdownPlan) mainDropdownPlan.textContent = out;
+        } catch (err) { /* ignore DOM issues */ }
+        if (planPriceEl) planPriceEl.textContent = `$${mapped.price}`;
+        if (planPeriodEl) planPeriodEl.textContent = mapped.period;
+        if (planTimeEl) planTimeEl.textContent = data.time_remaining || data.days_until_renewal || 'N/A';
+        if (planBadgeEl) planBadgeEl.textContent = data.status ? (data.status === 'active' ? 'Current' : data.status) : 'Current';
+
+        // Render mapped features
+        if (planFeaturesEl) {
+            planFeaturesEl.innerHTML = '';
+            (mapped.features || []).forEach(f => {
+                const div = document.createElement('div');
+                div.className = 'feature';
+                div.textContent = `✓ ${f}`;
+                planFeaturesEl.appendChild(div);
+            });
+        }
+
+    // Payment method
+        if (data.payment_method) {
+            const pmTitle = document.getElementById('paymentMethodTitle');
+            const pmExpiry = document.getElementById('paymentMethodExpiry');
+            if (pmTitle) pmTitle.textContent = data.payment_method.brand ? `${this.capitalize(data.payment_method.brand)} ending in ${data.payment_method.last4}` : data.payment_method.description || 'Card on file';
+            if (pmExpiry) pmExpiry.textContent = data.payment_method.expiry ? `Expires ${data.payment_method.expiry}` : '';
+        }
+        // Update price display more explicitly if pricing details exist
+        if (data.price || data.amount || data.currency) {
+            const priceEl = document.getElementById('currentPlanPrice');
+            const periodEl = document.getElementById('currentPlanPeriod');
+            if (priceEl) priceEl.textContent = data.price ? `$${data.price}` : (data.amount ? `${data.currency || '$'}${data.amount}` : priceEl.textContent);
+            if (periodEl && data.billing_interval) periodEl.textContent = data.billing_interval;
+        }
+    }
+
+    initSubscriptionButtons() {
+        const updateBtn = document.getElementById('updateSubscriptionBtn');
+        const updatePaymentBtn = document.getElementById('updatePaymentBtn');
+
+        if (updateBtn) {
+            updateBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.openBillingPortal();
+            });
+        }
+
+        if (updatePaymentBtn) {
+            updatePaymentBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.openBillingPortal();
+            });
+        }
+
+        // Change plan UI removed; no handler required
+    }
+
+    openBillingPortal() {
+        const sub = this.subscriptionData || null;
+        // Check common fields for portal/manage URL
+        const portalUrl = sub && (sub.portal_url || sub.manage_url || (sub.data && (sub.data.portal_url || sub.data.manage_url)));
+        if (portalUrl) {
+            window.open(portalUrl, '_blank');
+            return;
+        }
+
+        // If no portal URL, fall back to open billing modal
+        if (document.getElementById('billingModal')) {
+            this.openModal('billingModal');
+            return;
+        }
+
+        // Final fallback: show notification
+        this.showNotification('Billing', 'Manage your subscription from your account dashboard or contact support.', 'info');
+    }
+
+    renderInvoices(invoices) {
+        const invoiceList = document.getElementById('invoiceList');
+        if (!invoiceList) return;
+
+        if (!invoices || invoices.length === 0) {
+            invoiceList.innerHTML = `<div class="invoice-empty">No billing history available.</div>`;
+            return;
+        }
+
+        invoiceList.innerHTML = '';
+        invoices.forEach(inv => {
+            const item = document.createElement('div');
+            item.className = 'invoice-item';
+            const date = inv.date || inv.paid_at || inv.created_at || 'Unknown';
+            const desc = inv.description || `${inv.plan_name || ''} - $${inv.amount || inv.total || '0.00'}`;
+            const status = inv.status || (inv.paid ? 'Paid' : 'Pending');
+
+            item.innerHTML = `
+                <div class="invoice-info">
+                    <h4>${date}</h4>
+                    <p>${desc}</p>
+                </div>
+                <div class="invoice-actions">
+                    <span class="status ${status.toLowerCase()}">${status}</span>
+                    ${inv.download_url ? `<button class="neu-button-small" onclick="window.open('${inv.download_url}', '_blank')">Download</button>` : ''}
+                </div>
+            `;
+
+            invoiceList.appendChild(item);
+        });
+    }
+
+    capitalize(s) {
+        if (!s) return s;
+        return s.charAt(0).toUpperCase() + s.slice(1);
     }
 
     updateCustomAvatar(avatarUrl) {

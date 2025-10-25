@@ -29,97 +29,56 @@
                 <a href="templates.html" class="nav-link">Templates</a>
                 <a href="help.html" class="nav-link">Help</a>
             </nav>
-            <div class="user-menu">
-                <div class="profile-dropdown">
-                    <button class="profile-btn neu-button-small" id="profileBtn">
-                        <img id="headerProfileAvatar" src="assets/img/default-avatar.svg" alt="Profile" class="profile-avatar">
-                        <span id="headerProfileName" class="profile-name">User</span>
-                        <svg class="dropdown-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polyline points="6,9 12,15 18,9"/>
-                        </svg>
-                    </button>
-                    
-                    <div class="dropdown-menu" id="profileDropdown">
-                        <div class="dropdown-header">
-                            <div class="user-info">
-                                <img id="dropdownUserAvatar" src="assets/img/default-avatar.svg" alt="Profile" class="user-avatar">
-                                <div class="user-details">
-                                    <h4 id="dropdownUserName">User</h4>
-                                    <p id="dropdownUserEmail"></p>
-                                    <span id="dropdownUserPlan" class="user-plan">Free Plan</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="dropdown-divider"></div>
-                        
-                        <div class="dropdown-section">
-                            <a href="#" class="dropdown-item" onclick="openModal('profileModal')">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                    <circle cx="12" cy="7" r="4"/>
-                                </svg>
-                                Profile Settings
-                            </a>
-                            
-                            <a href="#" class="dropdown-item" onclick="openModal('accountModal')">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="3"/>
-                                    <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"/>
-                                </svg>
-                                Account Settings
-                            </a>
-                            
-                            <a href="#" class="dropdown-item" onclick="openModal('billingModal')">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-                                    <line x1="1" y1="10" x2="23" y2="10"/>
-                                </svg>
-                                Billing & Plans
-                            </a>
-                            
-                            <a href="#" class="dropdown-item" onclick="showTemplateSettings()">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
-                                </svg>
-                                Template Manager
-                            </a>
-                            
-                            <a href="#" class="dropdown-item" onclick="openModal('usageModal')">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M3 3v18h18"/>
-                                    <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
-                                </svg>
-                                Usage Statistics
-                            </a>
-                        </div>
-                        
-                        <div class="dropdown-divider"></div>
-                        
-                        <div class="dropdown-section">
-                            <a href="help.html" class="dropdown-item">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
-                                    <circle cx="12" cy="17" r="1"/>
-                                </svg>
-                                Help & Support
-                            </a>
-                            
-                            <a href="login.html" class="dropdown-item logout">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                                    <polyline points="16,17 21,12 16,7"/>
-                                    <line x1="21" y1="12" x2="9" y2="12"/>
-                                </svg>
-                                Sign Out
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div class="user-menu"></div>
         </div>
     </header>
+    <script>
+    // Populate header/profile info from authManager/localStorage
+    function populateHeaderUser(user) {
+        try {
+            const headerName = document.getElementById('headerProfileName');
+            const headerAvatar = document.getElementById('headerProfileAvatar');
+            const dropdownName = document.getElementById('dropdownUserName');
+            const dropdownEmail = document.getElementById('dropdownUserEmail');
+            const dropdownAvatar = document.getElementById('dropdownUserAvatar');
+            const dropdownPlan = document.getElementById('dropdownUserPlan');
+
+            if (!user) return;
+            if (headerName) headerName.textContent = user.name || 'User';
+            if (dropdownName) dropdownName.textContent = user.name || 'User';
+            if (dropdownEmail) dropdownEmail.textContent = user.email || '';
+            if (headerAvatar) headerAvatar.src = user.avatarUrl || 'assets/img/default-avatar.svg';
+            if (dropdownAvatar) dropdownAvatar.src = user.avatarUrl || 'assets/img/default-avatar.svg';
+            if (dropdownPlan) {
+                const p = user.plan || '';
+                dropdownPlan.textContent = p + (p.toLowerCase().includes('plan') ? '' : ' Plan') || 'Free Plan';
+            }
+        } catch (err) { console.warn(err); }
+    }
+
+    function loadHeaderUser() {
+        if (window.authManager && typeof window.authManager.getCurrentUser === 'function') {
+            const user = window.authManager.getCurrentUser();
+            if (user) { populateHeaderUser(user); return; }
+        }
+        try {
+            const userStr = localStorage.getItem('user');
+            if (userStr) { populateHeaderUser(JSON.parse(userStr)); return; }
+            const authStr = localStorage.getItem('finDeckAuth');
+            if (authStr) {
+                const authObj = JSON.parse(authStr);
+                if (authObj && authObj.user) { populateHeaderUser(authObj.user); return; }
+            }
+        } catch (err) {}
+    }
+
+    window.addEventListener('authStateChanged', (e) => {
+        const user = e.detail && e.detail.user ? e.detail.user : null;
+        if (user) populateHeaderUser(user);
+    });
+
+    document.addEventListener('DOMContentLoaded', loadHeaderUser);
+    </script>
 
     <!-- Main Content -->
     <main class="main-content">

@@ -228,11 +228,16 @@ class NeumorphismLoginForm {
             // Show success
             this.showNeumorphicSuccess();
             
-            // Redirect to dashboard or redirect URL
+            // Redirect to verification page after login (for 2FA / email verification)
             setTimeout(() => {
-                const urlParams = new URLSearchParams(window.location.search);
-                const redirectUrl = urlParams.get('redirect') || 'mainpage.html';
-                window.location.href = redirectUrl;
+                try {
+                    const email = encodeURIComponent(this.emailInput.value.trim());
+                    const url = `verify.html?email=${email}&purpose=login_verification`;
+                    window.location.href = url;
+                } catch (err) {
+                    console.error('Failed to redirect to verification page, falling back to mainpage', err);
+                    window.location.href = 'mainpage.html';
+                }
             }, 2500);
             
         } catch (error) {

@@ -3,14 +3,10 @@
  * Handles all communication with the FastAPI backend
  */
 
-console.log('📡 Loading API Service...');
-
 class APIService {
     constructor() {
-        console.log('🔧 Creating APIService instance...');
-        console.log('   - window.apiConfig available:', !!window.apiConfig);
-        this.api = window.apiConfig;
-        console.log('✅ APIService instance created');
+        // Minimal initialization; avoid noisy console output in production
+        this.api = window.apiConfig || {};
     }
 
     // =================
@@ -120,6 +116,17 @@ class APIService {
      */
     async getUserSubscription() {
         return await this.api.makeRequest(this.api.endpoints.users.subscription);
+    }
+
+    /**
+     * Update user subscription / plan
+     * payload example: { plan: 'pro' }
+     */
+    async updateUserSubscription(payload) {
+        return await this.api.makeRequest(this.api.endpoints.users.subscription, {
+            method: 'PUT',
+            body: JSON.stringify(payload)
+        });
     }
 
     /**
@@ -271,11 +278,10 @@ class APIService {
 }
 
 // Create global API service instance
-console.log('🔧 Creating global APIService instance...');
 try {
     window.APIService = APIService; // Export the class
     window.apiService = new APIService(); // Create an instance
-    console.log('✅ Global APIService created successfully');
 } catch (error) {
-    console.error('❌ Error creating APIService:', error);
+    // Keep only critical errors in the console
+    console.error('Error creating APIService:', error);
 }

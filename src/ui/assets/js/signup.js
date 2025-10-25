@@ -452,21 +452,16 @@ class NeumorphismSignupForm {
             
             console.log('Starting redirect process...');
             
-            // Redirect to main page after success
+            // Redirect to verification page after signup so user can enter the email code
             setTimeout(() => {
-                console.log('Executing redirect to mainpage.html...');
-                
-                // Try multiple redirect methods
+                console.log('Redirecting to verification page with user email...');
                 try {
-                    window.location.href = 'mainpage.html';
+                    const emailParam = encodeURIComponent(email);
+                    const url = `verify.html?email=${emailParam}&purpose=email_verification`;
+                    window.location.href = url;
                 } catch (redirectError) {
-                    console.error('Primary redirect failed:', redirectError);
-                    try {
-                        window.location.replace('mainpage.html');
-                    } catch (fallbackError) {
-                        console.error('Fallback redirect failed:', fallbackError);
-                        window.location.assign('mainpage.html');
-                    }
+                    console.error('Redirect to verification failed, falling back to mainpage:', redirectError);
+                    window.location.href = 'mainpage.html';
                 }
             }, 1500);
             

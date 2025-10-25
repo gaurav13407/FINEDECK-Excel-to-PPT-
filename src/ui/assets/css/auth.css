@@ -110,6 +110,14 @@
     color: #666;
 }
 
+/* Prevent long emails from overflowing the dropdown */
+.dropdown-header .user-details p {
+    white-space: normal;
+    word-break: break-word;
+    max-width: 160px;
+    overflow-wrap: anywhere;
+}
+
 .user-plan {
     display: inline-block;
     background: var(--accent-color, #e59d02);

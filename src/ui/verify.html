@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Verify your email — FinDeck</title>
+    <link href="assets/img/favicon.png" rel="icon">
+
+    <!-- Fonts and shared styles to match main site -->
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&family=Raleway:wght@600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/bootstrap-grid.css">
+    <link rel="stylesheet" href="assets/css/mainpage.css">
+    <link rel="stylesheet" href="assets/css/auth.css">
+
+    <style>
+    /* Small tweaks specific to the verification card while using main styles */
+    .verify-card { max-width:700px; margin:56px auto; padding:28px; background:var(--card-bg); color:var(--text-primary); border-radius:14px; box-shadow:0 12px 40px rgba(0,0,0,0.6); border:1px solid rgba(229,157,2,0.06); }
+    .verify-header { text-align:center; margin-bottom:12px }
+    .verify-header h2 { margin:0; color:var(--text-primary); font-weight:700 }
+    .verify-sub { color:var(--text-secondary); margin-top:6px }
+    .code-input { font-size:1.6rem; letter-spacing:6px; text-align:center; padding:12px 16px; width:100%; max-width:420px; margin:12px auto; display:block; border-radius:10px; border:1px solid rgba(255,255,255,0.06); background: rgba(0,0,0,0.08); color:var(--text-primary) }
+    .code-input::placeholder { color: rgba(255,255,255,0.35); }
+    .small-note { color:var(--text-secondary); font-size:0.95rem; text-align:center }
+    .resend-link { background:none;border:none;color:var(--accent-color);cursor:pointer;font-weight:700 }
+    #message { text-align:center; margin-top:14px; min-height:26px }
+    /* Yellow cancel button to match site accent */
+    .neu-button.yellow { background: var(--accent-color); color: var(--primary-bg); border: none; box-shadow: 0 8px 22px rgba(229,157,2,0.12); }
+    .neu-button.yellow:hover { filter: brightness(0.98); }
+    /* Make verify button text black to match the Cancel button per request */
+    #verifyBtn { color: #000 !important; }
+    </style>
+</head>
+<body>
+    <main class="main-content">
+        <div class="container">
+            <div class="verify-card" role="main">
+                <div class="verify-header">
+                    <h2>Enter verification code</h2>
+                    <p class="verify-sub">We've sent a one-time code to your email. Enter it below to continue.</p>
+                </div>
+
+                <div id="infoRow" style="text-align:center;margin-bottom:8px">
+                    <div class="small-note" id="sentTo">Sending code to <strong id="emailText">your email</strong></div>
+                    <div class="small-note" id="purposeText"></div>
+                </div>
+
+                <input id="codeInput" class="code-input" maxlength="9" placeholder="XXXX-XXXX" autofocus>
+
+                <div style="display:flex;gap:12px;justify-content:center;margin-top:12px">
+                    <button id="verifyBtn" class="neu-button primary">Verify</button>
+                    <button id="cancelBtn" class="neu-button yellow">Cancel</button>
+                </div>
+
+                <div style="text-align:center;margin-top:12px">
+                    <button id="resendBtn" class="resend-link">Resend code</button>
+                </div>
+
+                <div id="message" aria-live="polite"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/api-config.js"></script>
+    <script src="assets/js/api-service.js"></script>
+    <script src="assets/js/verify.js"></script>
+</body>
+</html>

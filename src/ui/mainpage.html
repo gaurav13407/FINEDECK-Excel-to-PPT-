@@ -212,6 +212,15 @@
                                 </svg>
                                 Billing & Plans
                             </a>
+
+                            <a href="verify.html?purpose=redeem" class="dropdown-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7,10 12,15 17,10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Redeem Code
+                            </a>
                             
                             <a href="templates.html" class="dropdown-item">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -664,16 +673,22 @@
             
             <div class="modal-body">
                 <div class="current-plan">
-                    <div class="plan-card active">
+                    <div class="plan-card active" id="planCard">
                         <div class="plan-header">
-                            <h3>Pro Plan</h3>
-                            <span class="plan-badge">Current</span>
+                            <h3 id="currentPlanName">AI Pro</h3>
+                            <span class="plan-badge" id="planBadge">Current</span>
                         </div>
                         <div class="plan-price">
-                            <span class="price">$29</span>
-                            <span class="period">/month</span>
+                            <span class="price" id="currentPlanPrice">$99</span>
+                            <span class="period" id="currentPlanPeriod">/month</span>
+                            <div class="plan-actions" style="margin-top:8px;">
+                                <button class="neu-button primary" id="updateSubscriptionBtn">Update Subscription</button>
+                            </div>
                         </div>
-                        <div class="plan-features">
+                        <div class="plan-meta">
+                            <small id="planTimeRemaining">Next billing in: <span id="planTimeRemainingDays">30 days</span></small>
+                        </div>
+                        <div class="plan-features" id="planFeatures">
                             <div class="feature">✓ Unlimited conversions</div>
                             <div class="feature">✓ Custom templates</div>
                             <div class="feature">✓ Priority support</div>
@@ -691,37 +706,21 @@
                                 <line x1="1" y1="10" x2="23" y2="10"/>
                             </svg>
                             <div class="card-details">
-                                <h4>Visa ending in 4242</h4>
-                                <p>Expires 12/25</p>
+                                <h4 id="paymentMethodTitle">Visa ending in 4242</h4>
+                                <p id="paymentMethodExpiry">Expires 12/25</p>
                             </div>
                         </div>
-                        <button class="neu-button secondary">Update</button>
+                        <button class="neu-button secondary" id="updatePaymentBtn">Update</button>
                     </div>
                 </div>
+
+                <!-- Change Plan UI removed per request -->
                 
                 <div class="billing-section">
                     <h3>Billing History</h3>
                     <div class="invoice-list">
-                        <div class="invoice-item">
-                            <div class="invoice-info">
-                                <h4>October 2025</h4>
-                                <p>Pro Plan - $29.00</p>
-                            </div>
-                            <div class="invoice-actions">
-                                <span class="status paid">Paid</span>
-                                <button class="neu-button-small">Download</button>
-                            </div>
-                        </div>
-                        
-                        <div class="invoice-item">
-                            <div class="invoice-info">
-                                <h4>September 2025</h4>
-                                <p>Pro Plan - $29.00</p>
-                            </div>
-                            <div class="invoice-actions">
-                                <span class="status paid">Paid</span>
-                                <button class="neu-button-small">Download</button>
-                            </div>
+                        <div id="invoiceList">
+                            <!-- Invoices will be injected here by JavaScript -->
                         </div>
                     </div>
                 </div>
@@ -879,7 +878,8 @@
                     // Update dropdown user info
                     document.getElementById('userName').textContent = user.name || 'User';
                     document.getElementById('userEmail').textContent = user.email || 'user@example.com';
-                    document.getElementById('userPlan').textContent = (user.plan || 'Free') + ' Plan';
+                    const up = user.plan || 'Free';
+                    document.getElementById('userPlan').textContent = up + (up.toLowerCase().includes('plan') ? '' : ' Plan');
                     document.getElementById('userAvatar').src = 'assets/img/default-avatar.svg';
                 }
             }

@@ -16,6 +16,10 @@ from core.security import create_access_token, verify_password
 from services.user_service import create_user, get_user_by_email,authenticate_user
 from models.user import UserCreate, UserResponse,UserLogin,Token
 from api.deps import get_current_active_user,get_db
+from pydantic import BaseModel
+from datetime import datetime
+from core.database import get_collection
+from core.security import get_password_hash
 
 router = APIRouter(tags=["Authentication"])
 @router.post("/signup", response_model=UserResponse,status_code=status.HTTP_201_CREATED)
@@ -115,8 +119,65 @@ async def change_password(
             detail="Current password is incorrect"
         )
     try:
+        # Update password hash in database
+        users = get_collection("users")
+        new_hash = get_password_hash(new_password)
+        await users.update_one({"_id": current_user.id}, {"$set": {"password_hash": new_hash}})
         return {"message": "Password changed successfully"}
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to update password")
+
+
+
+class ResetPasswordRequest(BaseModel):
+    email: str
+    code: str
+    new_password: str
+    confirm_password: str
+
+
+@router.post("/reset-password")
+async def reset_password(payload: ResetPasswordRequest):
+    """Reset password using a one-time code sent to the user's email.
+
+    Steps:
+    - Validate passwords match
+    - Find activation code with purpose 'password_reset'
+    - Verify not expired and not redeemed
+    - Ensure new password is not the same as current password
+    - Update user's password_hash and mark code redeemed
+    """
+    if payload.new_password != payload.confirm_password:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Passwords do not match")
+
+    codes = get_collection("activation_codes")
+    users = get_collection("users")
+    now = datetime.utcnow()
+
+    q = {
+        "code": payload.code,
+        "purpose": "password_reset",
+        "target_email": payload.email,
+        "redeemed": False,
+        "expires_at": {"$gt": now}
+    }
+    doc = await codes.find_one(q)
+    if not doc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid or expired code")
+
+    user = await users.find_one({"email": payload.email})
+    if not user:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User not found")
+
+    # Prevent reusing the same password
+    if user.get("password_hash") and verify_password(payload.new_password, user.get("password_hash")):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="New password cannot be the same as the current password")
+
+    # All good: update password and mark code redeemed
+    new_hash = get_password_hash(payload.new_password)
+    await users.update_one({"_id": user.get("_id")}, {"$set": {"password_hash": new_hash}})
+    await codes.update_one({"_id": doc["_id"]}, {"$set": {"redeemed": True, "redeemed_at": now, "redeemed_by": payload.email}})
+
+    return {"ok": True, "message": "Password has been reset"}

@@ -26,9 +26,7 @@
                 <a href="templates.html" class="nav-link">Templates</a>
                 <a href="help.html" class="nav-link active">Help</a>
             </nav>
-            <div class="user-menu">
-                <a href="login.html" class="nav-link login-cta">Login / Sign up</a>
-            </div>
+            <div class="user-menu"></div>
         </div>
     </header>
 
@@ -282,7 +280,7 @@
                             </svg>
                         </div>
                         <div class="faq-answer">
-                            <p>Free plan includes 5 conversions per month with basic templates. Pro plan offers unlimited conversions, custom templates, priority processing, advanced formatting options, and priority support.</p>
+                            <p>Free plan includes 1 conversion per month with basic templates. Basic, Pro, and AI Pro plans increase conversion credits and add features — Pro and AI Pro include priority processing and advanced formatting, with AI Pro offering unlimited conversions and AI-powered slide suggestions.</p>
                         </div>
                     </div>
 
@@ -541,12 +539,12 @@
                 const dropdownPlan = document.getElementById('dropdownUserPlan');
 
                 if (!user) {
-                    if (headerName) headerName.textContent = 'John Doe';
-                    if (dropdownName) dropdownName.textContent = 'John Doe';
-                    if (dropdownEmail) dropdownEmail.textContent = 'john.doe@example.com';
+                    if (headerName) headerName.textContent = 'User';
+                    if (dropdownName) dropdownName.textContent = 'User';
+                    if (dropdownEmail) dropdownEmail.textContent = '';
                     if (headerAvatar) headerAvatar.src = 'assets/img/default-avatar.svg';
                     if (dropdownAvatar) dropdownAvatar.src = 'assets/img/default-avatar.svg';
-                    if (dropdownPlan) dropdownPlan.textContent = 'Pro Plan';
+                    if (dropdownPlan) dropdownPlan.textContent = 'AI Pro';
                     return;
                 }
 
@@ -555,7 +553,10 @@
                 if (dropdownEmail) dropdownEmail.textContent = user.email || '';
                 if (headerAvatar) headerAvatar.src = user.avatarUrl || 'assets/img/default-avatar.svg';
                 if (dropdownAvatar) dropdownAvatar.src = user.avatarUrl || 'assets/img/default-avatar.svg';
-                if (dropdownPlan) dropdownPlan.textContent = user.plan ? (user.plan + ' Plan') : 'Free Plan';
+                if (dropdownPlan) {
+                    const p = user.plan || '';
+                    dropdownPlan.textContent = p + (p.toLowerCase().includes('plan') ? '' : ' Plan') || 'Free Plan';
+                }
             } catch (err) {
                 console.warn('Failed to populate help user info:', err);
             }

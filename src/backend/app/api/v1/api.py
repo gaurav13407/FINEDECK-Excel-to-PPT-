@@ -8,7 +8,8 @@
 
 from fastapi import APIRouter
 
-from api.v1.endpoints import auth, users, files, conversions
+# Import all v1 endpoint modules (including codes)
+from api.v1.endpoints import auth, users, files, conversions, codes
 
 api_router = APIRouter()
 
@@ -35,4 +36,9 @@ api_router.include_router(
     conversions.router, 
     prefix="/conversions", 
     tags=["conversions"]
+)
+api_router.include_router(
+    codes.router,
+    prefix="/codes",
+    tags=["codes"]
 )

@@ -55,6 +55,12 @@ class Settings(BaseSettings):
     file_retention_hours: int = 24
     cleanup_interval_hours: int = 6
 
+    # Transactional email providers
+    brevo_api_key: Optional[str] = None
+    sendgrid_api_key: Optional[str] = None
+    email_from: str = "no-reply@example.com"
+    frontend_url: str = "http://localhost:3000"
+
     model_config = {"env_file": str(env_file_path), "extra": "ignore"}
 
 # Create instance that other files can import (OUTSIDE the class)

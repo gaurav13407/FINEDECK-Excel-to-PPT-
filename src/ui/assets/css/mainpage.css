@@ -147,7 +147,8 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid var(--accent-color);
+    /* keep container neutral — border applied to image for sharper result */
+    background: transparent;
 }
 
 .user-avatar-container {
@@ -165,6 +166,34 @@ body {
     width: 100%;
     height: 100%;
     display: block;
+}
+
+/* Ensure header and dropdown avatars are consistent and aligned */
+#profileAvatar,
+.profile-avatar-container img,
+.profile-btn img {
+    width: 32px !important;
+    height: 32px !important;
+    display: block !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+    border: 2px solid var(--accent-color) !important;
+}
+
+#userAvatar,
+.user-avatar-container img,
+.dropdown-header .user-avatar {
+    width: 48px !important;
+    height: 48px !important;
+    display: block !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+    border: 3px solid var(--accent-color) !important;
+}
+
+/* small spacing/vertical-align fixes */
+.profile-btn .profile-name {
+    line-height: 1; /* keep name vertically centered */
 }
 
 .default-avatar.large {
