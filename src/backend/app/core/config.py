@@ -63,6 +63,28 @@ class Settings(BaseSettings):
 
     model_config = {"env_file": str(env_file_path), "extra": "ignore"}
 
+    # OAuth provider credentials (uppercase names are read by oauth.py via getattr)
+    GOOGLE_CLIENT_ID: Optional[str] = None
+    GOOGLE_CLIENT_SECRET: Optional[str] = None
+    GOOGLE_CLIENT_ID_LOCAL: Optional[str] = None
+    GOOGLE_CLIENT_SECRET_LOCAL: Optional[str] = None
+    GOOGLE_CLIENT_ID_PROD: Optional[str] = None
+    GOOGLE_CLIENT_SECRET_PROD: Optional[str] = None
+
+    GITHUB_CLIENT_ID: Optional[str] = None
+    GITHUB_CLIENT_SECRET: Optional[str] = None
+    GITHUB_CLIENT_ID_LOCAL: Optional[str] = None
+    GITHUB_CLIENT_SECRET_LOCAL: Optional[str] = None
+    GITHUB_CLIENT_ID_PROD: Optional[str] = None
+    GITHUB_CLIENT_SECRET_PROD: Optional[str] = None
+
+    X_CLIENT_ID: Optional[str] = None
+    X_CLIENT_SECRET: Optional[str] = None
+    X_CLIENT_ID_LOCAL: Optional[str] = None
+    X_CLIENT_SECRET_LOCAL: Optional[str] = None
+    X_CLIENT_ID_PROD: Optional[str] = None
+    X_CLIENT_SECRET_PROD: Optional[str] = None
+
 # Create instance that other files can import (OUTSIDE the class)
 settings = Settings()
 
@@ -72,5 +94,14 @@ print(f"   .env file path: {env_file_path}")
 print(f"   .env file exists: {env_file_path.exists()}")
 print(f"   DATABASE_URL: {settings.database_url}")
 print(f"   DATABASE_NAME: {settings.database_name}")
+try:
+    google_loaded = bool(getattr(settings, "GOOGLE_CLIENT_ID", None))
+    github_loaded = bool(getattr(settings, "GITHUB_CLIENT_ID", None))
+    x_loaded = bool(getattr(settings, "X_CLIENT_ID", None))
+    print(f"   GOOGLE_CLIENT_ID present: {google_loaded}")
+    print(f"   GITHUB_CLIENT_ID present: {github_loaded}")
+    print(f"   X_CLIENT_ID present: {x_loaded}")
+except Exception:
+    pass
 
     

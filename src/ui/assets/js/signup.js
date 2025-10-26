@@ -124,7 +124,15 @@ class NeumorphismSignupForm {
             button.addEventListener('click', (e) => {
                 e.preventDefault();
                 const provider = button.getAttribute('data-provider');
-                this.handleSocialSignup(provider, button);
+                // Redirect to backend OAuth start endpoint which will send a verification code
+                try {
+                    const redirect = encodeURIComponent('verify.html?purpose=email_verification');
+                    // Use provider-specific login endpoint
+                    window.location.href = `/api/v1/auth/${provider.toLowerCase()}/login?redirect=${redirect}`;
+                } catch (err) {
+                    console.error('Social signup redirect failed', err);
+                    this.handleSocialSignup(provider, button);
+                }
             });
         });
     }

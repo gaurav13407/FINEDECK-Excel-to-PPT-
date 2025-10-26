@@ -382,6 +382,28 @@ body {
     color: #ff4757 !important;
 }
 
+/* Inline statistics inside dropdown (compact view) */
+.dropdown-stats {
+    display: block !important;
+    padding: 8px 16px !important;
+}
+.dropdown-stats .stats-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 0;
+}
+.dropdown-stats .stat-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary) !important;
+}
+.dropdown-stats .stat-value {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--accent-color) !important;
+}
+
 .logout-btn {
     color: var(--text-muted);
     text-decoration: none;

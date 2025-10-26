@@ -23,10 +23,12 @@ class APIConfig {
             
             // User management endpoints
             users: {
-                profile: `${this.API_BASE}/users/profile`,
-                updateProfile: `${this.API_BASE}/users/profile`,
+                // Backend exposes /users/me for profile get/update
+                profile: `${this.API_BASE}/users/me`,
+                updateProfile: `${this.API_BASE}/users/me`,
                 subscription: `${this.API_BASE}/users/subscription`,
-                usage: `${this.API_BASE}/users/usage`
+                // Use /users/stats for usage/statistics (backend exposes /stats)
+                usage: `${this.API_BASE}/users/stats`
             },
             
             // File management endpoints

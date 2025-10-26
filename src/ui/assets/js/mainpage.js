@@ -664,6 +664,7 @@ class FinDeckApp {
     }
 
     renderSubscription(sub) {
+
         if (!sub) return;
 
         // Sub might be nested under data
@@ -844,6 +845,67 @@ class FinDeckApp {
         }
     }
 
+    /**
+     * Fetch quick stats (conversions done / left) and populate profile dropdown
+     */
+    async fetchAndPopulateStats() {
+        // Elements in the profile dropdown
+        const doneEl = document.getElementById('statConversionsDone');
+        const leftEl = document.getElementById('statConversionsLeft');
+
+        if (!doneEl || !leftEl) return;
+
+        // If user is not authenticated, show a hint and skip the call
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            doneEl.textContent = 'Login';
+            leftEl.textContent = 'Login';
+            console.log('fetchAndPopulateStats: no auth token present - skipping stats fetch');
+            return;
+        }
+
+        // Show loading placeholders
+        doneEl.textContent = '…';
+        leftEl.textContent = '…';
+
+        if (!this.apiService || typeof this.apiService.getUserUsage !== 'function') {
+            // fallback: try to call apiConfig directly
+            try {
+                const url = (window.apiConfig && window.apiConfig.endpoints && window.apiConfig.endpoints.users && window.apiConfig.endpoints.users.usage) || '/api/v1/users/stats';
+                console.log('fetchAndPopulateStats: calling fallback URL', url);
+                const resp = await window.apiConfig.makeRequest(url);
+                console.log('fetchAndPopulateStats: raw response', resp);
+                const data = resp && (resp.data || resp) || {};
+                const done = data.conversions_done ?? data.conversionsDone ?? data.done ?? data.used ?? data.slides_created ?? 0;
+                const left = data.conversions_left ?? data.conversionsLeft ?? data.remaining ?? data.left ?? 'Unlimited';
+                console.log('fetchAndPopulateStats: mapped values', { done, left });
+                doneEl.textContent = done;
+                leftEl.textContent = left;
+            } catch (err) {
+                console.warn('Quick stats (direct) failed', err);
+                doneEl.textContent = '—';
+                leftEl.textContent = '—';
+            }
+            return;
+        }
+
+        try {
+            const usage = await this.apiService.getUserUsage();
+            const data = usage && (usage.data || usage) || {};
+
+            // Support multiple possible field names from backend
+            const done = data.conversions_done ?? data.conversionsDone ?? data.done ?? data.used ?? data.slides_created ?? 0;
+            const left = data.conversions_left ?? data.conversionsLeft ?? data.remaining ?? data.left ?? (data.limit !== undefined && data.limit !== null ? (data.limit - (done || 0)) : 'Unlimited');
+
+            doneEl.textContent = (done === null || done === undefined) ? '—' : done;
+            leftEl.textContent = (left === null || left === undefined) ? '—' : left;
+        } catch (err) {
+            console.warn('Failed to fetch user usage stats', err);
+            doneEl.textContent = '—';
+            leftEl.textContent = '—';
+        }
+    }
+
     toggleProfileDropdown() {
         const dropdown = document.getElementById('profileDropdown');
         const profileBtn = document.getElementById('profileBtn');
@@ -870,6 +932,12 @@ class FinDeckApp {
             dropdown.classList.add('show');
         }, 10);
         profileBtn.setAttribute('aria-expanded', 'true');
+        // Fetch and populate quick statistics when the dropdown opens
+        try {
+            this.fetchAndPopulateStats();
+        } catch (err) {
+            console.warn('Failed to load quick stats', err);
+        }
     }
 
     closeProfileDropdown() {
@@ -991,33 +1059,6 @@ class FinDeckApp {
                 notification.remove();
             }
         }, 5000);
-
-        // Close button functionality
-        const closeBtn = notification.querySelector('.notification-close');
-        closeBtn.addEventListener('click', () => {
-            notification.remove();
-        });
-    }
-
-    handleResize() {
-        // Handle responsive layout changes
-        const isMobile = window.innerWidth <= 768;
-        
-        if (isMobile) {
-            this.closeProfileDropdown();
-        }
-    }
-
-    updateUIState() {
-        // Update UI based on current state
-        this.updateStepIndicator(this.currentStep);
-        
-        if (this.uploadedFiles.length > 0) {
-            this.displayUploadedFiles();
-            this.showFileListSection();
-        } else {
-            this.showUploadSection();
-        }
     }
 
     // Conversion functionality
@@ -1362,19 +1403,7 @@ function populateProfileModalFromUser(user) {
         document.getElementById('profileFirstName').value = first || '';
         document.getElementById('profileLastName').value = last || '';
         document.getElementById('profileEmail').value = user.email || '';
-        document.getElementById('profileJobTitle').value = user.jobTitle || user.title || '';
-        document.getElementById('profileCompany').value = user.company || '';
-        if (user.timezone) {
-            const tzSelect = document.getElementById('profileTimeZone');
-            if (tzSelect) {
-                for (let i = 0; i < tzSelect.options.length; i++) {
-                    if (tzSelect.options[i].value === user.timezone) {
-                        tzSelect.selectedIndex = i;
-                        break;
-                    }
-                }
-            }
-        }
+        // jobTitle / company / timezone removed from UI (kept in user object if needed server-side)
         // Update avatar image if element exists
         const avatarEl = document.querySelector('.profile-image');
         if (avatarEl) {
@@ -1447,6 +1476,208 @@ function closeModal(modalId) {
         window.finDeckApp.closeModal(modalId);
     }
 }
+
+// Save profile changes handler
+async function saveProfileChanges(event) {
+    try {
+        // Collect values from modal inputs
+        const first = (document.getElementById('profileFirstName') || {}).value || '';
+        const last = (document.getElementById('profileLastName') || {}).value || '';
+        const name = [first, last].filter(Boolean).join(' ');
+        const email = (document.getElementById('profileEmail') || {}).value || '';
+        const payload = {
+            // Keep profile minimal: only update name & email from UI
+            name: name || undefined,
+            email: email || undefined
+        };
+
+        // Basic validation
+        if (!payload.name || !payload.email) {
+            // Use existing notification helper if present
+            if (window.finDeckApp && typeof window.finDeckApp.showNotification === 'function') {
+                window.finDeckApp.showNotification('Error', 'Name and email are required.', 'error');
+            } else {
+                alert('Name and email are required.');
+            }
+            return;
+        }
+
+        // Ensure API service exists
+        const svc = (window.APIService) ? new window.APIService() : (window.apiService || null);
+        if (!svc || typeof svc.updateUserProfile !== 'function') {
+            if (window.finDeckApp && typeof window.finDeckApp.showNotification === 'function') {
+                window.finDeckApp.showNotification('Error', 'API service not available. Please refresh the page.', 'error');
+            } else {
+                alert('API service not available. Please refresh the page.');
+            }
+            return;
+        }
+
+        // Call backend to update profile
+        const resp = await svc.updateUserProfile(payload);
+
+        // On success, update authManager and UI
+        if (resp) {
+            const updated = resp; // response is expected to include user data
+            // Update authManager currentUser (only name/email)
+            if (window.authManager && window.authManager.currentUser) {
+                const cur = window.authManager.currentUser;
+                const newUser = Object.assign({}, cur, {
+                    name: updated.name || payload.name || cur.name,
+                    email: updated.email || payload.email || cur.email
+                });
+                window.authManager.currentUser = newUser;
+
+                // Persist to local finDeckAuth entry if present
+                try {
+                    const authStr = localStorage.getItem('finDeckAuth');
+                    if (authStr) {
+                        const ad = JSON.parse(authStr);
+                        ad.user = newUser;
+                        localStorage.setItem('finDeckAuth', JSON.stringify(ad));
+                    }
+                } catch (e) { /* ignore localStorage errors */ }
+
+                // Trigger UI update
+                if (typeof window.authManager.updateUI === 'function') window.authManager.updateUI();
+                window.dispatchEvent(new CustomEvent('authStateChanged', { detail: { isLoggedIn: true, user: newUser } }));
+            }
+
+            // Show success and close modal
+            if (window.finDeckApp && typeof window.finDeckApp.showNotification === 'function') {
+                window.finDeckApp.showNotification('Success', 'Profile updated successfully', 'success');
+            } else {
+                alert('Profile updated successfully');
+            }
+            closeModal('profileModal');
+        }
+    } catch (err) {
+        console.error('Failed to save profile changes', err);
+        if (window.finDeckApp && typeof window.finDeckApp.showNotification === 'function') {
+            window.finDeckApp.showNotification('Error', err.message || 'Failed to update profile', 'error');
+        } else {
+            alert('Failed to update profile: ' + (err.message || err));
+        }
+    }
+}
+
+// Wire up save button on DOMContentLoaded so it is available when modal is shown
+document.addEventListener('DOMContentLoaded', function() {
+    const saveBtn = document.getElementById('profileSaveBtn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', saveProfileChanges);
+    }
+    // Wire Change Password button in Account Settings modal
+    const accountChangeBtn = document.getElementById('accountChangePasswordBtn');
+    if (accountChangeBtn) {
+        accountChangeBtn.addEventListener('click', async function(e){
+            e.preventDefault();
+
+            // Prefer current user email from authManager, otherwise use stored modal value
+            const email = (window.authManager && window.authManager.currentUser && window.authManager.currentUser.email)
+                || (document.getElementById('profileEmail') || {}).value || '';
+
+            if (!email) {
+                if (window.finDeckApp && typeof window.finDeckApp.showNotification === 'function') {
+                    window.finDeckApp.showNotification('Error', 'No email available for this account.', 'error');
+                } else {
+                    alert('No email available for this account.');
+                }
+                return;
+            }
+
+            accountChangeBtn.disabled = true;
+            const originalText = accountChangeBtn.textContent;
+            accountChangeBtn.textContent = 'Sending…';
+
+            try {
+                const base = window.apiConfig ? window.apiConfig.API_BASE : '';
+                const url = base ? `${base}/codes/send` : '/api/v1/codes/send';
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({ email, purpose: 'password_reset' })
+                });
+
+                let payload = null;
+                try { payload = await res.json(); } catch (e) { payload = null; }
+
+                if (res.ok) {
+                    if (window.finDeckApp && typeof window.finDeckApp.showNotification === 'function') {
+                        window.finDeckApp.showNotification('Success', 'Reset code sent. Redirecting…', 'success');
+                    }
+                    setTimeout(() => {
+                        window.location.href = `reset_password.html?email=${encodeURIComponent(email)}`;
+                    }, 600);
+                } else {
+                    const msg = payload && (payload.detail || payload.message) || 'Failed to send reset code';
+                    if (window.finDeckApp && typeof window.finDeckApp.showNotification === 'function') window.finDeckApp.showNotification('Error', msg, 'error');
+                    else alert(msg);
+                }
+            } catch (err) {
+                console.error('Account Change Password request failed', err);
+                if (window.finDeckApp && typeof window.finDeckApp.showNotification === 'function') window.finDeckApp.showNotification('Error', 'Network error while sending reset code', 'error');
+                else alert('Network error while sending reset code');
+            } finally {
+                accountChangeBtn.disabled = false;
+                accountChangeBtn.textContent = originalText;
+            }
+        });
+    }
+    // Wire Delete Account button
+    const deleteBtn = document.getElementById('deleteAccountBtn');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', async function(e){
+            e.preventDefault();
+
+            // Double-confirm destructive action
+            const ok = confirm('Delete account? This will deactivate your account and cannot be undone. Are you sure?');
+            if (!ok) return;
+
+            // Ensure we have an auth token
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                if (window.finDeckApp && typeof window.finDeckApp.showNotification === 'function') {
+                    window.finDeckApp.showNotification('Error', 'You must be signed in to delete your account.', 'error');
+                } else {
+                    alert('You must be signed in to delete your account.');
+                }
+                return;
+            }
+
+            // disable button while working
+            deleteBtn.disabled = true;
+            const orig = deleteBtn.textContent;
+            deleteBtn.textContent = 'Deleting…';
+
+            try {
+                const base = window.apiConfig ? window.apiConfig.API_BASE : '';
+                const url = base ? `${base}/users/me` : '/api/v1/users/me';
+                const res = await fetch(url, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                let body = null;
+                try { body = await res.json(); } catch (e) { body = null; }
+
+                if (res.ok) {
+                    // Clear local session and redirect to signup/login
+                    try { localStorage.removeItem('authToken'); localStorage.removeItem('tokenType'); localStorage.removeItem('finDeckAuth'); localStorage.removeItem('currentUser'); } catch(e){}
+                    if (window.finDeckApp && typeof window.finDeckApp.showNotification === 'function') window.finDeckApp.showNotification('Success', 'Account deleted. Redirecting...', 'success');
+                    setTimeout(()=> { window.location.href = 'index.html'; }, 700);
+                } else {
+                    const msg = body && (body.detail || body.message) || res.statusText || 'Failed to delete account';
+                    if (window.finDeckApp && typeof window.finDeckApp.showNotification === 'function') window.finDeckApp.showNotification('Error', msg, 'error');
+                    else alert(msg);
+                }
+            } catch (err) {
+                console.error('Delete account failed', err);
+                if (window.finDeckApp && typeof window.finDeckApp.showNotification === 'function') window.finDeckApp.showNotification('Error', 'Network error while deleting account', 'error');
+                else alert('Network error while deleting account');
+            } finally {
+                deleteBtn.disabled = false;
+                deleteBtn.textContent = orig;
+            }
+        });
+    }
+});
 
 function showTemplateSettings() {
     window.location.href = 'templates.html';

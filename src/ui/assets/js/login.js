@@ -48,15 +48,29 @@ class NeumorphismLoginForm {
     setupSocialButtons() {
         this.socialButtons.forEach(button => {
             button.addEventListener('click', (e) => {
+                e.preventDefault();
                 this.animateSoftPress(button);
-                
-                // Determine which social platform based on SVG content
-                const svgPath = button.querySelector('svg path').getAttribute('d');
-                let provider = 'Social';
-                if (svgPath.includes('22.56')) provider = 'Google';
-                else if (svgPath.includes('github')) provider = 'GitHub';
-                else if (svgPath.includes('23.953')) provider = 'Twitter';
-                
+
+                // Prefer explicit data-provider attribute (keeps markup and JS consistent)
+                const providerAttr = button.getAttribute('data-provider');
+                let provider = providerAttr ? providerAttr : null;
+
+                // Fallback: try to detect from SVG (legacy)
+                if (!provider) {
+                    try {
+                        const svgPath = button.querySelector('svg path');
+                        const d = svgPath ? svgPath.getAttribute('d') || '' : '';
+                        if (d.includes('22.56')) provider = 'google';
+                        else if (d.includes('github')) provider = 'github';
+                        else if (d.includes('23.953')) provider = 'twitter';
+                    } catch (err) {
+                        provider = 'google';
+                    }
+                }
+
+                // Normalize provider string to lowercase
+                if (provider) provider = provider.toLowerCase();
+
                 this.handleSocialLogin(provider, button);
             });
         });
@@ -261,12 +275,12 @@ class NeumorphismLoginForm {
         button.style.opacity = '0.7';
         
         try {
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            console.log(`Redirecting to ${provider} authentication...`);
-            // window.location.href = `/auth/${provider.toLowerCase()}`;
+            // Redirect to provider-specific login endpoint (matches signup behavior)
+            const providerKey = provider.toLowerCase();
+            const redirect = encodeURIComponent('verify.html?purpose=login_verification');
+            window.location.href = `/api/v1/auth/${providerKey}/login?redirect=${redirect}`;
         } catch (error) {
             console.error(`${provider} authentication failed: ${error.message}`);
-        } finally {
             button.style.pointerEvents = 'auto';
             button.style.opacity = '1';
         }
