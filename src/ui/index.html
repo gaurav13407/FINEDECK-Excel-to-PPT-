@@ -1444,24 +1444,24 @@ const privacyContent = `
   <p>For any concerns or inquiries, contact us at: <a href="mailto:gaurav13407@outlook.com">gaurav13407@outlook.com</a></p>
 `;
 
-function openModal(content) {
+function openLegalModal(content) {
   legalModalBody.innerHTML = content;
   legalModal.style.display = 'block';
 }
-function closeModal() {
+function closeLegalModal() {
   legalModal.style.display = 'none';
 }
 if (termsLink) termsLink.addEventListener('click', function(e) {
   e.preventDefault();
-  openModal(termsContent);
+  openLegalModal(termsContent);
 });
 if (privacyLink) privacyLink.addEventListener('click', function(e) {
   e.preventDefault();
-  openModal(privacyContent);
+  openLegalModal(privacyContent);
 });
-if (legalModalClose) legalModalClose.addEventListener('click', closeModal);
+if (legalModalClose) legalModalClose.addEventListener('click', closeLegalModal);
 window.addEventListener('click', function(e) {
-  if (e.target === legalModal) closeModal();
+  if (e.target === legalModal) closeLegalModal();
 });
 
 </script>

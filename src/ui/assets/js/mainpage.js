@@ -634,6 +634,50 @@ class FinDeckApp {
         // Default SVG avatars are already set in HTML and styled with CSS
     }
 
+
+    // Simple auth check used by plan CTAs
+    isAuthenticated() {
+        try {
+            if (window.authManager && typeof window.authManager.isAuthenticated === 'function') {
+                return window.authManager.isAuthenticated();
+            }
+            if (window.authManager && window.authManager.currentUser) return true;
+        } catch (e) { /* ignore */ }
+
+        const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+        if (token) return true;
+
+        try {
+            const fd = localStorage.getItem('finDeckAuth');
+            if (fd) {
+                const parsed = JSON.parse(fd);
+                if (parsed && (parsed.token || parsed.user)) return true;
+            }
+        } catch (e) { /* ignore */ }
+
+        return false;
+    }
+
+    // Central handler for plan CTA clicks — enforces login and resumes after login
+    handleChoosePlan(planKey, approvalUrl) {
+        if (!approvalUrl) return;
+        if (this.isAuthenticated()) {
+            // Open approval link in new tab for authenticated users
+            window.open(approvalUrl, '_blank');
+            return;
+        }
+
+        // Save pending subscription intent and redirect to login
+        try {
+            localStorage.setItem('pendingSubscription', JSON.stringify({ plan: planKey, approvalUrl, ts: Date.now() }));
+        } catch (e) { /* ignore localStorage errors */ }
+
+        // Redirect to login page and return current location so we can resume
+        const next = window.location.href;
+        window.location.href = `login.html?next=${encodeURIComponent(next)}`;
+    }
+
+
     // -----------------
     // Billing / Plans
     // -----------------
@@ -772,7 +816,44 @@ class FinDeckApp {
             });
         }
 
-        // Change plan UI removed; no handler required
+
+        // Remove any previously appended plan subscribe containers (cleanup) so no QR widgets appear site-wide
+        try {
+            document.querySelectorAll('.plan-subscribe-container, .subscribe-widget, [id^="plan-subscribe-"], [id^="paypal-qr-"]').forEach(el => {
+                if (el && el.parentNode) el.parentNode.removeChild(el);
+            });
+        } catch (e) { /* ignore */ }
+
+        // Only wire CTAs to open approval URLs (enforcing login via handleChoosePlan). Do NOT inject QR widgets.
+        try {
+            const mapping = {
+                basic: 'https://www.paypal.com/ncp/payment/96JM3XH5CLV62',
+                pro: 'https://www.paypal.com/ncp/payment/FRZX8QMPTJ93E',
+                ai: 'https://www.paypal.com/ncp/payment/M9JQCX6DJHHSJ'
+            };
+
+            const selGroups = {
+                basic: ['.choose-basic', '#chooseBasicBtn', '[data-plan="basic"]'],
+                pro: ['.choose-pro', '#chooseProBtn', '[data-plan="pro"]'],
+                ai: ['.choose-ai', '#chooseAiBtn', '[data-plan="ai"]']
+            };
+
+            Object.keys(selGroups).forEach(k => {
+                selGroups[k].forEach(sel => {
+                    document.querySelectorAll(sel).forEach(el => {
+                        // Remove any old click handlers by cloning
+                        const newEl = el.cloneNode(true);
+                        el.parentNode.replaceChild(newEl, el);
+                        newEl.addEventListener('click', (ev) => {
+                            ev.preventDefault();
+                            this.handleChoosePlan(k, mapping[k]);
+                        });
+                    });
+                });
+            });
+        } catch (e) {
+            console.warn('Failed to wire plan CTAs', e);
+        }
     }
 
     openBillingPortal() {
@@ -1452,13 +1533,7 @@ function openProfileModal() {
     if (modal) modal.style.display = 'block';
 }
 
-// Expose closeModal if not already present
-if (typeof closeModal !== 'function') {
-    function closeModal(id) {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-    }
-}
+// (Removed redundant short closeModal helper to avoid duplicate definitions)
 
 // Global functions for backward compatibility
 function openModal(modalId) {
@@ -1700,7 +1775,13 @@ function testConversion() {
 // Initialize the application with proper error handling
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Initializing FinDeck App...');
-    
+    // Prevent initializing the full FinDeck app on marketing/landing pages that don't include app elements.
+    // If none of the key app elements exist, skip initialization to avoid errors on index.html.
+    if (!document.getElementById('uploadArea') && !document.getElementById('profileBtn') && !document.getElementById('convertBtn')) {
+        console.log('FinDeckApp: skipping initialization — app elements not present on this page.');
+        return;
+    }
+
     // Check if required dependencies are available
     if (typeof window.APIService === 'undefined') {
         console.warn('⚠️ APIService not loaded yet, retrying...');
@@ -1714,6 +1795,18 @@ document.addEventListener('DOMContentLoaded', function() {
                         window.finDeckApp.initializeConvertButton();
                     }
                 }, 100);
+                // If user had a pending subscription intent (saved before redirect to login), resume it now
+                try {
+                    const pending = localStorage.getItem('pendingSubscription');
+                    if (pending) {
+                        const p = JSON.parse(pending);
+                        if (p && p.approvalUrl && window.finDeckApp && window.finDeckApp.isAuthenticated && window.finDeckApp.isAuthenticated()) {
+                            // Open approval link and clear pending
+                            window.open(p.approvalUrl, '_blank');
+                            localStorage.removeItem('pendingSubscription');
+                        }
+                    }
+                } catch (e) { /* ignore */ }
             } else {
                 console.error('❌ APIService failed to load');
             }
@@ -1727,5 +1820,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 window.finDeckApp.initializeConvertButton();
             }
         }, 100);
+        // Cleanup any previously appended plan subscribe containers/QRs left by older runs
+        try {
+            // Fix: use valid "starts with" attribute selector (^=) instead of invalid "^^"
+            document.querySelectorAll('.plan-subscribe-container, .subscribe-widget, [id^="plan-subscribe-"], [id^="paypal-qr-"], [id^="paypal-hosted-"]').forEach(el => {
+                if (el && el.parentNode) el.parentNode.removeChild(el);
+            });
+        } catch (e) { /* ignore */ }
+
+        // Resume any pending subscription approval after login
+        try {
+            const pending = localStorage.getItem('pendingSubscription');
+            if (pending) {
+                const p = JSON.parse(pending);
+                if (p && p.approvalUrl && window.finDeckApp && window.finDeckApp.isAuthenticated && window.finDeckApp.isAuthenticated()) {
+                    window.open(p.approvalUrl, '_blank');
+                    localStorage.removeItem('pendingSubscription');
+                }
+            }
+        } catch (e) { /* ignore */ }
     }
 });
