@@ -260,6 +260,23 @@ def get_credit_usage_stats(user:UserInDB)->dict:
 
 
 PLAN_CONFIGS={
+    SubscriptionPlan.FREE: {
+        "price": 0.00,
+        "presentations_limit": 1,
+        "ai_features": False,
+        "monthly_credits_limit": 1,
+        "template_access": {
+            "basic_templates": True,
+            "professional_templates": False,
+            "premium_templates": False,
+            "custom_templates": False,
+            "custom_template_upload": False,
+            "template_upload": False
+        },
+
+        "name": "Free Plan",
+        "features": ["1 presentation/month", "basic templates"],
+    },
     SubscriptionPlan.BASIC:{
         "price":25.00,
         "presentations_limit":7,
@@ -269,6 +286,7 @@ PLAN_CONFIGS={
             "basic_templates":True,
             "professional_templates":False,
             "premium_templates":False,
+            "custom_templates":False,
             "custom_template_upload":False,
             "template_upload":False
         },
@@ -285,6 +303,7 @@ PLAN_CONFIGS={
             "basic_templates":True,
             "professional_templates":True,
             "premium_templates":False,
+            "custom_templates":False,
             "custom_template_upload":False,
             "template_upload":False
         },
@@ -300,6 +319,7 @@ PLAN_CONFIGS={
             "basic_templates":True,
             "professional_templates":True,
             "premium_templates":True,
+            "custom_templates":True,
             "custom_template_upload":True,
             "template_upload":True
         },

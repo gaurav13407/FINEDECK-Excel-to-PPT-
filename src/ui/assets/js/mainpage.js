@@ -728,8 +728,8 @@ class FinDeckApp {
             ai: { label: 'AI Pro', price: 99, period: '/month', credits: 'unlimited', features: ['Unlimited conversions', 'AI features', 'Priority support'] }
         };
 
-        // Determine key: prefer explicit plan_key or plan_name/name and normalize it
-        let rawKey = (data.plan_key || data.plan_name || data.name || '') || '';
+    // Determine key: prefer explicit plan_key, plan_name, name, or plan/subscription_plan and normalize it
+    let rawKey = (data.plan_key || data.plan_name || data.name || data.plan || data.subscription_plan || '') || '';
         let planKey = ('' + rawKey).toLowerCase().trim();
 
         // Normalize common separators and remove non-alphanumeric
@@ -805,14 +805,39 @@ class FinDeckApp {
         if (updateBtn) {
             updateBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                this.openBillingPortal();
+                // Redirect user to the pricing section where PayPal links live
+                try {
+                    // If already on mainpage, scroll to section smoothly
+                    const isOnMain = window.location.pathname.includes('mainpage');
+                    if (isOnMain) {
+                        const el = document.getElementById('pricing') || document.querySelector('#pricing');
+                        if (el && typeof el.scrollIntoView === 'function') {
+                            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            return;
+                        }
+                    }
+                } catch (err) { /* ignore */ }
+
+                // Otherwise navigate to the landing page pricing anchor
+                window.location.href = 'index.html#pricing';
             });
         }
 
         if (updatePaymentBtn) {
             updatePaymentBtn.addEventListener('click', (e) => {
                 e.preventDefault();
-                this.openBillingPortal();
+                // Same behavior as updateSubscriptionBtn: navigate to pricing where payment links exist
+                try {
+                    const isOnMain = window.location.pathname.includes('mainpage');
+                    if (isOnMain) {
+                        const el = document.getElementById('pricing') || document.querySelector('#pricing');
+                        if (el && typeof el.scrollIntoView === 'function') {
+                            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            return;
+                        }
+                    }
+                } catch (err) { /* ignore */ }
+                window.location.href = 'index.html#pricing';
             });
         }
 
@@ -957,11 +982,13 @@ class FinDeckApp {
                 const resp = await window.apiConfig.makeRequest(url);
                 console.log('fetchAndPopulateStats: raw response', resp);
                 const data = resp && (resp.data || resp) || {};
-                const done = data.conversions_done ?? data.conversionsDone ?? data.done ?? data.used ?? data.slides_created ?? 0;
-                const left = data.conversions_left ?? data.conversionsLeft ?? data.remaining ?? data.left ?? 'Unlimited';
+                // Prefer presentations_* fields (backend uses these names), then fall back to older names
+                const done = data.presentations_created ?? data.presentationsCreated ?? data.conversions_done ?? data.conversionsDone ?? data.done ?? data.used ?? data.slides_created ?? 0;
+                const leftFromPresentations = (data.presentations_limit !== undefined && data.presentations_limit !== null) ? (data.presentations_limit - (done || 0)) : undefined;
+                const left = data.presentations_left ?? data.presentationsLeft ?? leftFromPresentations ?? data.conversions_left ?? data.conversionsLeft ?? data.remaining ?? data.left ?? 'Unlimited';
                 console.log('fetchAndPopulateStats: mapped values', { done, left });
-                doneEl.textContent = done;
-                leftEl.textContent = left;
+                doneEl.textContent = (done === null || done === undefined) ? '—' : done;
+                leftEl.textContent = (left === null || left === undefined) ? '—' : left;
             } catch (err) {
                 console.warn('Quick stats (direct) failed', err);
                 doneEl.textContent = '—';
@@ -974,9 +1001,10 @@ class FinDeckApp {
             const usage = await this.apiService.getUserUsage();
             const data = usage && (usage.data || usage) || {};
 
-            // Support multiple possible field names from backend
-            const done = data.conversions_done ?? data.conversionsDone ?? data.done ?? data.used ?? data.slides_created ?? 0;
-            const left = data.conversions_left ?? data.conversionsLeft ?? data.remaining ?? data.left ?? (data.limit !== undefined && data.limit !== null ? (data.limit - (done || 0)) : 'Unlimited');
+            // Support multiple possible field names from backend; prefer presentations_* fields first
+            const done = data.presentations_created ?? data.presentationsCreated ?? data.conversions_done ?? data.conversionsDone ?? data.done ?? data.used ?? data.slides_created ?? 0;
+            const leftFromPresentations = (data.presentations_limit !== undefined && data.presentations_limit !== null) ? (data.presentations_limit - (done || 0)) : undefined;
+            const left = data.presentations_left ?? data.presentationsLeft ?? leftFromPresentations ?? data.conversions_left ?? data.conversionsLeft ?? data.remaining ?? data.left ?? (data.limit !== undefined && data.limit !== null ? (data.limit - (done || 0)) : 'Unlimited');
 
             doneEl.textContent = (done === null || done === undefined) ? '—' : done;
             leftEl.textContent = (left === null || left === undefined) ? '—' : left;
@@ -1751,6 +1779,39 @@ document.addEventListener('DOMContentLoaded', function() {
                 deleteBtn.textContent = orig;
             }
         });
+    }
+});
+
+// Ensure subscription update buttons always redirect to pricing even if the app
+// instance hasn't been initialized yet (defensive wiring).
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        const wireRedirect = (btn) => {
+            if (!btn) return;
+            // Avoid binding twice
+            if (btn.__wiredToPricing) return;
+            btn.__wiredToPricing = true;
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                try {
+                    const isOnMain = window.location.pathname.includes('mainpage');
+                    if (isOnMain) {
+                        const el = document.getElementById('pricing') || document.querySelector('#pricing');
+                        if (el && typeof el.scrollIntoView === 'function') {
+                            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            return;
+                        }
+                    }
+                } catch (err) { /* ignore */ }
+                window.location.href = 'mainpage.html#pricing';
+            });
+        };
+
+        wireRedirect(document.getElementById('updateSubscriptionBtn'));
+        wireRedirect(document.getElementById('updatePaymentBtn'));
+    } catch (err) {
+        // Defensive: do not break page if something goes wrong
+        console.warn('Failed to wire subscription redirect buttons', err);
     }
 });
 
