@@ -136,12 +136,35 @@ async def deduct_user_credits(user_id:str,credits:int)->bool:
     if not has_credits_remaning(user,credits):
         return False
     user_collection=get_collection("users")
-    result=await user_collection.update_one(
-        {"_id":ObjectId(str(user_id))},
-        {"$inc":{"subscription.credits_remaining": -credits,"usage_stats.total_credits_used":credits},
-         "$set":{"updated_at":datetime.utcnow()}}
-    )
-    return result.modified_count>0
+    # Keep credit-related fields consistent across the codebase:
+    # - increment subscription.monthly_credits_used (used by get_credit_usage_stats)
+    # - decrement subscription.credits_remaining (legacy field some parts of app read)
+    # - increment usage_stats.total_credits_used for historical tracking
+    try:
+        result=await user_collection.update_one(
+            {"_id":ObjectId(str(user_id))},
+            {"$inc":{
+                "subscription.monthly_credits_used": credits,
+                "subscription.credits_remaining": -credits,
+                "usage_stats.total_credits_used": credits
+            },
+             "$set":{"updated_at":datetime.utcnow()}}
+        )
+        return result.modified_count>0
+    except Exception:
+        # In case the older field names are present only, attempt a fallback update
+        try:
+            result=await user_collection.update_one(
+                {"_id":ObjectId(str(user_id))},
+                {"$inc":{
+                    "subscription.credits_remaining": -credits,
+                    "usage_stats.total_credits_used": credits
+                },
+                 "$set":{"updated_at":datetime.utcnow()}}
+            )
+            return result.modified_count>0
+        except Exception:
+            return False
 
 
 async def upgrade_subscription(user_id:str,new_plan:SubscriptionPlan)->bool:
@@ -187,4 +210,23 @@ async def get_user_usage_stats(user_id:str)->Dict[str,Any]:
     user=await get_user_by_id(user_id)
     if not user:
         return {}
-    return get_credit_usage_stats(user)
+
+    # Gather presentation counts and limits from user document
+    # Prefer top-level presentations_created if present, else usage_stats.total_conversions
+    presentations_created = getattr(user, 'presentations_created', None)
+    if presentations_created is None:
+        presentations_created = getattr(user, 'usage_stats', {}).get('total_conversions', 0) if getattr(user, 'usage_stats', None) else 0
+
+    # Determine presentations limit from subscription or user-level field
+    sub = getattr(user, 'subscription', {}) or {}
+    presentations_limit = getattr(sub, 'presentations_limit', None) or getattr(user, 'presentations_limit', None) or (sub.get('presentations_limit') if isinstance(sub, dict) else None)
+
+    credit_stats = get_credit_usage_stats(user)
+
+    return {
+        "presentations_created": presentations_created,
+        "presentations_limit": presentations_limit,
+        "credits_used": credit_stats.get('credits_used'),
+        "credits_limit": credit_stats.get('credits_limit'),
+        "credits_remaining": credit_stats.get('credits_remaining')
+    }

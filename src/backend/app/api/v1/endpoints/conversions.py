@@ -23,6 +23,9 @@ from converter.ppt_writer import df_to_ppt
 from api.deps import get_current_active_user, require_credits
 from models.user import UserInDB
 from services.file_service import get_file_by_id
+from services.user_service import deduct_user_credits
+from core.database import get_collection
+from bson import ObjectId
 
 router = APIRouter()
 
@@ -103,6 +106,18 @@ async def convert_excel_to_ppt(
         with tempfile.NamedTemporaryFile(delete=False, suffix='.pptx') as tmp_file:
             ppt_path = tmp_file.name
         
+        # Before conversion: deduct credits (reserve)
+        try:
+            deducted = await deduct_user_credits(str(current_user.id), 1)
+        except Exception:
+            deducted = False
+
+        if not deducted:
+            raise HTTPException(
+                status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                detail="Failed to reserve credits for conversion. Please check your subscription."
+            )
+
         # Convert to PowerPoint
         df_to_ppt(
             df=df,
@@ -118,6 +133,19 @@ async def convert_excel_to_ppt(
         base_name = Path(file_doc.filename).stem
         ppt_filename = f"{base_name}_converted.pptx"
         
+        # After successful conversion: increment user's presentation counters
+        try:
+            users_collection = get_collection('users')
+            user_obj_id = ObjectId(str(current_user.id)) if hasattr(current_user, 'id') else ObjectId(str(current_user._id))
+            await users_collection.update_one(
+                {"_id": user_obj_id},
+                {"$inc": {"presentations_created": 1, "usage_stats.total_conversions": 1, "usage_stats.this_month_conversions": 1},
+                 "$set": {"updated_at": datetime.utcnow(), "usage_stats.last_conversion_date": datetime.utcnow()}}
+            )
+        except Exception:
+            # Don't fail the conversion if stats update fails; log server-side if desired
+            pass
+
         # Return the file for download
         return FileResponse(
             path=ppt_path,

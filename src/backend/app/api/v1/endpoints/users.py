@@ -22,6 +22,7 @@ from models.user import(
     UserResponse,UserUpdate,SubscriptionPlan,SubscriptionUpdate,
     PresentationUsage,SubscriptionResponse
 )
+from models.user import PLAN_CONFIGS
 from api.deps import get_current_active_user,get_db,get_pagination_params
 router=APIRouter(tags=["User"])  # Remove prefix from here, it's added in api.py
 
@@ -96,13 +97,24 @@ async def get_user_stats_endpoint(current_user=Depends(get_current_active_user),
         if hasattr(plan, 'value'):
             plan = plan.value
 
-        # presentation counts: support both presentation_created and presentations_created
-        presentations_created = getattr(current_user, 'presentations_created', None)
+        # presentation counts and limits: prefer values returned by service (which reads fresh DB state)
+        presentations_created = stats.get('presentations_created') if isinstance(stats, dict) and 'presentations_created' in stats else getattr(current_user, 'presentations_created', None)
         if presentations_created is None:
             presentations_created = getattr(current_user, 'presentation_created', 0)
 
-        # presentation limit: try subscription.presentations_limit, then legacy field
-        presentations_limit = getattr(subscription, 'presentations_limit', None) or getattr(current_user, 'presentations_limit', None)
+        # presentation limit: prefer service value, then subscription.presentations_limit, then derive from plan config
+        presentations_limit = None
+        if isinstance(stats, dict):
+            presentations_limit = stats.get('presentations_limit')
+        if presentations_limit is None:
+            presentations_limit = getattr(subscription, 'presentations_limit', None) or getattr(current_user, 'presentations_limit', None)
+        # If still None, derive canonical limit from plan config so UI matches enforcement
+        if presentations_limit is None:
+            try:
+                plan_key = plan if isinstance(plan, SubscriptionPlan) else SubscriptionPlan(plan) if plan else SubscriptionPlan.FREE
+                presentations_limit = PLAN_CONFIGS.get(plan_key, {}).get('presentations_limit')
+            except Exception:
+                presentations_limit = None
 
         # credits from subscription (defensive)
         credits_used = getattr(subscription, 'monthly_credits_used', None)
@@ -111,6 +123,14 @@ async def get_user_stats_endpoint(current_user=Depends(get_current_active_user),
             # fallback to stats returned by service
             credits_used = credits_used if credits_used is not None else stats.get('credits_used') if isinstance(stats, dict) else None
             credits_limit = credits_limit if credits_limit is not None else stats.get('credits_limit') if isinstance(stats, dict) else None
+
+        # If credits_limit still missing, derive from plan config to keep UI consistent with enforcement
+        if credits_limit is None:
+            try:
+                plan_key = plan if isinstance(plan, SubscriptionPlan) else SubscriptionPlan(plan) if plan else SubscriptionPlan.FREE
+                credits_limit = PLAN_CONFIGS.get(plan_key, {}).get('monthly_credits_limit')
+            except Exception:
+                credits_limit = None
 
         credits_remaining = None
         if (credits_limit is not None) and (credits_used is not None):
@@ -229,9 +249,33 @@ async def get_subscription_info(current_user=Depends(get_current_active_user)):
     # Defensive extraction for presentations_limit (may live on subscription or user)
     presentations_limit = getattr(subscription, 'presentations_limit', None) or getattr(current_user, 'presentations_limit', None)
 
-    # If still None, try common alternatives or default to 0
-    if presentations_limit is None:
-        presentations_limit = getattr(subscription, 'presentationsLimit', None) or 0
+    # If a canonical plan config exists for this plan, prefer it to avoid stale snapshot values
+    try:
+        plan_val = getattr(subscription, 'plan', None)
+        if hasattr(plan_val, 'value'):
+            plan_key = plan_val
+        else:
+            plan_key = plan_val or subscription.plan if isinstance(subscription, dict) and subscription.get('plan') else plan_val
+        # Normalize to SubscriptionPlan if possible
+        from models.user import SubscriptionPlan as _SP
+        if plan_key is None:
+            plan_key_enum = _SP.FREE
+        else:
+            try:
+                plan_key_enum = _SP(plan_key) if not isinstance(plan_key, _SP) else plan_key
+            except Exception:
+                # Fallback: attempt to coerce string
+                try:
+                    plan_key_enum = _SP(str(plan_key).lower())
+                except Exception:
+                    plan_key_enum = _SP.FREE
+
+        canonical = PLAN_CONFIGS.get(plan_key_enum)
+        if canonical:
+            presentations_limit = canonical.get('presentations_limit', presentations_limit)
+    except Exception:
+        # If anything fails, keep the original presentations_limit
+        pass
 
     return SubscriptionResponse(
         plan=subscription.plan,
