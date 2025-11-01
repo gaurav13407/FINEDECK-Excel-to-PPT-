@@ -319,6 +319,47 @@ def create_column_chart_slide(prs: Presentation, df: pd.DataFrame, x_col: str,
     return slide
 
 
+def create_scatter_chart_slide(prs: Presentation, df: pd.DataFrame, x_col: str,
+                              y_col: str, title: str = "Correlation Analysis"):
+    """
+    Create a scatter plot slide.
+    Best for: Correlation analysis, relationship between two variables
+    """
+    from pptx.chart.data import XyChartData
+    from pptx.enum.chart import XL_CHART_TYPE
+    from pptx.util import Inches
+    
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+    
+    # Add title
+    title_box = slide.shapes.add_textbox(Inches(0.5), Inches(0.3), Inches(9), Inches(0.5))
+    title_box.text = title
+    for paragraph in title_box.text_frame.paragraphs:
+        paragraph.font.size = Pt(24)
+        paragraph.font.bold = True
+    
+    # Prepare data
+    chart_df = df[[x_col, y_col]].copy()
+    chart_df = chart_df.dropna()
+    
+    # Create XY chart data
+    chart_data = XyChartData()
+    series = chart_data.add_series(f'{y_col} vs {x_col}')
+    for _, row in chart_df.iterrows():
+        series.add_data_point(row[x_col], row[y_col])
+    
+    # Add chart
+    x, y, cx, cy = Inches(1), Inches(1.2), Inches(8), Inches(5)
+    chart = slide.shapes.add_chart(
+        XL_CHART_TYPE.XY_SCATTER, x, y, cx, cy, chart_data
+    ).chart
+    
+    # Styling
+    chart.has_legend = False
+    
+    return slide
+
+
 def create_auto_chart_slide(prs: Presentation, df: pd.DataFrame, title: str = "Data Visualization"):
     """
     Automatically detect and create the most appropriate chart for the data.
@@ -369,6 +410,13 @@ def create_auto_chart_slide(prs: Presentation, df: pd.DataFrame, title: str = "D
                 prs, df,
                 config['x_col'],
                 config['y_cols'],
+                config.get('title', title)
+            )
+        elif chart_type == 'scatter':
+            slide = create_scatter_chart_slide(
+                prs, df,
+                config['x_col'],
+                config['y_col'],
                 config.get('title', title)
             )
     except Exception as e:

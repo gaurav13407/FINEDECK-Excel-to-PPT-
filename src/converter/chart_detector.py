@@ -12,6 +12,13 @@ def detect_chart_type(df:pd.DataFrame,x_col:Optional[str]=None,y_cols:Optional[s
     if df.empty or df.shape[0]<2:
         return  None,{}
     
+    # Handle financial statements where column names are numbers (quarters/years)
+    # and first column is metric names
+    numeric_col_names = [col for col in df.columns if isinstance(col, (int, float))]
+    if len(numeric_col_names) > 0 and df.shape[1] >= 2:
+        # This is likely a financial statement (rows=metrics, columns=periods)
+        # Skip for now as it needs transposing
+        return None, {}
 
     # Get Nummerics and categorical columns
     numeric_cols=df.select_dtypes(include=['int64','float64']).columns.tolist()
@@ -35,7 +42,7 @@ def detect_chart_type(df:pd.DataFrame,x_col:Optional[str]=None,y_cols:Optional[s
         }
     
     ## CAse 2:Line Chart - Time series or sequential data
-    #Example:Quaterly Revenue,Monthly sales
+    #Example:Quaterly Revenue,Monthly sales, Stock Prices
     if len(categotical_cols)>=1 and len(numeric_cols)>=1:
         cat_col=categotical_cols[0]
 
@@ -48,10 +55,23 @@ def detect_chart_type(df:pd.DataFrame,x_col:Optional[str]=None,y_cols:Optional[s
         sample_values=df[cat_col].astype(str).str.lower().str.cat(sep=' ')
 
         if any (keyword in first_col_text for keyword in time_keywords) or any(keyword in sample_values for keyword in time_keywords):
+            # For price data with many columns, focus on key columns
+            if len(numeric_cols) > 4:
+                # Use Close price if available, otherwise first numeric column
+                key_cols = []
+                for priority_col in ['Close', 'Adj Close', 'close', 'price']:
+                    matching = [c for c in numeric_cols if priority_col.lower() in str(c).lower()]
+                    if matching:
+                        key_cols.append(matching[0])
+                        break
+                if not key_cols:
+                    key_cols = [numeric_cols[0]]
+                numeric_cols = key_cols[:3]  # Max 3 series
+            
             return 'line',{
                 'x_col':cat_col,
                 'y_cols':numeric_cols,
-                'title':f'Trend of {", ".join(numeric_cols)} over {cat_col}'
+                'title':f'Trend of {", ".join(numeric_cols)} over Time'
             }
         
 
@@ -75,32 +95,40 @@ def detect_chart_type(df:pd.DataFrame,x_col:Optional[str]=None,y_cols:Optional[s
             'title':f'Comparison of {", ".join(numeric_cols)} by {categotical_cols[0]}'
         }
     
-    #Case 5: Scatter Plot - Relationship between two numeric variables
-    if len(numeric_cols)>=2:
-        return 'scatter',{
-            'x_col':numeric_cols[0],
-            'y_cols':numeric_cols[1],
-            'title':f'{numeric_cols[1]} vs {numeric_cols[0]}'
-        }
-    
-    # Default: Column Chart if we have any data
-    if len(numeric_cols)>0:
+    # Default: Column Chart if we have categorical + numeric
+    if len(categotical_cols)>0 and len(numeric_cols)>0:
         return 'column',{
-            'x_col':categotical_cols[0] if categotical_cols else None,
+            'x_col':categotical_cols[0],
             'y_cols':numeric_cols[:3],
             'title':'Data Overview'
         }
+    
+    # Last resort: Scatter for purely numeric data
+    if len(numeric_cols)>=2 and len(categotical_cols)==0:
+        return 'scatter',{
+            'x_col':numeric_cols[0],
+            'y_col':numeric_cols[1],
+            'title':f'{numeric_cols[1]} vs {numeric_cols[0]}'
+        }
+    
     return None,{}
 
 
 
-def should_create_chart(df:pd.DataFrame,min_rows:int=2,max_rows:int=50)->bool:
+def should_create_chart(df:pd.DataFrame,min_rows:int=2,max_rows:int=200)->bool:
     """Determine if a chart should be created based on data size"""
     if df is None or df.empty:
         return False
     
-    if df.shape[0]<min_rows or df.shape[0]>max_rows:
+    if df.shape[0]<min_rows:
         return False
+    
+    # Allow more rows for price/time series data
+    if df.shape[0]>max_rows:
+        # Check if it's time series data (Date column)
+        has_date_col = any('date' in str(col).lower() for col in df.columns)
+        if not has_date_col:
+            return False
     
     numeric_cols=df.select_dtypes(include=['int64','float64']).columns
     if len(numeric_cols)==0:
