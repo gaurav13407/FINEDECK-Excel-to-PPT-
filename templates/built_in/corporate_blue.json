@@ -1,0 +1,71 @@
+{
+  "name": "Corporate Blue",
+  "description": "Classic professional business theme with navy blue and clean design. Perfect for executive presentations and board meetings.",
+  "category": "business",
+  "colors": {
+    "primary": "#1F4788",
+    "secondary": "#4A90E2",
+    "accent": "#7CB9E8",
+    "background": "#FFFFFF",
+    "text": "#333333",
+    "text_light": "#666666",
+    "chart_colors": ["#1F4788", "#4A90E2", "#7CB9E8", "#B8D4E8", "#2E5C8A", "#5B9BD5", "#A5C8E8"]
+  },
+  "fonts": {
+    "title": {
+      "name": "Calibri",
+      "size": 44,
+      "bold": true,
+      "color": "#1F4788"
+    },
+    "subtitle": {
+      "name": "Calibri",
+      "size": 28,
+      "bold": false,
+      "color": "#666666"
+    },
+    "heading": {
+      "name": "Calibri",
+      "size": 32,
+      "bold": true,
+      "color": "#1F4788"
+    },
+    "body": {
+      "name": "Calibri",
+      "size": 18,
+      "bold": false,
+      "color": "#333333"
+    },
+    "table_header": {
+      "name": "Calibri",
+      "size": 11,
+      "bold": true,
+      "color": "#FFFFFF"
+    },
+    "table_data": {
+      "name": "Calibri",
+      "size": 10,
+      "bold": false,
+      "color": "#333333"
+    }
+  },
+  "layout": {
+    "title_slide": {
+      "title_position": {"left": 0.5, "top": 2.5, "width": 9, "height": 1.5},
+      "subtitle_position": {"left": 0.5, "top": 4.0, "width": 9, "height": 1.0}
+    },
+    "content_slide": {
+      "title_position": {"left": 0.5, "top": 0.3, "width": 9, "height": 0.6},
+      "chart_position": {"left": 0.5, "top": 1.2, "width": 5.5, "height": 5.0},
+      "table_position": {"left": 6.2, "top": 1.2, "width": 3.5, "height": 5.0}
+    }
+  },
+  "styling": {
+    "table_header_color": "#1F4788",
+    "table_alt_row_color": "#F2F7FC",
+    "border_color": "#1F4788",
+    "border_width": 1.5,
+    "shadow": true,
+    "rounded_corners": false
+  }
+}

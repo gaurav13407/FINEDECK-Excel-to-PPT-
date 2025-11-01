@@ -1,0 +1,71 @@
+{
+  "name": "Elegant Gold",
+  "description": "Luxurious black and gold theme. Premium look for high-end brands, luxury products, and exclusive presentations.",
+  "category": "luxury",
+  "colors": {
+    "primary": "#C9A961",
+    "secondary": "#D4AF37",
+    "accent": "#FFD700",
+    "background": "#FFFFFF",
+    "text": "#1A1A1A",
+    "text_light": "#4A4A4A",
+    "chart_colors": ["#C9A961", "#D4AF37", "#E6C87F", "#F4E4B7", "#B8941E", "#FFD700", "#FFECB3"]
+  },
+  "fonts": {
+    "title": {
+      "name": "Calibri",
+      "size": 44,
+      "bold": true,
+      "color": "#C9A961"
+    },
+    "subtitle": {
+      "name": "Calibri",
+      "size": 28,
+      "bold": false,
+      "color": "#4A4A4A"
+    },
+    "heading": {
+      "name": "Calibri",
+      "size": 32,
+      "bold": true,
+      "color": "#D4AF37"
+    },
+    "body": {
+      "name": "Calibri",
+      "size": 18,
+      "bold": false,
+      "color": "#1A1A1A"
+    },
+    "table_header": {
+      "name": "Calibri",
+      "size": 11,
+      "bold": true,
+      "color": "#1A1A1A"
+    },
+    "table_data": {
+      "name": "Calibri",
+      "size": 10,
+      "bold": false,
+      "color": "#1A1A1A"
+    }
+  },
+  "layout": {
+    "title_slide": {
+      "title_position": {"left": 0.5, "top": 2.5, "width": 9, "height": 1.5},
+      "subtitle_position": {"left": 0.5, "top": 4.0, "width": 9, "height": 1.0}
+    },
+    "content_slide": {
+      "title_position": {"left": 0.5, "top": 0.3, "width": 9, "height": 0.6},
+      "chart_position": {"left": 0.5, "top": 1.2, "width": 5.5, "height": 5.0},
+      "table_position": {"left": 6.2, "top": 1.2, "width": 3.5, "height": 5.0}
+    }
+  },
+  "styling": {
+    "table_header_color": "#C9A961",
+    "table_alt_row_color": "#FFFEF5",
+    "border_color": "#D4AF37",
+    "border_width": 2.0,
+    "shadow": true,
+    "rounded_corners": true
+  }
+}

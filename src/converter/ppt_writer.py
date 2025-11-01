@@ -1,12 +1,46 @@
 # ppt_writer.py
 import os
-from typing import Optional
+import sys
+from typing import Optional, Dict, Any
 import pandas as pd
 from pptx import Presentation
 from pptx.util import Inches, Pt
+from pptx.dml.color import RGBColor
 
-def create_presentation(title: str = "Report", subtitle: str = "") -> Presentation:
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
+
+from src.templates.template_manager import TemplateManager, hex_to_rgb, get_default_template
+
+# Global template manager instance
+_template_manager = None
+
+def get_template_manager():
+    """Get or create template manager instance"""
+    global _template_manager
+    if _template_manager is None:
+        _template_manager = TemplateManager()
+    return _template_manager
+
+def create_presentation(title: str = "Report", subtitle: str = "", template_name: Optional[str] = None) -> Presentation:
+    """
+    Create a new presentation with optional template styling
+    
+    Args:
+        title: Presentation title
+        subtitle: Presentation subtitle
+        template_name: Template to use (default: corporate_blue)
+    
+    Returns:
+        Presentation object with styled title slide
+    """
     prs = Presentation()
+    
+    # Load template if specified
+    template = None
+    if template_name:
+        template = get_template_manager().load_template(template_name)
+    
     # Title slide layout is usually 0 (depends on template)
     title_slide_layout = prs.slide_layouts[0]
     slide = prs.slides.add_slide(title_slide_layout)
@@ -17,7 +51,38 @@ def create_presentation(title: str = "Report", subtitle: str = "") -> Presentati
     title_placeholder.text = title
     if subtitle and subtitle_placeholder:
         subtitle_placeholder.text = subtitle
+    
+    # Apply template styling to title slide
+    if template:
+        _apply_template_to_title_slide(slide, template)
+    
     return prs
+
+def _apply_template_to_title_slide(slide, template: Dict[str, Any]):
+    """Apply template styling to title slide"""
+    try:
+        title_font = template['fonts']['title']
+        subtitle_font = template['fonts']['subtitle']
+        
+        # Style title
+        if slide.shapes.title:
+            for paragraph in slide.shapes.title.text_frame.paragraphs:
+                paragraph.font.size = Pt(title_font['size'])
+                paragraph.font.bold = title_font.get('bold', True)
+                if 'color' in title_font:
+                    r, g, b = hex_to_rgb(title_font['color'])
+                    paragraph.font.color.rgb = RGBColor(r, g, b)
+        
+        # Style subtitle
+        if len(slide.placeholders) > 1:
+            for paragraph in slide.placeholders[1].text_frame.paragraphs:
+                paragraph.font.size = Pt(subtitle_font['size'])
+                paragraph.font.bold = subtitle_font.get('bold', False)
+                if 'color' in subtitle_font:
+                    r, g, b = hex_to_rgb(subtitle_font['color'])
+                    paragraph.font.color.rgb = RGBColor(r, g, b)
+    except Exception as e:
+        print(f"Warning: Could not apply template styling to title: {e}")
 
 def set_shape_text(shape, text: str, font_size: int = 18, bold: bool = False):
     tx = shape.text_frame

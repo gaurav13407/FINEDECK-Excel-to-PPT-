@@ -1,0 +1,71 @@
+{
+  "name": "Modern Teal",
+  "description": "Fresh and contemporary teal theme. Great for healthcare, consulting, and modern business presentations.",
+  "category": "modern",
+  "colors": {
+    "primary": "#00796B",
+    "secondary": "#00ACC1",
+    "accent": "#26C6DA",
+    "background": "#FFFFFF",
+    "text": "#212121",
+    "text_light": "#616161",
+    "chart_colors": ["#00796B", "#00897B", "#00ACC1", "#26C6DA", "#4DD0E1", "#009688", "#80CBC4"]
+  },
+  "fonts": {
+    "title": {
+      "name": "Calibri",
+      "size": 44,
+      "bold": true,
+      "color": "#00796B"
+    },
+    "subtitle": {
+      "name": "Calibri",
+      "size": 28,
+      "bold": false,
+      "color": "#616161"
+    },
+    "heading": {
+      "name": "Calibri",
+      "size": 32,
+      "bold": true,
+      "color": "#00ACC1"
+    },
+    "body": {
+      "name": "Calibri",
+      "size": 18,
+      "bold": false,
+      "color": "#212121"
+    },
+    "table_header": {
+      "name": "Calibri",
+      "size": 11,
+      "bold": true,
+      "color": "#FFFFFF"
+    },
+    "table_data": {
+      "name": "Calibri",
+      "size": 10,
+      "bold": false,
+      "color": "#212121"
+    }
+  },
+  "layout": {
+    "title_slide": {
+      "title_position": {"left": 0.5, "top": 2.5, "width": 9, "height": 1.5},
+      "subtitle_position": {"left": 0.5, "top": 4.0, "width": 9, "height": 1.0}
+    },
+    "content_slide": {
+      "title_position": {"left": 0.5, "top": 0.3, "width": 9, "height": 0.6},
+      "chart_position": {"left": 0.5, "top": 1.2, "width": 5.5, "height": 5.0},
+      "table_position": {"left": 6.2, "top": 1.2, "width": 3.5, "height": 5.0}
+    }
+  },
+  "styling": {
+    "table_header_color": "#00796B",
+    "table_alt_row_color": "#E0F2F1",
+    "border_color": "#00ACC1",
+    "border_width": 1.5,
+    "shadow": true,
+    "rounded_corners": false
+  }
+}

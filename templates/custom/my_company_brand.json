@@ -1,0 +1,105 @@
+{
+  "name": "My Company Brand",
+  "description": "Custom template with company colors",
+  "category": "custom",
+  "colors": {
+    "primary": "#FF0000",
+    "secondary": "#CC0000",
+    "accent": "#FF6666",
+    "background": "#FFFFFF",
+    "text": "#333333",
+    "text_light": "#666666",
+    "chart_colors": [
+      "#FF0000",
+      "#CC0000",
+      "#FF6666",
+      "#FF9999",
+      "#990000",
+      "#FFCCCC"
+    ]
+  },
+  "fonts": {
+    "title": {
+      "name": "Arial",
+      "size": 44,
+      "bold": true,
+      "color": "#FF0000"
+    },
+    "subtitle": {
+      "name": "Arial",
+      "size": 28,
+      "bold": false,
+      "color": "#666666"
+    },
+    "heading": {
+      "name": "Arial",
+      "size": 32,
+      "bold": true,
+      "color": "#CC0000"
+    },
+    "body": {
+      "name": "Arial",
+      "size": 18,
+      "bold": false,
+      "color": "#333333"
+    },
+    "table_header": {
+      "name": "Arial",
+      "size": 11,
+      "bold": true,
+      "color": "#FFFFFF"
+    },
+    "table_data": {
+      "name": "Arial",
+      "size": 10,
+      "bold": false,
+      "color": "#333333"
+    }
+  },
+  "layout": {
+    "title_slide": {
+      "title_position": {
+        "left": 0.5,
+        "top": 2.5,
+        "width": 9,
+        "height": 1.5
+      },
+      "subtitle_position": {
+        "left": 0.5,
+        "top": 4.0,
+        "width": 9,
+        "height": 1.0
+      }
+    },
+    "content_slide": {
+      "title_position": {
+        "left": 0.5,
+        "top": 0.3,
+        "width": 9,
+        "height": 0.6
+      },
+      "chart_position": {
+        "left": 0.5,
+        "top": 1.2,
+        "width": 5.5,
+        "height": 5.0
+      },
+      "table_position": {
+        "left": 6.2,
+        "top": 1.2,
+        "width": 3.5,
+        "height": 5.0
+      }
+    }
+  },
+  "styling": {
+    "table_header_color": "#FF0000",
+    "table_alt_row_color": "#FFF0F0",
+    "border_color": "#CC0000",
+    "border_width": 2.0,
+    "shadow": true,
+    "rounded_corners": false
+  },
+  "created_at": "2025-11-01T11:16:35.384795",
+  "source": "custom"
+}

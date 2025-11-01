@@ -1,0 +1,71 @@
+{
+  "name": "Executive Dark",
+  "description": "Sophisticated dark theme with gold accents. Premium look for C-suite presentations and high-level strategy meetings.",
+  "category": "executive",
+  "colors": {
+    "primary": "#2C3E50",
+    "secondary": "#34495E",
+    "accent": "#F39C12",
+    "background": "#1A1A1A",
+    "text": "#ECF0F1",
+    "text_light": "#BDC3C7",
+    "chart_colors": ["#F39C12", "#E67E22", "#D68910", "#FFC857", "#FF9A00", "#FFB84D", "#CC7A00"]
+  },
+  "fonts": {
+    "title": {
+      "name": "Calibri",
+      "size": 44,
+      "bold": true,
+      "color": "#F39C12"
+    },
+    "subtitle": {
+      "name": "Calibri",
+      "size": 28,
+      "bold": false,
+      "color": "#BDC3C7"
+    },
+    "heading": {
+      "name": "Calibri",
+      "size": 32,
+      "bold": true,
+      "color": "#F39C12"
+    },
+    "body": {
+      "name": "Calibri",
+      "size": 18,
+      "bold": false,
+      "color": "#ECF0F1"
+    },
+    "table_header": {
+      "name": "Calibri",
+      "size": 11,
+      "bold": true,
+      "color": "#1A1A1A"
+    },
+    "table_data": {
+      "name": "Calibri",
+      "size": 10,
+      "bold": false,
+      "color": "#ECF0F1"
+    }
+  },
+  "layout": {
+    "title_slide": {
+      "title_position": {"left": 0.5, "top": 2.5, "width": 9, "height": 1.5},
+      "subtitle_position": {"left": 0.5, "top": 4.0, "width": 9, "height": 1.0}
+    },
+    "content_slide": {
+      "title_position": {"left": 0.5, "top": 0.3, "width": 9, "height": 0.6},
+      "chart_position": {"left": 0.5, "top": 1.2, "width": 5.5, "height": 5.0},
+      "table_position": {"left": 6.2, "top": 1.2, "width": 3.5, "height": 5.0}
+    }
+  },
+  "styling": {
+    "table_header_color": "#F39C12",
+    "table_alt_row_color": "#2C3E50",
+    "border_color": "#F39C12",
+    "border_width": 2.0,
+    "shadow": true,
+    "rounded_corners": true
+  }
+}

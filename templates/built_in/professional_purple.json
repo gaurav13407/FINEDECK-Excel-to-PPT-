@@ -1,0 +1,71 @@
+{
+  "name": "Professional Purple",
+  "description": "Creative yet professional purple theme. Perfect for tech companies, innovation-focused presentations, and creative agencies.",
+  "category": "business",
+  "colors": {
+    "primary": "#6A1B9A",
+    "secondary": "#8E24AA",
+    "accent": "#AB47BC",
+    "background": "#FFFFFF",
+    "text": "#212121",
+    "text_light": "#616161",
+    "chart_colors": ["#6A1B9A", "#8E24AA", "#AB47BC", "#BA68C8", "#CE93D8", "#9C27B0", "#E1BEE7"]
+  },
+  "fonts": {
+    "title": {
+      "name": "Calibri",
+      "size": 44,
+      "bold": true,
+      "color": "#6A1B9A"
+    },
+    "subtitle": {
+      "name": "Calibri",
+      "size": 28,
+      "bold": false,
+      "color": "#616161"
+    },
+    "heading": {
+      "name": "Calibri",
+      "size": 32,
+      "bold": true,
+      "color": "#8E24AA"
+    },
+    "body": {
+      "name": "Calibri",
+      "size": 18,
+      "bold": false,
+      "color": "#212121"
+    },
+    "table_header": {
+      "name": "Calibri",
+      "size": 11,
+      "bold": true,
+      "color": "#FFFFFF"
+    },
+    "table_data": {
+      "name": "Calibri",
+      "size": 10,
+      "bold": false,
+      "color": "#212121"
+    }
+  },
+  "layout": {
+    "title_slide": {
+      "title_position": {"left": 0.5, "top": 2.5, "width": 9, "height": 1.5},
+      "subtitle_position": {"left": 0.5, "top": 4.0, "width": 9, "height": 1.0}
+    },
+    "content_slide": {
+      "title_position": {"left": 0.5, "top": 0.3, "width": 9, "height": 0.6},
+      "chart_position": {"left": 0.5, "top": 1.2, "width": 5.5, "height": 5.0},
+      "table_position": {"left": 6.2, "top": 1.2, "width": 3.5, "height": 5.0}
+    }
+  },
+  "styling": {
+    "table_header_color": "#6A1B9A",
+    "table_alt_row_color": "#F3E5F5",
+    "border_color": "#8E24AA",
+    "border_width": 1.5,
+    "shadow": true,
+    "rounded_corners": false
+  }
+}

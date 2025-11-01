@@ -1,0 +1,71 @@
+{
+  "name": "Minimal White",
+  "description": "Clean minimalist design with subtle gray tones. Perfect for modern, data-focused presentations with maximum clarity.",
+  "category": "minimal",
+  "colors": {
+    "primary": "#495057",
+    "secondary": "#6C757D",
+    "accent": "#212529",
+    "background": "#FFFFFF",
+    "text": "#212529",
+    "text_light": "#868E96",
+    "chart_colors": ["#495057", "#6C757D", "#868E96", "#ADB5BD", "#CED4DA", "#9BA4AB", "#7A8288"]
+  },
+  "fonts": {
+    "title": {
+      "name": "Calibri",
+      "size": 44,
+      "bold": true,
+      "color": "#212529"
+    },
+    "subtitle": {
+      "name": "Calibri",
+      "size": 28,
+      "bold": false,
+      "color": "#868E96"
+    },
+    "heading": {
+      "name": "Calibri",
+      "size": 32,
+      "bold": true,
+      "color": "#495057"
+    },
+    "body": {
+      "name": "Calibri",
+      "size": 18,
+      "bold": false,
+      "color": "#212529"
+    },
+    "table_header": {
+      "name": "Calibri",
+      "size": 11,
+      "bold": true,
+      "color": "#FFFFFF"
+    },
+    "table_data": {
+      "name": "Calibri",
+      "size": 10,
+      "bold": false,
+      "color": "#212529"
+    }
+  },
+  "layout": {
+    "title_slide": {
+      "title_position": {"left": 1.0, "top": 2.5, "width": 8, "height": 1.5},
+      "subtitle_position": {"left": 1.0, "top": 4.0, "width": 8, "height": 1.0}
+    },
+    "content_slide": {
+      "title_position": {"left": 0.5, "top": 0.3, "width": 9, "height": 0.6},
+      "chart_position": {"left": 0.5, "top": 1.2, "width": 5.5, "height": 5.0},
+      "table_position": {"left": 6.2, "top": 1.2, "width": 3.5, "height": 5.0}
+    }
+  },
+  "styling": {
+    "table_header_color": "#495057",
+    "table_alt_row_color": "#F8F9FA",
+    "border_color": "#DEE2E6",
+    "border_width": 1.0,
+    "shadow": false,
+    "rounded_corners": false
+  }
+}
