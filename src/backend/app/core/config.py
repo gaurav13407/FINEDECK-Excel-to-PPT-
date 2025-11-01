@@ -8,8 +8,10 @@
 # - Environment-specific settings (dev, staging, prod)
 # - CORS origins for frontend domains
 from pydantic_settings import BaseSettings
-from typing import Optional
+from pydantic import field_validator
+from typing import Optional, Union
 import os
+import json
 from pathlib import Path
 
 # Get the project root directory (where .env file should be located)
@@ -42,7 +44,34 @@ class Settings(BaseSettings):
     environment:str="development"
 
     #CORS Setting for frontend
-    cors_origins:list=["http://localhost:3000", "http://127.0.0.1:5500","https://www.findeck.live"]
+    cors_origins: Union[list, str] = ["http://localhost:3000", "http://127.0.0.1:5500", "http://localhost:5500", "null", "https://www.findeck.live"]
+    
+    @field_validator('cors_origins', mode='before')
+    @classmethod
+    def parse_cors_origins(cls, v):
+        """Parse CORS_ORIGINS from JSON string in .env file"""
+        if isinstance(v, str):
+            try:
+                # Try to parse as JSON array
+                parsed = json.loads(v)
+                if isinstance(parsed, list):
+                    # Add 'null' origin for local file:// access if not present
+                    if "null" not in parsed:
+                        parsed.append("null")
+                    return parsed
+            except json.JSONDecodeError:
+                # If not valid JSON, split by comma
+                origins = [origin.strip().strip('"').strip("'") for origin in v.split(',')]
+                if "null" not in origins:
+                    origins.append("null")
+                return origins
+        elif isinstance(v, list):
+            # Already a list, just ensure 'null' is included
+            if "null" not in v:
+                v.append("null")
+            return v
+        return v
+    
     # Backblaze B2 Storage Settings
     use_b2_storage: bool = False
     b2_application_key_id: Optional[str] = None
@@ -94,6 +123,9 @@ print(f"   .env file path: {env_file_path}")
 print(f"   .env file exists: {env_file_path.exists()}")
 print(f"   DATABASE_URL: {settings.database_url}")
 print(f"   DATABASE_NAME: {settings.database_name}")
+print(f"   CORS_ORIGINS: {settings.cors_origins}")
+print(f"   DEBUG: {settings.debug}")
+print(f"   ENVIRONMENT: {settings.environment}")
 try:
     google_loaded = bool(getattr(settings, "GOOGLE_CLIENT_ID", None))
     github_loaded = bool(getattr(settings, "GITHUB_CLIENT_ID", None))

@@ -178,7 +178,7 @@ def df_to_ppt(df: pd.DataFrame, out_path: str, title: str = "Auto Report", subti
 # --- Example usage ---------------------------------------------------------
 
 if __name__ == "__main__":
-    demo_path = os.path.join("examples", "finance_sample.xlsx")
+    demo_path = os.path.join("example", "AAPL_Financial_Data.xlsx")
     df = pd.read_excel(demo_path, sheet_name=0)
     df = df.fillna("").astype(object)
     out = df_to_ppt(df, out_path=os.path.join("examples", "demo_presentation.pptx"),

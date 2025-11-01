@@ -3,7 +3,7 @@
 # - POST /conversions/convert - Direct Excel to PPT conversion
 # - GET /conversions/templates - Get available PowerPoint templates
 
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Form
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Form, Request
 from fastapi.responses import FileResponse
 from typing import List, Optional, Dict, Any
 from datetime import datetime
@@ -25,12 +25,15 @@ from models.user import UserInDB
 from services.file_service import get_file_by_id
 from services.user_service import deduct_user_credits
 from core.database import get_collection
+from core.rate_limit import limiter, get_rate_limit_for_plan
 from bson import ObjectId
 
 router = APIRouter()
 
 @router.post("/convert")
+@limiter.limit("50/hour")  # Default rate limit, will be dynamic based on plan
 async def convert_excel_to_ppt(
+    request: Request,
     file_id: str = Form(...),
     title: str = Form("Auto Report"),
     subtitle: str = Form(""),
