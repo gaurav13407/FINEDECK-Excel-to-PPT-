@@ -7,13 +7,17 @@ from fastapi import APIRouter, HTTPException, UploadFile, File, Depends, status
 from fastapi.responses import FileResponse, JSONResponse
 from typing import List, Optional
 import os
+import sys
 import json
 import tempfile
 from pathlib import Path
 
+# Add paths for imports
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../../')))
+
 from src.templates.template_manager import TemplateManager, get_default_template
-from src.backend.app.api.deps import get_current_user
-from src.backend.app.models.user import User
+from api.deps import get_current_user
+from models.user import UserInDB as User
 
 router = APIRouter()
 
