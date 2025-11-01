@@ -136,10 +136,256 @@ def row_to_table_slide(prs: Presentation, row: pd.Series, title_col: Optional[st
                 for run in paragraph.runs:
                     run.font.size = Pt(12)
 
+
+#-------------------------- Chart Creator---------------------------------------------------
+def create_pie_chart_slide(prs: Presentation, df:pd.DataFrame,category_col:str,value_col:str,title:str="Distribution Chart"):
+    """ Create a pie chart slide from DataFrame columns """
+    from pptx.chart.data import CategoryChartData
+    from pptx.enum.chart import XL_CHART_TYPE
+    from pptx.util import Inches
+
+    # Add Slide with balnk layout 
+    slide=prs.slides.add_slide(prs.slide_layouts[6]) # blank layout
+
+    ## Add title
+    title_box=slide.shapes.add_textbox(Inches(0.5),Inches(0.2),Inches(9),Inches(0.5))
+    title_box.text=title
+    for paragraph in title_box.text_frame.paragraphs:
+        paragraph.font.size=Pt(24)
+        paragraph.font.bold=True
+
+    ## Prepare data-sort by value descending
+    chart_df=df[[category_col,value_col]].copy()
+    chart_df=chart_df.dropna()
+    chart_df=chart_df.sort_values(by=value_col,ascending=False)
+
+    ## Limit to top 10 categories
+    if len(chart_df)>10:
+        chart_df=chart_df.head(10)
+
+    # Create chart data
+    chart_data=CategoryChartData()
+    chart_data.categories=chart_df[category_col].tolist()
+    chart_data.add_series('Values', chart_df[value_col].tolist())
+
+    x,y,cx,cy=Inches(1),Inches(1.2),Inches(8),Inches(5)
+    chart=slide.shapes.add_chart(XL_CHART_TYPE.PIE, x,y,cx,cy,chart_data).chart
+
+    # Chart Styling
+    chart.has_legend=True
+    from pptx.enum.chart import XL_LEGEND_POSITION
+    chart.legend.position=XL_LEGEND_POSITION.RIGHT
+    chart.legend.font.size=Pt(10)
+
+    # Show Percentages on pie slices
+    chart.plots[0].has_data_labels=True
+    data_labels=chart.plots[0].data_labels
+    data_labels.number_format='0%'
+    data_labels.position=5
+
+    return slide
+
+def create_bar_chart_slide(prs: Presentation, df: pd.DataFrame, x_col: str, 
+                           y_col: str, title: str = "Comparison"):
+    """
+    Create a horizontal bar chart slide.
+    Best for: Comparing categories, ranking, metrics comparison
+    """
+    from pptx.chart.data import CategoryChartData
+    from pptx.enum.chart import XL_CHART_TYPE
+    from pptx.util import Inches
+    
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+    
+    # Add title
+    title_box = slide.shapes.add_textbox(Inches(0.5), Inches(0.3), Inches(9), Inches(0.5))
+    title_box.text = title
+    for paragraph in title_box.text_frame.paragraphs:
+        paragraph.font.size = Pt(24)
+        paragraph.font.bold = True
+    
+    # Prepare data
+    chart_df = df[[x_col, y_col]].copy()
+    chart_df = chart_df.dropna()
+    chart_df = chart_df.sort_values(y_col, ascending=True)  # Ascending for bar chart
+    
+    # Create chart data
+    chart_data = CategoryChartData()
+    chart_data.categories = chart_df[x_col].tolist()
+    chart_data.add_series(y_col, chart_df[y_col].tolist())
+    
+    # Add chart
+    x, y, cx, cy = Inches(1), Inches(1.2), Inches(8), Inches(5)
+    chart = slide.shapes.add_chart(
+        XL_CHART_TYPE.BAR_CLUSTERED, x, y, cx, cy, chart_data
+    ).chart
+    
+    # Styling
+    chart.has_legend = False
+    chart.plots[0].has_data_labels = True
+    data_labels = chart.plots[0].data_labels
+    data_labels.number_format = '#,##0'
+    
+    return slide
+
+
+def create_line_chart_slide(prs: Presentation, df: pd.DataFrame, x_col: str, 
+                            y_cols: list, title: str = "Trend Analysis"):
+    """
+    Create a line chart slide showing trends over time.
+    Best for: Time series, quarterly data, trend analysis
+    """
+    from pptx.chart.data import CategoryChartData
+    from pptx.enum.chart import XL_CHART_TYPE
+    from pptx.util import Inches
+    
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+    
+    # Add title
+    title_box = slide.shapes.add_textbox(Inches(0.5), Inches(0.3), Inches(9), Inches(0.5))
+    title_box.text = title
+    for paragraph in title_box.text_frame.paragraphs:
+        paragraph.font.size = Pt(24)
+        paragraph.font.bold = True
+    
+    # Prepare data
+    chart_data = CategoryChartData()
+    chart_data.categories = df[x_col].tolist()
+    
+    # Add series for each numeric column
+    for y_col in y_cols[:3]:  # Max 3 series for clarity
+        if y_col in df.columns:
+            chart_data.add_series(y_col, df[y_col].tolist())
+    
+    # Add chart
+    x, y, cx, cy = Inches(1), Inches(1.2), Inches(8), Inches(5)
+    chart = slide.shapes.add_chart(
+        XL_CHART_TYPE.LINE_MARKERS, x, y, cx, cy, chart_data
+    ).chart
+    
+    # Styling
+    chart.has_legend = True
+    from pptx.enum.chart import XL_LEGEND_POSITION
+    chart.legend.position = XL_LEGEND_POSITION.BOTTOM
+    chart.legend.font.size = Pt(10)
+    
+    # Add data labels only if single series
+    if len(y_cols) == 1:
+        chart.plots[0].has_data_labels = True
+    
+    return slide
+
+
+def create_column_chart_slide(prs: Presentation, df: pd.DataFrame, x_col: str, 
+                              y_cols: list, title: str = "Comparison"):
+    """
+    Create a column (vertical bar) chart slide.
+    Best for: Multi-series comparison, grouped data
+    """
+    from pptx.chart.data import CategoryChartData
+    from pptx.enum.chart import XL_CHART_TYPE
+    from pptx.util import Inches
+    
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+    
+    # Add title
+    title_box = slide.shapes.add_textbox(Inches(0.5), Inches(0.3), Inches(9), Inches(0.5))
+    title_box.text = title
+    for paragraph in title_box.text_frame.paragraphs:
+        paragraph.font.size = Pt(24)
+        paragraph.font.bold = True
+    
+    # Prepare data
+    chart_data = CategoryChartData()
+    chart_data.categories = df[x_col].tolist()
+    
+    # Add series
+    for y_col in y_cols[:3]:  # Max 3 series
+        if y_col in df.columns:
+            chart_data.add_series(y_col, df[y_col].tolist())
+    
+    # Add chart
+    x, y, cx, cy = Inches(1), Inches(1.2), Inches(8), Inches(5)
+    chart = slide.shapes.add_chart(
+        XL_CHART_TYPE.COLUMN_CLUSTERED, x, y, cx, cy, chart_data
+    ).chart
+    
+    # Styling
+    chart.has_legend = True
+    from pptx.enum.chart import XL_LEGEND_POSITION
+    chart.legend.position = XL_LEGEND_POSITION.BOTTOM
+    chart.legend.font.size = Pt(10)
+    
+    return slide
+
+
+def create_auto_chart_slide(prs: Presentation, df: pd.DataFrame, title: str = "Data Visualization"):
+    """
+    Automatically detect and create the most appropriate chart for the data.
+    
+    Uses intelligent detection based on:
+    - Column types (numeric vs categorical)
+    - Data patterns (time series, part-to-whole, comparisons)
+    - Row count and data distribution
+    """
+    from converter.chart_detector import detect_chart_type, should_create_chart
+    
+    # Check if data is suitable for charting
+    if not should_create_chart(df):
+        return None
+    
+    # Detect appropriate chart type
+    chart_type, config = detect_chart_type(df)
+    
+    if chart_type is None:
+        return None
+    
+    # Create the appropriate chart
+    slide = None
+    try:
+        if chart_type == 'pie':
+            slide = create_pie_chart_slide(
+                prs, df, 
+                config['category_col'], 
+                config['value_col'],
+                config.get('title', title)
+            )
+        elif chart_type == 'bar':
+            slide = create_bar_chart_slide(
+                prs, df,
+                config['x_col'],
+                config['y_col'],
+                config.get('title', title)
+            )
+        elif chart_type == 'line':
+            slide = create_line_chart_slide(
+                prs, df,
+                config['x_col'],
+                config['y_cols'],
+                config.get('title', title)
+            )
+        elif chart_type in ['column', 'stacked_bar']:
+            slide = create_column_chart_slide(
+                prs, df,
+                config['x_col'],
+                config['y_cols'],
+                config.get('title', title)
+            )
+    except Exception as e:
+        print(f"Warning: Could not create {chart_type} chart: {e}")
+        return None
+    
+    return slide
+
+
+
+
+
+
 # --- Main export function --------------------------------------------------
 
 def df_to_ppt(df: pd.DataFrame, out_path: str, title: str = "Auto Report", subtitle: str = "",
-              title_col: Optional[str] = None, mode: str = "table", limit: Optional[int] = None):
+              title_col: Optional[str] = None, mode: str = "table", limit: Optional[int] = None,include_charts: bool = True):
     """
     Convert a DataFrame to PPT:
     - mode: 'table' or 'text' (per-row slide)
@@ -159,15 +405,48 @@ def df_to_ppt(df: pd.DataFrame, out_path: str, title: str = "Auto Report", subti
     n = df.shape[0]
     if limit is not None:
         n = min(n, int(limit))
-
-    for i in range(n):
-        row = df.iloc[i]
-        if mode == "text":
-            row_to_text_slide(prs, row, title_col=title_col)
-        else:
+    
+    # MODE 1: Chart Only - Just create visualization
+    if mode == "chart_only":
+        create_auto_chart_slide(prs, df.iloc[:n], title="Data Overview")
+    
+    # MODE 2: Auto - Smart detection
+    elif mode == "auto":
+        # First, add a chart overview if data is suitable
+        if include_charts:
+            from converter.chart_detector import should_create_chart
+            if should_create_chart(df.iloc[:n]):
+                create_auto_chart_slide(prs, df.iloc[:n], title="Overview")
+        
+        # Then add detailed table/text slides if needed (for small datasets)
+        if n <= 10:
+            for i in range(n):
+                row = df.iloc[i]
+                row_to_table_slide(prs, row, title_col=title_col)
+    
+    # MODE 3: Table mode
+    elif mode == "table":
+        # Add chart first if suitable
+        if include_charts:
+            create_auto_chart_slide(prs, df.iloc[:n], title="Overview")
+        
+        # Add table slides
+        for i in range(n):
+            row = df.iloc[i]
             row_to_table_slide(prs, row, title_col=title_col)
+    
+    # MODE 4: Text mode
+    elif mode == "text":
+        # Add chart first if suitable
+        if include_charts:
+            create_auto_chart_slide(prs, df.iloc[:n], title="Overview")
+        
+        # Add text slides
+        for i in range(n):
+            row = df.iloc[i]
+            row_to_text_slide(prs, row, title_col=title_col)
 
-    # ensure output directory exists
+    # Ensure output directory exists
     out_dir = os.path.dirname(out_path)
     if out_dir and not os.path.exists(out_dir):
         os.makedirs(out_dir, exist_ok=True)
