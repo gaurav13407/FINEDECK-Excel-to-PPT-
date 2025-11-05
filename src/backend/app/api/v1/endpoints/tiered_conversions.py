@@ -106,15 +106,41 @@ async def tiered_convert_excel_to_ppt(
         with tempfile.NamedTemporaryFile(delete=False, suffix='.pptx') as tmp_ppt:
             output_path = tmp_ppt.name
         
-        # Convert with tier-based features
-        result = convert_excel_to_ppt(
-            excel_path=excel_path,
-            output_path=output_path,
+        # Convert with tier-based features using professional slide builder
+        # Safely extract filename without extension
+        filename_parts = file.filename.rsplit('.', 1)
+        default_title = filename_parts[0] if filename_parts else 'Presentation'
+        
+        # Use the professional converter for better styling and layouts
+        converter = ExcelToPPTConverter(
             user_tier=user_tier,
-            template_name=template_name,
-            presentation_title=presentation_title or file.filename.split('.')[0],
-            user_ppt_count=ppt_count
+            user_id=str(current_user.id),
+            user_metadata={
+                'name': current_user.name or current_user.email.split('@')[0],
+                'email': current_user.email,
+                'company': getattr(current_user, 'company', 'FinDeck User')
+            }
         )
+        
+        # Use convert_professional for AI_PRO and PRO tiers to get nice slides
+        if user_tier in ['ai_pro', 'pro']:
+            result = converter.convert_professional(
+                excel_path=excel_path,
+                output_path=output_path,
+                template_name=template_name,
+                presentation_title=presentation_title or default_title,
+                user_ppt_count=ppt_count,
+                use_professional_structure=True
+            )
+        else:
+            # Use basic convert for FREE and BASIC tiers
+            result = converter.convert(
+                excel_path=excel_path,
+                output_path=output_path,
+                template_name=template_name,
+                presentation_title=presentation_title or default_title,
+                user_ppt_count=ppt_count
+            )
         
         # Check if conversion was successful
         if not result['success']:

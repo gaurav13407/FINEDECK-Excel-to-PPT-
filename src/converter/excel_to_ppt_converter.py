@@ -201,12 +201,14 @@ class ExcelToPPTConverter:
             
             # Fallback to default template
             if template_name is None:
-                template_name = self.get_allowed_templates()[0]
+                allowed_templates = self.get_allowed_templates()
+                template_name = allowed_templates[0] if allowed_templates else 'corporate_blue'
             
             # Validate template is allowed for this tier
             if template_name not in self.get_allowed_templates():
                 print(f"Warning: Template {template_name} not allowed for {self.config['name']} tier. Using default.")
-                template_name = self.get_allowed_templates()[0]
+                allowed_templates = self.get_allowed_templates()
+                template_name = allowed_templates[0] if allowed_templates else 'corporate_blue'
             
             # Load template
             template = self.template_manager.load_template(template_name)
@@ -310,16 +312,40 @@ class ExcelToPPTConverter:
             
             # AI Template Selection
             if template_name is None:
-                template_name = self.get_allowed_templates()[0]
+                allowed_templates = self.get_allowed_templates()
+                template_name = allowed_templates[0] if allowed_templates else 'corporate_blue'
             
             # Validate template
             if template_name not in self.get_allowed_templates():
                 print(f"⚠️  Template {template_name} not allowed for tier. Using default.")
-                template_name = self.get_allowed_templates()[0]
+                allowed_templates = self.get_allowed_templates()
+                template_name = allowed_templates[0] if allowed_templates else 'corporate_blue'
             
-            # Load template
+            # Load template or use FINANCE_THEME as fallback
             template = self.template_manager.load_template(template_name)
-            print(f"✅ Using template: {template_name}")
+            if template is None:
+                # Use FINANCE_THEME as fallback template
+                from src.converter.professional_slide_builder import FINANCE_THEME
+                template = {
+                    'name': 'Dark Finance',
+                    'colors': {
+                        'primary': '#192A56',  # Navy
+                        'secondary': '#343A40',  # Charcoal
+                        'accent': '#FFC107',  # Gold
+                        'success': '#2E7D32',  # Green
+                        'danger': '#D32F2F',  # Red
+                        'chart_colors': ['#2196F3', '#2E7D32', '#FFC107', '#D32F2F', '#9C27B0', '#FF9800']
+                    },
+                    'fonts': {
+                        'title': {'size': 44, 'bold': True, 'color': '#192A56'},
+                        'subtitle': {'size': 18, 'bold': False, 'color': '#646464'},
+                        'heading': {'size': 28, 'bold': True, 'color': '#192A56'},
+                        'body': {'size': 14, 'bold': False, 'color': '#343A40'}
+                    }
+                }
+                print(f"✅ Using FINANCE_THEME (template file not found)")
+            else:
+                print(f"✅ Using template: {template_name}")
             
             # Create presentation
             prs = Presentation()
@@ -504,7 +530,7 @@ class ExcelToPPTConverter:
                 chart_width = 5.5
                 chart_height = 5.0
             
-            # Create chart (with fallback if it fails)
+            # Create chart (with fallback to base chart system if it fails)
             chart_created = False
             try:
                 self._add_chart_to_slide(
@@ -513,9 +539,30 @@ class ExcelToPPTConverter:
                     template
                 )
                 chart_created = True
+                print(f"✅ Chart created successfully using AI-recommended config")
             except Exception as e:
-                print(f"⚠️  Chart creation failed: {e}")
-                print(f"   Continuing with slide creation without chart...")
+                print(f"⚠️  AI chart creation failed: {e}")
+                print(f"   Falling back to base chart system...")
+                
+                # Fallback: Use base chart detection and creation
+                try:
+                    # Re-detect chart using base system
+                    fallback_chart_type, fallback_config = detect_chart_type(df)
+                    
+                    if fallback_chart_type != 'unknown' and fallback_config.get('x_col') and fallback_config.get('y_cols'):
+                        print(f"   Base system detected: {fallback_chart_type}")
+                        self._add_chart_to_slide(
+                            slide, df, fallback_chart_type, fallback_config,
+                            chart_left, chart_top, chart_width, chart_height,
+                            template
+                        )
+                        chart_created = True
+                        print(f"✅ Chart created successfully using base system")
+                    else:
+                        print(f"   Base system also couldn't create chart. Continuing without chart...")
+                except Exception as fallback_error:
+                    print(f"⚠️  Base chart system also failed: {fallback_error}")
+                    print(f"   Continuing with slide creation without chart...")
             
             # AI-generated insights (for AI Pro only)
             if self.can_use_ai_feature('insights') and self.ai_service:
@@ -591,7 +638,10 @@ class ExcelToPPTConverter:
         y_cols = chart_config.get('y_cols', [])
         
         if not x_col or not y_cols:
-            raise ValueError(f"Invalid chart config: x_col={x_col}, y_cols={y_cols}")
+            raise ValueError(
+                f"Invalid chart config: x_col={x_col}, y_cols={y_cols}. "
+                f"AI chart detection may have failed - will fallback to base chart system."
+            )
         
         # Get template colors for chart
         chart_colors = []
@@ -742,6 +792,7 @@ def convert_excel_to_ppt(excel_path: str,
                         output_path: str,
                         user_tier: str = 'free',
                         template_name: Optional[str] = None,
+                        presentation_title: Optional[str] = None,
                         user_ppt_count: int = 0) -> Dict[str, Any]:
     """
     Convenience function to convert Excel to PPT
@@ -751,10 +802,11 @@ def convert_excel_to_ppt(excel_path: str,
         output_path: Path to save PowerPoint
         user_tier: User subscription tier ('free', 'basic', 'pro', 'ai_pro')
         template_name: Optional template name
+        presentation_title: Optional custom title for the presentation
         user_ppt_count: Number of PPTs user created this month
         
     Returns:
         Dict with conversion results
     """
     converter = ExcelToPPTConverter(user_tier=user_tier)
-    return converter.convert(excel_path, output_path, template_name, user_ppt_count=user_ppt_count)
+    return converter.convert(excel_path, output_path, template_name, presentation_title=presentation_title, user_ppt_count=user_ppt_count)

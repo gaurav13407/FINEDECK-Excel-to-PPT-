@@ -234,8 +234,14 @@ class UsageStats(BaseModel):
 def has_credits_remaning(user:UserInDB,credits_needed:int=1)->bool:
     """Checks if user has enough credits to create a presentation"""
     config=PLAN_CONFIGS[user.subscription.plan]
+    credit_limit = config["monthly_credits_limit"]
+    
+    # Check if unlimited credits (-1 or 200+)
+    if credit_limit == -1 or credit_limit >= 200:
+        return True  # Unlimited credits
+    
     total_used=user.subscription.monthly_credits_used+credits_needed
-    return total_used <= config["monthly_credits_limit"]
+    return total_used <= credit_limit
 
 
 def deduct_credits(user:UserInDB,credits_used:int)-> bool:

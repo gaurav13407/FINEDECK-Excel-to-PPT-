@@ -1,0 +1,39 @@
+{
+  "id": "ocean_blue",
+  "name": "Ocean Blue",
+  "description": "Calm ocean-inspired blues with professional appeal for corporate settings",
+  "category": "professional",
+  "colors": {
+    "primary": "#006064",
+    "secondary": "#00838F",
+    "accent": "#00ACC1",
+    "success": "#00897B",
+    "danger": "#D32F2F",
+    "light": "#E0F7FA",
+    "white": "#FFFFFF",
+    "chart_colors": ["#0097A7", "#00ACC1", "#26C6DA", "#4DD0E1", "#80DEEA", "#B2EBF2"]
+  },
+  "fonts": {
+    "title": {
+      "size": 44,
+      "bold": true,
+      "color": "#006064"
+    },
+    "subtitle": {
+      "size": 18,
+      "bold": false,
+      "color": "#546E7A"
+    },
+    "heading": {
+      "size": 28,
+      "bold": true,
+      "color": "#006064"
+    },
+    "body": {
+      "size": 14,
+      "bold": false,
+      "color": "#37474F"
+    }
+  },
+  "preview_image": "/templates/previews/ocean_blue.png"
+}

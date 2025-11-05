@@ -1,0 +1,39 @@
+{
+  "id": "modern_tech",
+  "name": "Modern Tech",
+  "description": "Sleek modern design with vibrant colors, ideal for tech and startup presentations",
+  "category": "professional",
+  "colors": {
+    "primary": "#2C3E50",
+    "secondary": "#34495E",
+    "accent": "#3498DB",
+    "success": "#27AE60",
+    "danger": "#E74C3C",
+    "light": "#ECF0F1",
+    "white": "#FFFFFF",
+    "chart_colors": ["#3498DB", "#E74C3C", "#F39C12", "#9B59B6", "#1ABC9C", "#E67E22"]
+  },
+  "fonts": {
+    "title": {
+      "size": 44,
+      "bold": true,
+      "color": "#2C3E50"
+    },
+    "subtitle": {
+      "size": 18,
+      "bold": false,
+      "color": "#7F8C8D"
+    },
+    "heading": {
+      "size": 28,
+      "bold": true,
+      "color": "#2C3E50"
+    },
+    "body": {
+      "size": 14,
+      "bold": false,
+      "color": "#34495E"
+    }
+  },
+  "preview_image": "/templates/previews/modern_tech.png"
+}

@@ -1,0 +1,39 @@
+{
+  "id": "corporate_blue",
+  "name": "Corporate Blue",
+  "description": "Classic corporate template with professional blue tones and clean layout",
+  "category": "professional",
+  "colors": {
+    "primary": "#1F4E78",
+    "secondary": "#2C5F8D",
+    "accent": "#4F81BD",
+    "success": "#5A9C6E",
+    "danger": "#C23934",
+    "light": "#E8F0F8",
+    "white": "#FFFFFF",
+    "chart_colors": ["#4F81BD", "#C23934", "#9BBB59", "#8064A2", "#4BACC6", "#F79646"]
+  },
+  "fonts": {
+    "title": {
+      "size": 44,
+      "bold": true,
+      "color": "#1F4E78"
+    },
+    "subtitle": {
+      "size": 18,
+      "bold": false,
+      "color": "#5A5A5A"
+    },
+    "heading": {
+      "size": 28,
+      "bold": true,
+      "color": "#1F4E78"
+    },
+    "body": {
+      "size": 14,
+      "bold": false,
+      "color": "#333333"
+    }
+  },
+  "preview_image": "/templates/previews/corporate_blue.png"
+}

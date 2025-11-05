@@ -21,8 +21,9 @@ from models.user import UserInDB as User
 
 router = APIRouter()
 
-# Initialize template manager
-template_manager = TemplateManager()
+# Initialize template manager with correct path
+TEMPLATES_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../../../src/templates'))
+template_manager = TemplateManager(templates_dir=TEMPLATES_DIR)
 
 
 @router.get("/templates", response_model=List[dict])

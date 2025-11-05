@@ -1,0 +1,39 @@
+{
+  "id": "sunset_orange",
+  "name": "Sunset Orange",
+  "description": "Warm orange tones with creative energy, perfect for dynamic presentations",
+  "category": "premium",
+  "colors": {
+    "primary": "#E65100",
+    "secondary": "#F57C00",
+    "accent": "#FFC107",
+    "success": "#7CB342",
+    "danger": "#D84315",
+    "light": "#FFF3E0",
+    "white": "#FFFFFF",
+    "chart_colors": ["#FF6F00", "#FFC107", "#F4511E", "#8E24AA", "#00897B", "#5E35B1"]
+  },
+  "fonts": {
+    "title": {
+      "size": 44,
+      "bold": true,
+      "color": "#E65100"
+    },
+    "subtitle": {
+      "size": 18,
+      "bold": false,
+      "color": "#6D4C41"
+    },
+    "heading": {
+      "size": 28,
+      "bold": true,
+      "color": "#E65100"
+    },
+    "body": {
+      "size": 14,
+      "bold": false,
+      "color": "#5D4037"
+    }
+  },
+  "preview_image": "/templates/previews/sunset_orange.png"
+}

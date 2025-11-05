@@ -241,14 +241,20 @@ class FinDeckApp {
                 
                 if (response) {
                     // Add file metadata from backend response
+                    // Note: File objects don't spread properly, so we manually copy properties
                     const fileWithId = {
-                        ...file,
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        lastModified: file.lastModified,
                         id: response._id || response.id || `temp_${Date.now()}_${i}`,
                         _id: response._id || response.id,
                         url: response.url || null,
                         uploaded: true,
                         // Store the backend response for conversion
-                        backendResponse: response
+                        backendResponse: response,
+                        // Keep reference to original file for blob operations
+                        originalFile: file
                     };
                     this.uploadedFiles.push(fileWithId);
                     console.log('📁 File added to uploaded list:', fileWithId);
@@ -1197,7 +1203,7 @@ class FinDeckApp {
 
     async performConversion() {
         try {
-            console.log('🔄 Starting performConversion...');
+            console.log('🔄 Starting AI-powered conversion...');
             const conversionResults = [];
             
             for (let i = 0; i < this.uploadedFiles.length; i++) {
@@ -1206,29 +1212,43 @@ class FinDeckApp {
                 
                 this.updateConversionProgress(
                     (i / this.uploadedFiles.length) * 100,
-                    `Converting ${file.name}...`
+                    `🤖 AI analyzing ${file.name}...`
                 );
                 
-                // Convert each file - use the file ID from the upload response
+                // Convert each file - use the original file for tiered conversion
                 const fileId = file._id || file.id || file.name;
-                console.log('📤 Calling API with file ID:', fileId);
+                console.log('📤 Calling AI conversion with file ID:', fileId);
                 
-                const result = await this.apiService.convertExcelToPPT(fileId);
-                console.log('📥 API Response:', result);
+                // Prepare conversion options with AI features
+                const conversionOptions = {
+                    fileName: file.name,
+                    // template_name: null, // Let backend choose default template
+                    presentation_title: file.name.replace(/\.[^/.]+$/, ''), // Remove extension
+                    useTieredConversion: true, // Enable AI features
+                    originalFile: file.originalFile || file // Pass the actual File object for direct upload
+                };
+                
+                const result = await this.apiService.convertExcelToPPT(fileId, conversionOptions);
+                console.log('📥 AI Conversion Response:', result);
                 
                 // For file downloads, the response is the file itself
                 if (result && result.ok !== false) {
+                    // Extract AI metadata if available
+                    const aiInfo = result.aiMetadata || {};
+                    console.log('🤖 AI Features Used:', aiInfo);
+                    
                     conversionResults.push({
                         originalFile: file,
-                        convertedFile: result
+                        convertedFile: result,
+                        aiMetadata: aiInfo // Store AI metadata for display
                     });
                 } else {
                     throw new Error(`Failed to convert ${file.name}`);
                 }
             }
             
-            console.log('✅ All conversions completed:', conversionResults);
-            this.updateConversionProgress(100, 'Conversion complete!');
+            console.log('✅ All AI conversions completed:', conversionResults);
+            this.updateConversionProgress(100, '🎉 AI-powered conversion complete!');
             this.conversionResults = conversionResults;
             
             setTimeout(() => {
@@ -1325,9 +1345,37 @@ class FinDeckApp {
         
         const downloadLinks = this.conversionResults.map((result, index) => {
             const convertedFile = result.convertedFile;
+            const aiMetadata = result.aiMetadata || {};
+            
             // Get the original filename safely
             const originalName = result.originalFile?.name || 'converted_file';
             const pptFilename = originalName.replace(/\.[^/.]+$/, '.pptx');
+            
+            // Build AI features badge
+            const aiFeaturesHTML = aiMetadata.aiFeaturesUsed && aiMetadata.aiFeaturesUsed.length > 0 ? `
+                <div class="ai-features-badge">
+                    <span class="ai-badge-icon">🤖</span>
+                    <span class="ai-badge-text">AI: ${aiMetadata.aiFeaturesUsed.join(', ')}</span>
+                </div>
+            ` : '';
+            
+            // Build AI stats
+            const aiStatsHTML = aiMetadata.slidesCreated ? `
+                <div class="ai-stats">
+                    <span class="stat-item">
+                        <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                        </svg>
+                        ${aiMetadata.slidesCreated} slides
+                    </span>
+                    <span class="stat-item">
+                        <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor" width="14" height="14">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        </svg>
+                        ${aiMetadata.templateUsed || 'dark_finance'}
+                    </span>
+                </div>
+            ` : '';
             
             return `
                 <div class="download-item-enhanced">
@@ -1347,6 +1395,8 @@ class FinDeckApp {
                                     <span class="file-extension-badge">.pptx</span>
                                 </div>
                             </div>
+                            ${aiFeaturesHTML}
+                            ${aiStatsHTML}
                             <div class="file-meta">
                                 <span class="file-size">PowerPoint Presentation</span>
                                 <span class="conversion-status">

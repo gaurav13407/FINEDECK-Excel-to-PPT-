@@ -90,14 +90,14 @@
                     <p>Professional templates for your financial presentations</p>
                 </div>
                 <div class="header-actions">
-                    <a class="upload-template-btn neu-button primary" href="mainpage.html">
+                    <button class="upload-template-btn neu-button primary" onclick="openUploadModal()">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                             <polyline points="17,8 12,3 7,8"/>
                             <line x1="12" y1="3" x2="12" y2="15"/>
                         </svg>
                         Upload Template
-                    </a>
+                    </button>
                 </div>
             </div>
 
@@ -113,10 +113,9 @@
                 
                 <div class="filter-tabs">
                     <button class="filter-tab active" data-category="all">All Templates</button>
-                    <button class="filter-tab" data-category="financial">Financial</button>
-                    <button class="filter-tab" data-category="corporate">Corporate</button>
-                    <button class="filter-tab" data-category="charts">Charts & Graphs</button>
-                    <button class="filter-tab" data-category="minimal">Minimal</button>
+                    <button class="filter-tab" data-category="basic">Basic</button>
+                    <button class="filter-tab" data-category="professional">Professional</button>
+                    <button class="filter-tab" data-category="premium">Premium</button>
                 </div>
                 
                 <div class="view-options">
@@ -143,116 +142,22 @@
 
             <!-- Templates Grid -->
             <div class="templates-grid" id="templatesGrid">
-                <!-- Financial Templates -->
-                <div class="template-card" data-category="financial">
+                <!-- BASIC TIER -->
+                <div class="template-card" data-category="basic" data-template-id="minimal_white">
                     <div class="template-preview">
-                        <img src="https://via.placeholder.com/300x200/e59d02/ffffff?text=Financial+Report" alt="Financial Report Template">
+                        <img src="https://via.placeholder.com/300x200/ffffff/212121?text=Minimal+White" alt="Minimal White Template">
+                        <div class="template-badge basic">FREE</div>
                         <div class="template-overlay">
                             <div class="template-actions">
-                                <button class="action-btn preview-btn" onclick="previewTemplate('financial-report')">
+                                <button class="action-btn preview-btn" onclick="previewTemplate('minimal_white')">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                                         <circle cx="12" cy="12" r="3"/>
                                     </svg>
                                 </button>
-                                <button class="action-btn download-btn" onclick="downloadTemplate('financial-report')">
+                                <button class="action-btn use-btn" onclick="useTemplate('minimal_white')">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                        <polyline points="7,10 12,15 17,10"/>
-                                        <line x1="12" y1="15" x2="12" y2="3"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="template-info">
-                        <h3>Financial Report</h3>
-                        <p>Professional financial analysis template with charts and tables</p>
-                        <div class="template-meta">
-                            <span class="template-tag financial">Financial</span>
-                            <span class="download-count">2.4k downloads</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="template-card" data-category="corporate">
-                    <div class="template-preview">
-                        <img src="https://via.placeholder.com/300x200/2c2c2c/e59d02?text=Corporate+Blue" alt="Corporate Blue Template">
-                        <div class="template-overlay">
-                            <div class="template-actions">
-                                <button class="action-btn preview-btn" onclick="previewTemplate('corporate-blue')">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                        <circle cx="12" cy="12" r="3"/>
-                                    </svg>
-                                </button>
-                                <button class="action-btn download-btn" onclick="downloadTemplate('corporate-blue')">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                        <polyline points="7,10 12,15 17,10"/>
-                                        <line x1="12" y1="15" x2="12" y2="3"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="template-info">
-                        <h3>Corporate Blue</h3>
-                        <p>Clean corporate design perfect for business presentations</p>
-                        <div class="template-meta">
-                            <span class="template-tag corporate">Corporate</span>
-                            <span class="download-count">1.8k downloads</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="template-card" data-category="charts">
-                    <div class="template-preview">
-                        <img src="https://via.placeholder.com/300x200/191919/e59d02?text=Data+Charts" alt="Data Charts Template">
-                        <div class="template-overlay">
-                            <div class="template-actions">
-                                <button class="action-btn preview-btn" onclick="previewTemplate('data-charts')">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                        <circle cx="12" cy="12" r="3"/>
-                                    </svg>
-                                </button>
-                                <button class="action-btn download-btn" onclick="downloadTemplate('data-charts')">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                        <polyline points="7,10 12,15 17,10"/>
-                                        <line x1="12" y1="15" x2="12" y2="3"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="template-info">
-                        <h3>Data Charts</h3>
-                        <p>Comprehensive chart and graph layouts for data visualization</p>
-                        <div class="template-meta">
-                            <span class="template-tag charts">Charts</span>
-                            <span class="download-count">3.1k downloads</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="template-card" data-category="minimal">
-                    <div class="template-preview">
-                        <img src="https://via.placeholder.com/300x200/ffffff/000000?text=Minimal+White" alt="Minimal White Template">
-                        <div class="template-overlay">
-                            <div class="template-actions">
-                                <button class="action-btn preview-btn" onclick="previewTemplate('minimal-white')">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                        <circle cx="12" cy="12" r="3"/>
-                                    </svg>
-                                </button>
-                                <button class="action-btn download-btn" onclick="downloadTemplate('minimal-white')">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                        <polyline points="7,10 12,15 17,10"/>
-                                        <line x1="12" y1="15" x2="12" y2="3"/>
+                                        <polyline points="20,6 9,17 4,12"/>
                                     </svg>
                                 </button>
                             </div>
@@ -260,72 +165,282 @@
                     </div>
                     <div class="template-info">
                         <h3>Minimal White</h3>
-                        <p>Clean and simple design with focus on content</p>
+                        <p>Clean minimalist design with black and blue accents, perfect for simple presentations</p>
                         <div class="template-meta">
-                            <span class="template-tag minimal">Minimal</span>
-                            <span class="download-count">1.5k downloads</span>
+                            <span class="template-tag basic">Basic</span>
+                            <span class="template-tier">FREE Tier</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="template-card" data-category="financial">
+                <!-- PROFESSIONAL TIER -->
+                <div class="template-card" data-category="professional" data-template-id="corporate_blue">
                     <div class="template-preview">
-                        <img src="https://via.placeholder.com/300x200/e59d02/000000?text=Budget+Analysis" alt="Budget Analysis Template">
+                        <img src="https://via.placeholder.com/300x200/1F4E78/ffffff?text=Corporate+Blue" alt="Corporate Blue Template">
+                        <div class="template-badge professional">PRO</div>
                         <div class="template-overlay">
                             <div class="template-actions">
-                                <button class="action-btn preview-btn" onclick="previewTemplate('budget-analysis')">
+                                <button class="action-btn preview-btn" onclick="previewTemplate('corporate_blue')">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                                         <circle cx="12" cy="12" r="3"/>
                                     </svg>
                                 </button>
-                                <button class="action-btn download-btn" onclick="downloadTemplate('budget-analysis')">
+                                <button class="action-btn use-btn" onclick="useTemplate('corporate_blue')">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                        <polyline points="7,10 12,15 17,10"/>
-                                        <line x1="12" y1="15" x2="12" y2="3"/>
+                                        <polyline points="20,6 9,17 4,12"/>
                                     </svg>
                                 </button>
                             </div>
                         </div>
                     </div>
                     <div class="template-info">
-                        <h3>Budget Analysis</h3>
-                        <p>Detailed budget tracking and analysis presentation</p>
+                        <h3>Corporate Blue</h3>
+                        <p>Classic corporate design with professional blue tones for business presentations</p>
                         <div class="template-meta">
-                            <span class="template-tag financial">Financial</span>
-                            <span class="download-count">2.9k downloads</span>
+                            <span class="template-tag professional">Professional</span>
+                            <span class="template-tier">PRO Tier</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="template-card" data-category="corporate">
+                <div class="template-card" data-category="professional" data-template-id="modern_tech">
                     <div class="template-preview">
-                        <img src="https://via.placeholder.com/300x200/000004/e59d02?text=Professional+Dark" alt="Professional Dark Template">
+                        <img src="https://via.placeholder.com/300x200/2C3E50/3498DB?text=Modern+Tech" alt="Modern Tech Template">
+                        <div class="template-badge professional">PRO</div>
                         <div class="template-overlay">
                             <div class="template-actions">
-                                <button class="action-btn preview-btn" onclick="previewTemplate('professional-dark')">
+                                <button class="action-btn preview-btn" onclick="previewTemplate('modern_tech')">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                                         <circle cx="12" cy="12" r="3"/>
                                     </svg>
                                 </button>
-                                <button class="action-btn download-btn" onclick="downloadTemplate('professional-dark')">
+                                <button class="action-btn use-btn" onclick="useTemplate('modern_tech')">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                        <polyline points="7,10 12,15 17,10"/>
-                                        <line x1="12" y1="15" x2="12" y2="3"/>
+                                        <polyline points="20,6 9,17 4,12"/>
                                     </svg>
                                 </button>
                             </div>
                         </div>
                     </div>
                     <div class="template-info">
-                        <h3>Professional Dark</h3>
-                        <p>Elegant dark theme for premium presentations</p>
+                        <h3>Modern Tech</h3>
+                        <p>Sleek tech-focused design with vibrant colors for innovative presentations</p>
                         <div class="template-meta">
-                            <span class="template-tag corporate">Corporate</span>
-                            <span class="download-count">3.7k downloads</span>
+                            <span class="template-tag professional">Professional</span>
+                            <span class="template-tier">PRO Tier</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card" data-category="professional" data-template-id="elegant_gray">
+                    <div class="template-preview">
+                        <img src="https://via.placeholder.com/300x200/455A64/FF5722?text=Elegant+Gray" alt="Elegant Gray Template">
+                        <div class="template-badge professional">PRO</div>
+                        <div class="template-overlay">
+                            <div class="template-actions">
+                                <button class="action-btn preview-btn" onclick="previewTemplate('elegant_gray')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                </button>
+                                <button class="action-btn use-btn" onclick="useTemplate('elegant_gray')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20,6 9,17 4,12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Elegant Gray</h3>
+                        <p>Sophisticated gray palette with subtle red accents for professional settings</p>
+                        <div class="template-meta">
+                            <span class="template-tag professional">Professional</span>
+                            <span class="template-tier">PRO Tier</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card" data-category="professional" data-template-id="ocean_blue">
+                    <div class="template-preview">
+                        <img src="https://via.placeholder.com/300x200/006064/00ACC1?text=Ocean+Blue" alt="Ocean Blue Template">
+                        <div class="template-badge professional">PRO</div>
+                        <div class="template-overlay">
+                            <div class="template-actions">
+                                <button class="action-btn preview-btn" onclick="previewTemplate('ocean_blue')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                </button>
+                                <button class="action-btn use-btn" onclick="useTemplate('ocean_blue')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20,6 9,17 4,12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Ocean Blue</h3>
+                        <p>Calm ocean-inspired blues perfect for corporate and tech presentations</p>
+                        <div class="template-meta">
+                            <span class="template-tag professional">Professional</span>
+                            <span class="template-tier">PRO Tier</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PREMIUM TIER -->
+                <div class="template-card" data-category="premium" data-template-id="dark_finance">
+                    <div class="template-preview">
+                        <img src="https://via.placeholder.com/300x200/192A56/FFC107?text=Dark+Finance" alt="Dark Finance Template">
+                        <div class="template-badge premium">PREMIUM</div>
+                        <div class="template-overlay">
+                            <div class="template-actions">
+                                <button class="action-btn preview-btn" onclick="previewTemplate('dark_finance')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                </button>
+                                <button class="action-btn use-btn" onclick="useTemplate('dark_finance')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20,6 9,17 4,12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Dark Finance</h3>
+                        <p>Professional dark theme with navy blue and gold accents, perfect for financial presentations</p>
+                        <div class="template-meta">
+                            <span class="template-tag premium">Premium</span>
+                            <span class="template-tier">AI PRO Tier</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card" data-category="premium" data-template-id="vibrant_gradient">
+                    <div class="template-preview">
+                        <img src="https://via.placeholder.com/300x200/6A1B9A/FF6F00?text=Vibrant+Gradient" alt="Vibrant Gradient Template">
+                        <div class="template-badge premium">PREMIUM</div>
+                        <div class="template-overlay">
+                            <div class="template-actions">
+                                <button class="action-btn preview-btn" onclick="previewTemplate('vibrant_gradient')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                </button>
+                                <button class="action-btn use-btn" onclick="useTemplate('vibrant_gradient')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20,6 9,17 4,12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Vibrant Gradient</h3>
+                        <p>Bold design with purple and orange gradients for dynamic presentations</p>
+                        <div class="template-meta">
+                            <span class="template-tag premium">Premium</span>
+                            <span class="template-tier">AI PRO Tier</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card" data-category="premium" data-template-id="sunset_orange">
+                    <div class="template-preview">
+                        <img src="https://via.placeholder.com/300x200/E65100/FFC107?text=Sunset+Orange" alt="Sunset Orange Template">
+                        <div class="template-badge premium">PREMIUM</div>
+                        <div class="template-overlay">
+                            <div class="template-actions">
+                                <button class="action-btn preview-btn" onclick="previewTemplate('sunset_orange')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                </button>
+                                <button class="action-btn use-btn" onclick="useTemplate('sunset_orange')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20,6 9,17 4,12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Sunset Orange</h3>
+                        <p>Warm orange and gold tones perfect for creative and dynamic presentations</p>
+                        <div class="template-meta">
+                            <span class="template-tag premium">Premium</span>
+                            <span class="template-tier">AI PRO Tier</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card" data-category="premium" data-template-id="forest_green">
+                    <div class="template-preview">
+                        <img src="https://via.placeholder.com/300x200/1B5E20/4CAF50?text=Forest+Green" alt="Forest Green Template">
+                        <div class="template-badge premium">PREMIUM</div>
+                        <div class="template-overlay">
+                            <div class="template-actions">
+                                <button class="action-btn preview-btn" onclick="previewTemplate('forest_green')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                </button>
+                                <button class="action-btn use-btn" onclick="useTemplate('forest_green')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20,6 9,17 4,12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Forest Green</h3>
+                        <p>Natural green tones ideal for sustainability and eco-friendly presentations</p>
+                        <div class="template-meta">
+                            <span class="template-tag premium">Premium</span>
+                            <span class="template-tier">AI PRO Tier</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-card" data-category="premium" data-template-id="royal_purple">
+                    <div class="template-preview">
+                        <img src="https://via.placeholder.com/300x200/4A148C/9C27B0?text=Royal+Purple" alt="Royal Purple Template">
+                        <div class="template-badge premium">PREMIUM</div>
+                        <div class="template-overlay">
+                            <div class="template-actions">
+                                <button class="action-btn preview-btn" onclick="previewTemplate('royal_purple')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                </button>
+                                <button class="action-btn use-btn" onclick="useTemplate('royal_purple')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20,6 9,17 4,12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>Royal Purple</h3>
+                        <p>Luxurious deep purple theme perfect for creative and premium presentations</p>
+                        <div class="template-meta">
+                            <span class="template-tag premium">Premium</span>
+                            <span class="template-tier">AI PRO Tier</span>
                         </div>
                     </div>
                 </div>
@@ -395,6 +510,60 @@
                                 <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"/>
                             </svg>
                             Use as Default
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Template Modal -->
+    <div class="modal-overlay" id="uploadModal" style="display: none;">
+        <div class="preview-modal">
+            <div class="modal-header">
+                <h2>Upload Custom Template</h2>
+                <button class="close-btn" onclick="closeUploadModal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="preview-content" style="display: block;">
+                <div class="upload-form">
+                    <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                        Upload your custom PowerPoint template (.pptx file) to use for your presentations.
+                    </p>
+                    
+                    <div class="file-upload-area" id="uploadArea">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 64px; height: 64px; margin-bottom: 16px;">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17,8 12,3 7,8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        <h3>Drop your template here</h3>
+                        <p>or click to browse</p>
+                        <input type="file" id="templateFileInput" accept=".pptx" style="display: none;">
+                    </div>
+                    
+                    <div id="uploadProgress" style="display: none; margin-top: 20px;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <p id="uploadStatus" style="color: var(--text-secondary); text-align: center; margin-top: 8px;">Uploading...</p>
+                    </div>
+                    
+                    <div class="preview-actions" style="margin-top: 30px;">
+                        <button class="neu-button primary" id="uploadSubmitBtn" disabled onclick="submitTemplateUpload()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Upload Template
+                        </button>
+                        <button class="neu-button secondary" onclick="closeUploadModal()">
+                            Cancel
                         </button>
                     </div>
                 </div>
@@ -498,52 +667,96 @@
             currentTemplate = templateId;
             const modal = document.getElementById('previewModal');
             
-            // Template data (in real app, this would come from API)
+            // Template data from the new template system
             const templates = {
-                'financial-report': {
-                    name: 'Financial Report',
-                    description: 'Professional financial analysis template with charts and tables',
-                    downloads: '2.4k',
-                    image: 'https://via.placeholder.com/600x400/e59d02/ffffff?text=Financial+Report+Preview'
-                },
-                'corporate-blue': {
-                    name: 'Corporate Blue',
-                    description: 'Clean corporate design perfect for business presentations',
-                    downloads: '1.8k',
-                    image: 'https://via.placeholder.com/600x400/2c2c2c/e59d02?text=Corporate+Blue+Preview'
-                },
-                'data-charts': {
-                    name: 'Data Charts',
-                    description: 'Comprehensive chart and graph layouts for data visualization',
-                    downloads: '3.1k',
-                    image: 'https://via.placeholder.com/600x400/191919/e59d02?text=Data+Charts+Preview'
-                },
-                'minimal-white': {
+                'minimal_white': {
                     name: 'Minimal White',
-                    description: 'Clean and simple design with focus on content',
-                    downloads: '1.5k',
-                    image: 'https://via.placeholder.com/600x400/ffffff/000000?text=Minimal+White+Preview'
+                    description: 'Clean minimalist design with black and blue accents, perfect for simple presentations. FREE tier default template.',
+                    category: 'Basic',
+                    tier: 'FREE',
+                    colors: '#212121, #0288D1',
+                    image: 'https://via.placeholder.com/600x400/ffffff/212121?text=Minimal+White+Preview'
                 },
-                'budget-analysis': {
-                    name: 'Budget Analysis',
-                    description: 'Detailed budget tracking and analysis presentation',
-                    downloads: '2.9k',
-                    image: 'https://via.placeholder.com/600x400/e59d02/000000?text=Budget+Analysis+Preview'
+                'corporate_blue': {
+                    name: 'Corporate Blue',
+                    description: 'Classic corporate design with professional blue tones for business presentations. Timeless and professional.',
+                    category: 'Professional',
+                    tier: 'PRO',
+                    colors: '#1F4E78, #4F81BD',
+                    image: 'https://via.placeholder.com/600x400/1F4E78/ffffff?text=Corporate+Blue+Preview'
                 },
-                'professional-dark': {
-                    name: 'Professional Dark',
-                    description: 'Elegant dark theme for premium presentations',
-                    downloads: '3.7k',
-                    image: 'https://via.placeholder.com/600x400/000004/e59d02?text=Professional+Dark+Preview'
+                'modern_tech': {
+                    name: 'Modern Tech',
+                    description: 'Sleek tech-focused design with vibrant colors for innovative presentations. Perfect for startups and tech companies.',
+                    category: 'Professional',
+                    tier: 'PRO',
+                    colors: '#2C3E50, #3498DB',
+                    image: 'https://via.placeholder.com/600x400/2C3E50/3498DB?text=Modern+Tech+Preview'
+                },
+                'elegant_gray': {
+                    name: 'Elegant Gray',
+                    description: 'Sophisticated gray palette with subtle red accents for professional settings. Modern and refined.',
+                    category: 'Professional',
+                    tier: 'PRO',
+                    colors: '#455A64, #FF5722',
+                    image: 'https://via.placeholder.com/600x400/455A64/FF5722?text=Elegant+Gray+Preview'
+                },
+                'ocean_blue': {
+                    name: 'Ocean Blue',
+                    description: 'Calm ocean-inspired blues perfect for corporate and tech presentations. Serene and trustworthy.',
+                    category: 'Professional',
+                    tier: 'PRO',
+                    colors: '#006064, #00ACC1',
+                    image: 'https://via.placeholder.com/600x400/006064/00ACC1?text=Ocean+Blue+Preview'
+                },
+                'dark_finance': {
+                    name: 'Dark Finance',
+                    description: 'Professional dark theme with navy blue and gold accents, perfect for financial presentations. Our flagship premium template.',
+                    category: 'Premium',
+                    tier: 'AI PRO',
+                    colors: '#192A56, #FFC107',
+                    image: 'https://via.placeholder.com/600x400/192A56/FFC107?text=Dark+Finance+Preview'
+                },
+                'vibrant_gradient': {
+                    name: 'Vibrant Gradient',
+                    description: 'Bold design with purple and orange gradients for dynamic presentations. Eye-catching and memorable.',
+                    category: 'Premium',
+                    tier: 'AI PRO',
+                    colors: '#6A1B9A, #FF6F00',
+                    image: 'https://via.placeholder.com/600x400/6A1B9A/FF6F00?text=Vibrant+Gradient+Preview'
+                },
+                'sunset_orange': {
+                    name: 'Sunset Orange',
+                    description: 'Warm orange and gold tones perfect for creative and dynamic presentations. Energetic and inspiring.',
+                    category: 'Premium',
+                    tier: 'AI PRO',
+                    colors: '#E65100, #FFC107',
+                    image: 'https://via.placeholder.com/600x400/E65100/FFC107?text=Sunset+Orange+Preview'
+                },
+                'forest_green': {
+                    name: 'Forest Green',
+                    description: 'Natural green tones ideal for sustainability and eco-friendly presentations. Fresh and organic.',
+                    category: 'Premium',
+                    tier: 'AI PRO',
+                    colors: '#1B5E20, #4CAF50',
+                    image: 'https://via.placeholder.com/600x400/1B5E20/4CAF50?text=Forest+Green+Preview'
+                },
+                'royal_purple': {
+                    name: 'Royal Purple',
+                    description: 'Luxurious deep purple theme perfect for creative and premium presentations. Elegant and sophisticated.',
+                    category: 'Premium',
+                    tier: 'AI PRO',
+                    colors: '#4A148C, #9C27B0',
+                    image: 'https://via.placeholder.com/600x400/4A148C/9C27B0?text=Royal+Purple+Preview'
                 }
             };
             
             const template = templates[templateId];
             if (template) {
-                document.getElementById('previewTitle').textContent = template.name + ' Preview';
+                document.getElementById('previewTitle').textContent = template.name + ' - Preview';
                 document.getElementById('previewTemplateName').textContent = template.name;
                 document.getElementById('previewDescription').textContent = template.description;
-                document.getElementById('previewDownloads').textContent = template.downloads + ' downloads';
+                document.getElementById('previewDownloads').textContent = template.tier + ' Tier • ' + template.category;
                 document.getElementById('previewImage').src = template.image;
             }
             
@@ -565,11 +778,21 @@
             }
         }
 
-        function useTemplate() {
-            if (currentTemplate) {
-                alert('Template "' + currentTemplate + '" set as default!');
+        function useTemplate(templateId) {
+            // Save selected template to localStorage
+            localStorage.setItem('selectedTemplate', templateId || currentTemplate);
+            
+            // Show success notification
+            const templateName = templateId || currentTemplate;
+            alert('Template "' + templateName + '" has been set as your default template!');
+            
+            // Close preview if open
+            if (document.getElementById('previewModal').style.display === 'flex') {
                 closePreview();
             }
+            
+            // Optional: Redirect to main page or update UI
+            console.log('Template selected:', templateName);
         }
 
         // View options
@@ -601,11 +824,148 @@
 
         // Close modal when clicking outside
         window.onclick = function(event) {
-            const modal = document.getElementById('previewModal');
-            if (event.target === modal) {
+            const previewModal = document.getElementById('previewModal');
+            const uploadModal = document.getElementById('uploadModal');
+            
+            if (event.target === previewModal) {
                 closePreview();
             }
+            if (event.target === uploadModal) {
+                closeUploadModal();
+            }
         }
+
+        // Upload Modal Functions
+        let selectedTemplateFile = null;
+
+        function openUploadModal() {
+            document.getElementById('uploadModal').style.display = 'flex';
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').style.display = 'none';
+            selectedTemplateFile = null;
+            document.getElementById('uploadSubmitBtn').disabled = true;
+            document.getElementById('uploadProgress').style.display = 'none';
+        }
+
+        // File upload area interactions
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('templateFileInput');
+
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'var(--accent-color)';
+            uploadArea.style.background = 'rgba(229, 157, 2, 0.1)';
+        });
+
+        uploadArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'var(--border-color)';
+            uploadArea.style.background = 'var(--secondary-bg)';
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.style.borderColor = 'var(--border-color)';
+            uploadArea.style.background = 'var(--secondary-bg)';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].name.endsWith('.pptx')) {
+                handleFileSelection(files[0]);
+            } else {
+                alert('Please upload a valid .pptx file');
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileSelection(e.target.files[0]);
+            }
+        });
+
+        function handleFileSelection(file) {
+            if (!file.name.endsWith('.pptx')) {
+                alert('Please select a PowerPoint file (.pptx)');
+                return;
+            }
+            
+            selectedTemplateFile = file;
+            uploadArea.querySelector('h3').textContent = `Selected: ${file.name}`;
+            uploadArea.querySelector('p').textContent = `Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`;
+            document.getElementById('uploadSubmitBtn').disabled = false;
+        }
+
+        async function submitTemplateUpload() {
+            if (!selectedTemplateFile) {
+                alert('Please select a template file');
+                return;
+            }
+
+            const uploadProgress = document.getElementById('uploadProgress');
+            const uploadStatus = document.getElementById('uploadStatus');
+            const submitBtn = document.getElementById('uploadSubmitBtn');
+            
+            uploadProgress.style.display = 'block';
+            submitBtn.disabled = true;
+
+            try {
+                uploadStatus.textContent = 'Uploading template...';
+                
+                // Use templateLoader to upload
+                const result = await templateLoader.uploadTemplate(selectedTemplateFile);
+                
+                uploadStatus.textContent = 'Upload successful!';
+                uploadStatus.style.color = 'var(--success-color)';
+                
+                setTimeout(() => {
+                    closeUploadModal();
+                    alert('Template uploaded successfully! Refreshing...');
+                    location.reload();
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                uploadStatus.textContent = `Upload failed: ${error.message}`;
+                uploadStatus.style.color = 'var(--error-color)';
+                submitBtn.disabled = false;
+            }
+        }
+    </script>
+
+    <!-- Template Loader -->
+    <script src="assets/js/template-loader.js"></script>
+    <script>
+        // Initialize template loader
+        const templateLoader = new TemplateLoader();
+        
+        // Load templates on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('Loading templates from backend...');
+            
+            try {
+                const templates = await templateLoader.loadTemplates();
+                console.log(`Loaded ${templates.length} templates`);
+                
+                // Optional: Update UI with loaded templates
+                // This is a future enhancement - templates are already displayed statically
+            } catch (error) {
+                console.error('Failed to load templates:', error);
+            }
+            
+            // Mark selected template if any
+            const selectedTemplate = templateLoader.getSelectedTemplate();
+            if (selectedTemplate) {
+                const templateCard = document.querySelector(`[data-template-id="${selectedTemplate}"]`);
+                if (templateCard) {
+                    templateCard.classList.add('selected');
+                }
+            }
+        });
     </script>
 </body>
 </html>

@@ -1,0 +1,39 @@
+{
+  "id": "forest_green",
+  "name": "Forest Green",
+  "description": "Natural green theme with earthy tones for sustainability and eco-friendly presentations",
+  "category": "premium",
+  "colors": {
+    "primary": "#1B5E20",
+    "secondary": "#2E7D32",
+    "accent": "#66BB6A",
+    "success": "#43A047",
+    "danger": "#C62828",
+    "light": "#E8F5E9",
+    "white": "#FFFFFF",
+    "chart_colors": ["#388E3C", "#66BB6A", "#81C784", "#A5D6A7", "#C8E6C9", "#558B2F"]
+  },
+  "fonts": {
+    "title": {
+      "size": 44,
+      "bold": true,
+      "color": "#1B5E20"
+    },
+    "subtitle": {
+      "size": 18,
+      "bold": false,
+      "color": "#558B2F"
+    },
+    "heading": {
+      "size": 28,
+      "bold": true,
+      "color": "#1B5E20"
+    },
+    "body": {
+      "size": 14,
+      "bold": false,
+      "color": "#33691E"
+    }
+  },
+  "preview_image": "/templates/previews/forest_green.png"
+}

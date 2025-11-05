@@ -1,0 +1,39 @@
+{
+  "id": "minimal_white",
+  "name": "Minimal White",
+  "description": "Clean and minimalist white design, perfect for simple and elegant presentations",
+  "category": "basic",
+  "colors": {
+    "primary": "#212121",
+    "secondary": "#424242",
+    "accent": "#0288D1",
+    "success": "#388E3C",
+    "danger": "#D32F2F",
+    "light": "#FAFAFA",
+    "white": "#FFFFFF",
+    "chart_colors": ["#0288D1", "#D32F2F", "#F57C00", "#7B1FA2", "#00796B", "#C2185B"]
+  },
+  "fonts": {
+    "title": {
+      "size": 44,
+      "bold": true,
+      "color": "#212121"
+    },
+    "subtitle": {
+      "size": 18,
+      "bold": false,
+      "color": "#757575"
+    },
+    "heading": {
+      "size": 28,
+      "bold": true,
+      "color": "#212121"
+    },
+    "body": {
+      "size": 14,
+      "bold": false,
+      "color": "#424242"
+    }
+  },
+  "preview_image": "/templates/previews/minimal_white.png"
+}

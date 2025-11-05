@@ -646,6 +646,86 @@ body {
     color: #95a5a6 !important;
 }
 
+/* New template tier tags */
+.template-tag.basic {
+    background: rgba(149, 165, 166, 0.2);
+    color: #95a5a6 !important;
+}
+
+.template-tag.professional {
+    background: rgba(65, 131, 215, 0.2);
+    color: #4183d7 !important;
+}
+
+.template-tag.premium {
+    background: rgba(229, 157, 2, 0.2);
+    color: var(--accent-color) !important;
+}
+
+/* Template tier badge */
+.template-tier {
+    color: var(--text-muted) !important;
+    font-size: 0.8rem;
+}
+
+/* Template badge (overlay on preview) */
+.template-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.template-badge.basic {
+    background: rgba(149, 165, 166, 0.9);
+    color: #ffffff;
+}
+
+.template-badge.professional {
+    background: rgba(65, 131, 215, 0.9);
+    color: #ffffff;
+}
+
+.template-badge.premium {
+    background: linear-gradient(135deg, #e59d02 0%, #f4a742 100%);
+    color: #000004;
+}
+
+/* Selected template card */
+.template-card.selected {
+    border: 2px solid var(--accent-color);
+    box-shadow: 
+        0 0 20px rgba(229, 157, 2, 0.4),
+        12px 12px 24px rgba(0, 0, 0, 0.4),
+        -12px -12px 24px rgba(50, 50, 50, 0.1);
+}
+
+.template-card.selected::before {
+    content: '✓';
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 30px;
+    height: 30px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-bg);
+    font-weight: bold;
+    font-size: 18px;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
 .download-count {
     color: var(--text-muted) !important;
     font-size: 0.8rem;
@@ -819,6 +899,59 @@ body {
     .filter-tabs {
         justify-content: center;
     }
+}
+
+/* Upload Modal Styles */
+.file-upload-area {
+    border: 2px dashed var(--border-color);
+    border-radius: 16px;
+    padding: 60px 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--secondary-bg);
+}
+
+.file-upload-area:hover {
+    border-color: var(--accent-color);
+    background: rgba(229, 157, 2, 0.05);
+}
+
+.file-upload-area svg {
+    color: var(--accent-color);
+}
+
+.file-upload-area h3 {
+    color: var(--text-primary);
+    margin: 0 0 8px 0;
+    font-size: 1.2rem;
+}
+
+.file-upload-area p {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--secondary-bg);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-color), #f4a742);
+    width: 0%;
+    transition: width 0.3s ease;
+    animation: progress-animation 2s ease-in-out infinite;
+}
+
+@keyframes progress-animation {
+    0% { width: 0%; }
+    50% { width: 70%; }
+    100% { width: 100%; }
 }
 
 @media (max-width: 768px) {

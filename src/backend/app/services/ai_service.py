@@ -39,9 +39,10 @@ class AIInsightsService:
 
         # Updated models (Nov 2025) - using currently supported models
         # Check https://console.groq.com/docs/models for latest models
-        self.fast_model="llama-3.1-8b-instant"  # Fast responses
-        self.balanced_model="llama-3.3-70b-versatile"  # Balanced quality/speed  
-        self.capable_model="llama-3.3-70b-versatile"  # Most capable (same as balanced for now)
+        # Note: Using faster models to avoid rate limits (100k tokens/day on free tier)
+        self.fast_model="llama-3.1-8b-instant"  # Fast responses, higher rate limits
+        self.balanced_model="llama-3.1-8b-instant"  # Using fast model to avoid rate limits
+        self.capable_model="llama-3.1-8b-instant"  # Using fast model to avoid rate limits
         
         self.total_tokens_used=0
         self.total_cost=0.0

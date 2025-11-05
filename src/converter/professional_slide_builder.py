@@ -288,13 +288,16 @@ class ProfessionalSlideBuilder:
         """
         slide = prs.slides.add_slide(prs.slide_layouts[6])  # Blank layout
         
-        # Get colors from template (convert hex to RGB)
-        primary_hex = template.get('colors', {}).get('primary', '#1F4E78')
-        accent_hex = template.get('colors', {}).get('accent', '#4F81BD')
-        
-        # Convert hex to RGB
-        primary_color = self._hex_to_rgb(primary_hex)
-        accent_color = self._hex_to_rgb(accent_hex)
+        # Get colors from template (convert hex to RGB) or use FINANCE_THEME
+        if template and 'colors' in template:
+            primary_hex = template.get('colors', {}).get('primary', '#1F4E78')
+            accent_hex = template.get('colors', {}).get('accent', '#4F81BD')
+            primary_color = self._hex_to_rgb(primary_hex)
+            accent_color = self._hex_to_rgb(accent_hex)
+        else:
+            # Use FINANCE_THEME as fallback
+            primary_color = FINANCE_THEME['colors']['navy']
+            accent_color = FINANCE_THEME['colors']['gold']
         
         # Add decorative top bar
         top_bar = slide.shapes.add_shape(
@@ -581,8 +584,10 @@ class ProfessionalSlideBuilder:
         
         # Use Smart Chart Analyzer
         if hasattr(self, 'summary_df') and self.summary_df is not None:
+            print(f"📊 Using SmartChartAnalyzer with summary_df ({len(self.summary_df)} rows, {len(self.summary_df.columns)} cols)")
             analyzer = SmartChartAnalyzer(self.summary_df, sheets_data)
             recommended_charts = analyzer.get_recommended_charts('dashboard')
+            print(f"📈 Analyzer recommended {len(recommended_charts)} charts")
             
             if len(recommended_charts) >= 2:
                 # LEFT: First recommended chart
@@ -606,7 +611,9 @@ class ProfessionalSlideBuilder:
                     charts_created += 1
             else:
                 # Fallback to original charts if analyzer fails
+                print(f"⚠️  Smart analyzer returned {len(recommended_charts)} charts, need at least 2")
                 if hasattr(self, 'summary_df') and self.summary_df is not None:
+                    print(f"✓ Using summary_df with {len(self.summary_df)} rows for chart 1")
                     chart1_added = self._add_marketcap_bar_chart(
                         slide, self.summary_df,
                         left=Inches(0.5), top=Inches(1.3),
@@ -614,6 +621,9 @@ class ProfessionalSlideBuilder:
                     )
                     if chart1_added:
                         charts_created += 1
+                        print(f"✅ Chart 1 added successfully")
+                else:
+                    print(f"⚠️  No summary_df available for chart 1")
                 
                 # Try price trend as fallback
                 if hasattr(self, 'price_data') and self.price_data:
@@ -933,11 +943,16 @@ class ProfessionalSlideBuilder:
         """
         slide = prs.slides.add_slide(prs.slide_layouts[6])
         
-        # Get colors (convert hex to RGB)
-        primary_hex = template.get('colors', {}).get('primary', '#1F4E78')
-        accent_hex = template.get('colors', {}).get('accent', '#4F81BD')
-        primary_color = self._hex_to_rgb(primary_hex)
-        accent_color = self._hex_to_rgb(accent_hex)
+        # Get colors (convert hex to RGB) or use FINANCE_THEME
+        if template and 'colors' in template:
+            primary_hex = template.get('colors', {}).get('primary', '#1F4E78')
+            accent_hex = template.get('colors', {}).get('accent', '#4F81BD')
+            primary_color = self._hex_to_rgb(primary_hex)
+            accent_color = self._hex_to_rgb(accent_hex)
+        else:
+            # Use FINANCE_THEME as fallback
+            primary_color = FINANCE_THEME['colors']['navy']
+            accent_color = FINANCE_THEME['colors']['gold']
         
         # Add decorative elements
         # Top accent shape

@@ -2101,6 +2101,50 @@ input:checked + .toggle-slider:before {
     height: 14px;
 }
 
+/* AI Features Badge */
+.ai-features-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    border-radius: 20px;
+    padding: 4px 12px;
+    margin: 8px 0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #a78bfa;
+}
+
+.ai-badge-icon {
+    font-size: 1rem;
+}
+
+.ai-badge-text {
+    text-transform: capitalize;
+}
+
+/* AI Stats */
+.ai-stats {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.stat-icon {
+    opacity: 0.7;
+}
+
 .download-actions {
     margin-left: 20px;
 }

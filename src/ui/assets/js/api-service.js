@@ -211,6 +211,15 @@ class APIService {
      * Convert Excel file to PowerPoint
      */
     async convertExcelToPPT(fileId, conversionOptions = {}) {
+        // Check if user wants AI-powered conversion (default for AI_PRO users)
+        const useTieredConversion = conversionOptions.useTieredConversion !== false;
+        
+        if (useTieredConversion) {
+            // Use new tiered conversion with AI features
+            return await this.convertExcelToPPTTiered(fileId, conversionOptions);
+        }
+        
+        // Legacy conversion (kept for backwards compatibility)
         const formData = new FormData();
         formData.append('file_id', fileId);
         
@@ -237,6 +246,127 @@ class APIService {
 
         // For file downloads, return the response directly
         return response;
+    }
+
+    /**
+     * Convert Excel to PPT with AI-powered features (Tiered Conversion)
+     * Uses all AI features based on user's subscription tier
+     */
+    async convertExcelToPPTTiered(fileId, conversionOptions = {}) {
+        try {
+            // Use the original file if provided, otherwise try to fetch it
+            let fileBlob;
+            if (conversionOptions.originalFile) {
+                fileBlob = conversionOptions.originalFile;
+                console.log('✅ Using original file for tiered conversion');
+            } else {
+                // Fallback: try to get the file blob from the file ID
+                console.log('⚠️ No original file provided, attempting to download from backend');
+                fileBlob = await this.getFileBlob(fileId);
+            }
+            
+            // Create form data with the actual file
+            const formData = new FormData();
+            formData.append('file', fileBlob, conversionOptions.fileName || 'file.xlsx');
+            
+            // Add conversion options
+            if (conversionOptions.template_name) {
+                formData.append('template_name', conversionOptions.template_name);
+            }
+            if (conversionOptions.presentation_title) {
+                formData.append('presentation_title', conversionOptions.presentation_title);
+            }
+
+            const response = await fetch(`${this.api.API_BASE}/tiered/tiered-convert`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'AI conversion failed');
+            }
+
+            // Extract AI metadata from headers
+            const aiMetadata = {
+                slidesCreated: response.headers.get('X-Slides-Created'),
+                templateUsed: response.headers.get('X-Template-Used'),
+                aiFeaturesUsed: response.headers.get('X-AI-Features')?.split(',') || [],
+                aiTokens: response.headers.get('X-AI-Tokens'),
+                aiCost: response.headers.get('X-AI-Cost')
+            };
+
+            // Attach metadata to response
+            response.aiMetadata = aiMetadata;
+            
+            return response;
+        } catch (error) {
+            console.error('Tiered conversion error:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get file blob from file ID
+     */
+    async getFileBlob(fileId) {
+        const response = await fetch(`${this.api.API_BASE}/files/${fileId}/download`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch file for conversion');
+        }
+
+        return await response.blob();
+    }
+
+    /**
+     * Get user's tier features
+     */
+    async getTierFeatures() {
+        const response = await fetch(`${this.api.API_BASE}/tiered-convert/tier-features`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch tier features');
+        }
+
+        return await response.json();
+    }
+
+    /**
+     * Preview AI recommendations before conversion
+     */
+    async previewAI(fileId) {
+        const fileBlob = await this.getFileBlob(fileId);
+        
+        const formData = new FormData();
+        formData.append('file', fileBlob, 'preview.xlsx');
+
+        const response = await fetch(`${this.api.API_BASE}/tiered-convert/preview-ai`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+            },
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to preview AI recommendations');
+        }
+
+        return await response.json();
     }
 
     /**
