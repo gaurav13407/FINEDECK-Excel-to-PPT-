@@ -19,6 +19,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..'))
 from src.converter.excel_reader import excel_reader_all_sheets
 from src.converter.chart_detector import detect_chart_type, should_create_chart
 from src.templates.template_manager import TemplateManager
+from src.converter.professional_slide_builder import ProfessionalSlideBuilder
 
 # Import AI service (optional, only for paid tiers)
 try:
@@ -73,19 +74,21 @@ class ExcelToPPTConverter:
     Excel to PowerPoint converter with tiered subscription support
     """
     
-    def __init__(self, user_tier: str = 'free', user_id: Optional[str] = None):
+    def __init__(self, user_tier: str = 'free', user_id: Optional[str] = None, user_metadata: Optional[Dict[str, str]] = None):
         """
         Initialize converter with user tier
         
         Args:
             user_tier: One of 'free', 'basic', 'pro', 'ai_pro'
             user_id: Optional user ID for tracking usage
+            user_metadata: Optional dict with 'name', 'company', 'email' for branding
         """
         if user_tier not in TIER_CONFIG:
             raise ValueError(f"Invalid tier: {user_tier}. Must be one of: {list(TIER_CONFIG.keys())}")
         
         self.user_tier = user_tier
         self.user_id = user_id
+        self.user_metadata = user_metadata or {}
         self.config = TIER_CONFIG[user_tier]
         self.template_manager = TemplateManager()
         
@@ -250,6 +253,124 @@ class ExcelToPPTConverter:
             }
             
         except Exception as e:
+            return {
+                'success': False,
+                'error': str(e)
+            }
+    
+    def convert_professional(self, 
+                            excel_path: str, 
+                            output_path: str,
+                            template_name: Optional[str] = None,
+                            presentation_title: Optional[str] = None,
+                            user_ppt_count: int = 0,
+                            use_professional_structure: bool = True) -> Dict[str, Any]:
+        """
+        Convert Excel file to professional 7-10 slide presentation
+        
+        Args:
+            excel_path: Path to Excel file
+            output_path: Path to save PowerPoint file
+            template_name: Template to use (optional)
+            presentation_title: Custom title (optional)
+            user_ppt_count: Number of PPTs user has created this month
+            use_professional_structure: Use new 7-slide structure (default True)
+            
+        Returns:
+            Dict with conversion results and metadata
+        """
+        
+        # Check limits
+        if not self.check_limits(user_ppt_count):
+            return {
+                'success': False,
+                'error': f'PPT limit reached. {self.config["name"]} allows {self.config["ppt_limit"]} PPTs/month.',
+                'upgrade_required': True
+            }
+        
+        try:
+            # Read Excel file
+            print(f"\n📊 Reading Excel file: {excel_path}")
+            sheets_dict = excel_reader_all_sheets(excel_path)
+            
+            if not sheets_dict:
+                return {
+                    'success': False,
+                    'error': 'No data found in Excel file'
+                }
+            
+            # Convert dict to list of tuples for processing
+            sheets_data = [(name, df) for name, df in sheets_dict.items() if df is not None]
+            
+            # Limit sheets based on tier
+            max_sheets = self.config['max_sheets']
+            if max_sheets > 0 and len(sheets_data) > max_sheets:
+                sheets_data = sheets_data[:max_sheets]
+                print(f"⚠️  Limited to {max_sheets} sheets for {self.config['name']} tier")
+            
+            # AI Template Selection
+            if template_name is None:
+                template_name = self.get_allowed_templates()[0]
+            
+            # Validate template
+            if template_name not in self.get_allowed_templates():
+                print(f"⚠️  Template {template_name} not allowed for tier. Using default.")
+                template_name = self.get_allowed_templates()[0]
+            
+            # Load template
+            template = self.template_manager.load_template(template_name)
+            print(f"✅ Using template: {template_name}")
+            
+            # Create presentation
+            prs = Presentation()
+            
+            # Set project name
+            if presentation_title is None:
+                presentation_title = os.path.splitext(os.path.basename(excel_path))[0]
+                presentation_title = presentation_title.replace('_', ' ').title()
+            
+            # Use professional slide builder
+            print(f"\n🎨 Building professional {self.user_tier.upper()} presentation...")
+            slide_builder = ProfessionalSlideBuilder(
+                user_tier=self.user_tier,
+                ai_service=self.ai_service,
+                user_metadata=self.user_metadata
+            )
+            
+            # Build all slides
+            build_results = slide_builder.build_professional_presentation(
+                prs=prs,
+                sheets_data=sheets_data,
+                project_name=presentation_title,
+                template=template,
+                excel_path=excel_path  # Pass excel path for Summary and price data
+            )
+            
+            # Save presentation
+            prs.save(output_path)
+            print(f"\n✅ Professional presentation saved: {output_path}")
+            print(f"📊 Total slides: {build_results['total_slides']}")
+            print(f"🤖 AI features used: {len(build_results['ai_features_used'])}")
+            
+            if build_results['errors']:
+                print(f"⚠️  Errors encountered: {len(build_results['errors'])}")
+                for error in build_results['errors']:
+                    print(f"   - {error}")
+            
+            return {
+                'success': True,
+                'output_path': output_path,
+                'slides_created': build_results['total_slides'],
+                'template_used': template_name,
+                'user_tier': self.user_tier,
+                'ai_features_used': build_results['ai_features_used'],
+                'presentation_type': 'professional_7_slide',
+                'errors': build_results['errors']
+            }
+            
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
             return {
                 'success': False,
                 'error': str(e)
