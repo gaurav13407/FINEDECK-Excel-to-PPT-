@@ -3,6 +3,7 @@
 """
 
 import pandas as pd 
+import numpy as np
 from typing import Tuple,Optional,List
 
 
@@ -14,15 +15,22 @@ def detect_chart_type(df:pd.DataFrame,x_col:Optional[str]=None,y_cols:Optional[s
     
     # Handle financial statements where column names are numbers (quarters/years)
     # and first column is metric names
-    numeric_col_names = [col for col in df.columns if isinstance(col, (int, float))]
+    numeric_col_names = [str(col) for col in df.columns if isinstance(col, (int, float, np.int64, np.float64))]
     if len(numeric_col_names) > 0 and df.shape[1] >= 2:
         # This is likely a financial statement (rows=metrics, columns=periods)
-        # Skip for now as it needs transposing
-        return None, {}
+        # First column should be text (metric names), rest are numeric periods
+        first_col = str(df.columns[0])  # Convert to string
+        
+        # Use first column as categories, numeric columns as series
+        return 'line', {
+            'x_col': first_col,  # Use first column as category (metric names)
+            'y_cols': numeric_col_names[:3],  # Use up to 3 numeric columns (years/quarters)
+            'title': f'Financial Metrics Trend'
+        }
 
-    # Get Nummerics and categorical columns
-    numeric_cols=df.select_dtypes(include=['int64','float64']).columns.tolist()
-    categotical_cols=df.select_dtypes(include=['object','string']).columns.tolist()
+    # Get Nummerics and categorical columns - CONVERT ALL COLUMN NAMES TO STRINGS
+    numeric_cols = [str(col) for col in df.select_dtypes(include=['int64','float64']).columns.tolist()]
+    categotical_cols = [str(col) for col in df.select_dtypes(include=['object','string']).columns.tolist()]
 
     # CAse 1 : Pie Chart - Part-to-whole with one categgory and one value 
     #Example:Assests Allocation

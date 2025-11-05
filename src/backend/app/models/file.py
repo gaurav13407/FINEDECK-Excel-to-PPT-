@@ -218,10 +218,11 @@ def get_subscription_limits(subscription_plan:str)->Dict[str,Any]:
     """Get limit for user's subscription plan"""
     limits={
         "free": {"monthly_file_limit":1, "monthly_credits_limit":1, "storage_limit_mb":50},
-        "basic": {"monthly_file_limit":7, "monthly_credits_limit":10, "storage_limit_mb":100},
-        "pro": {"monthly_file_limit":15, "monthly_credits_limit":100, "storage_limit_mb":500},
-        "ai": {"monthly_file_limit":9999, "monthly_credits_limit":999999, "storage_limit_mb":5000},
-        "enterprise": {"monthly_file_limit":1000, "monthly_credits_limit":5000, "storage_limit_mb":2000}
+        "basic": {"monthly_file_limit":7, "monthly_credits_limit":7, "storage_limit_mb":100},  # FIXED: Aligned with PPT limit
+        "pro": {"monthly_file_limit":15, "monthly_credits_limit":15, "storage_limit_mb":500},  # FIXED: Aligned with PPT limit
+        "ai": {"monthly_file_limit":9999, "monthly_credits_limit":-1, "storage_limit_mb":5000},  # FIXED: Unlimited (-1)
+        "ai_pro": {"monthly_file_limit":-1, "monthly_credits_limit":-1, "storage_limit_mb":5000},  # Added ai_pro tier
+        "enterprise": {"monthly_file_limit":1000, "monthly_credits_limit":1000, "storage_limit_mb":2000}  # FIXED: Aligned
     }
     # Normalize key (accept enums or strings)
     key = subscription_plan.value if hasattr(subscription_plan, 'value') else str(subscription_plan or '').lower()

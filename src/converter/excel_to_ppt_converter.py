@@ -383,12 +383,18 @@ class ExcelToPPTConverter:
                 chart_width = 5.5
                 chart_height = 5.0
             
-            # Create chart
-            self._add_chart_to_slide(
-                slide, df, chart_type, chart_config,
-                chart_left, chart_top, chart_width, chart_height,
-                template
-            )
+            # Create chart (with fallback if it fails)
+            chart_created = False
+            try:
+                self._add_chart_to_slide(
+                    slide, df, chart_type, chart_config,
+                    chart_left, chart_top, chart_width, chart_height,
+                    template
+                )
+                chart_created = True
+            except Exception as e:
+                print(f"⚠️  Chart creation failed: {e}")
+                print(f"   Continuing with slide creation without chart...")
             
             # AI-generated insights (for AI Pro only)
             if self.can_use_ai_feature('insights') and self.ai_service:
@@ -464,7 +470,7 @@ class ExcelToPPTConverter:
         y_cols = chart_config.get('y_cols', [])
         
         if not x_col or not y_cols:
-            return
+            raise ValueError(f"Invalid chart config: x_col={x_col}, y_cols={y_cols}")
         
         # Get template colors for chart
         chart_colors = []
@@ -501,13 +507,17 @@ class ExcelToPPTConverter:
                 if len(y_cols) >= 2:
                     self._create_scatter_chart(slide, df, y_cols[0], y_cols[1], left, top, width, height, chart_colors)
         except Exception as e:
+            import traceback
             print(f"Error creating {chart_type} chart: {e}")
+            print(f"Traceback: {traceback.format_exc()}")
     
     def _create_pie_chart(self, slide, df, category_col, value_col, left, top, width, height, colors):
         """Create pie chart"""
         chart_data = CategoryChartData()
-        chart_data.categories = df[category_col].astype(str).tolist()
-        chart_data.add_series('Values', df[value_col].fillna(0).tolist())
+        category_col_str = str(category_col)
+        value_col_str = str(value_col)
+        chart_data.categories = df[category_col_str].astype(str).tolist()
+        chart_data.add_series('Values', df[value_col_str].fillna(0).tolist())
         
         chart = slide.shapes.add_chart(
             XL_CHART_TYPE.PIE, Inches(left), Inches(top), Inches(width), Inches(height), chart_data
@@ -522,10 +532,12 @@ class ExcelToPPTConverter:
     def _create_bar_chart(self, slide, df, x_col, y_cols, left, top, width, height, colors):
         """Create bar chart"""
         chart_data = CategoryChartData()
-        chart_data.categories = df[x_col].astype(str).tolist()
+        x_col_str = str(x_col)
+        chart_data.categories = df[x_col_str].astype(str).tolist()
         
         for i, col in enumerate(y_cols[:3]):  # Max 3 series
-            chart_data.add_series(col, df[col].fillna(0).tolist())
+            col_str = str(col)
+            chart_data.add_series(col_str, df[col_str].fillna(0).tolist())
         
         chart = slide.shapes.add_chart(
             XL_CHART_TYPE.BAR_CLUSTERED, Inches(left), Inches(top), Inches(width), Inches(height), chart_data
@@ -540,10 +552,13 @@ class ExcelToPPTConverter:
     def _create_line_chart(self, slide, df, x_col, y_cols, left, top, width, height, colors):
         """Create line chart"""
         chart_data = CategoryChartData()
-        chart_data.categories = df[x_col].astype(str).tolist()
+        # Convert column name to string in case it's numpy type
+        x_col_str = str(x_col)
+        chart_data.categories = df[x_col_str].astype(str).tolist()
         
         for i, col in enumerate(y_cols[:3]):  # Max 3 series
-            chart_data.add_series(col, df[col].dropna().tolist())
+            col_str = str(col)  # Convert to string in case it's numpy type
+            chart_data.add_series(col_str, df[col_str].dropna().tolist())
         
         chart = slide.shapes.add_chart(
             XL_CHART_TYPE.LINE, Inches(left), Inches(top), Inches(width), Inches(height), chart_data
@@ -558,10 +573,12 @@ class ExcelToPPTConverter:
     def _create_column_chart(self, slide, df, x_col, y_cols, left, top, width, height, colors):
         """Create column chart"""
         chart_data = CategoryChartData()
-        chart_data.categories = df[x_col].astype(str).tolist()
+        x_col_str = str(x_col)
+        chart_data.categories = df[x_col_str].astype(str).tolist()
         
         for i, col in enumerate(y_cols[:3]):  # Max 3 series
-            chart_data.add_series(col, df[col].fillna(0).tolist())
+            col_str = str(col)
+            chart_data.add_series(col_str, df[col_str].fillna(0).tolist())
         
         chart = slide.shapes.add_chart(
             XL_CHART_TYPE.COLUMN_CLUSTERED, Inches(left), Inches(top), Inches(width), Inches(height), chart_data
@@ -577,11 +594,14 @@ class ExcelToPPTConverter:
         """Create scatter chart"""
         from pptx.chart.data import XyChartData
         
+        x_col_str = str(x_col)
+        y_col_str = str(y_col)
+        
         chart_data = XyChartData()
         series = chart_data.add_series('Data')
         
-        for _, row in df[[x_col, y_col]].dropna().iterrows():
-            series.add_data_point(float(row[x_col]), float(row[y_col]))
+        for _, row in df[[x_col_str, y_col_str]].dropna().iterrows():
+            series.add_data_point(float(row[x_col_str]), float(row[y_col_str]))
         
         chart = slide.shapes.add_chart(
             XL_CHART_TYPE.XY_SCATTER, Inches(left), Inches(top), Inches(width), Inches(height), chart_data

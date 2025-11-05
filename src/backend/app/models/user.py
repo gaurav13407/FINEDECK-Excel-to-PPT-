@@ -83,7 +83,8 @@ class SubscriptionPlan(str,Enum):
     FREE="free"
     BASIC="basic"
     PRO="pro"
-    ENTERPRISE="enterprise"
+    AI_PRO="ai_pro"  # Updated from ENTERPRISE to match our tier naming
+    ENTERPRISE="enterprise"  # Keep for backward compatibility
 
 class SubscriptionStatus(str,Enum):
     ACTIVE="active"
@@ -263,8 +264,15 @@ PLAN_CONFIGS={
     SubscriptionPlan.FREE: {
         "price": 0.00,
         "presentations_limit": 1,
-        "ai_features": False,
-        "monthly_credits_limit": 1,
+        "ai_features": [],
+        "ai_titles": False,
+        "ai_template_selection": False,
+        "ai_summaries": False,
+        "ai_insights": False,
+        "ai_layout": False,
+        "ai_chart_recommendations": False,
+        "monthly_credits_limit": 1,  # Aligned with PPT limit (1 credit = 1 PPT)
+        "max_sheets": 1,
         "template_access": {
             "basic_templates": True,
             "professional_templates": False,
@@ -273,15 +281,21 @@ PLAN_CONFIGS={
             "custom_template_upload": False,
             "template_upload": False
         },
-
         "name": "Free Plan",
-        "features": ["1 presentation/month", "basic templates"],
+        "features": ["1 presentation/month", "Basic template only", "Single sheet support", "No AI features"],
     },
     SubscriptionPlan.BASIC:{
         "price":25.00,
         "presentations_limit":7,
-        "ai_features":False,
-        "monthly_credits_limit":10,
+        "ai_features":["title"],
+        "ai_titles": True,
+        "ai_template_selection": False,
+        "ai_summaries": False,
+        "ai_insights": False,
+        "ai_layout": False,
+        "ai_chart_recommendations": False,
+        "monthly_credits_limit":7,  # FIXED: Aligned with PPT limit (7 credits = 7 PPTs)
+        "max_sheets": 5,
         "template_access":{
             "basic_templates":True,
             "professional_templates":False,
@@ -290,15 +304,21 @@ PLAN_CONFIGS={
             "custom_template_upload":False,
             "template_upload":False
         },
-
         "name":"Basic Plan",
-        "features":["7 presentations/month", "basic templates", "standard processing"],
+        "features":["7 presentations/month", "Basic template", "AI-generated titles", "Multi-sheet support (5 max)", "Standard processing"],
     },
     SubscriptionPlan.PRO:{
-        "price":49.99,
+        "price":49.00,
         "presentations_limit":15,
-        "ai_features":False,
-        "monthly_credits_limit":50,
+        "ai_features":["title", "template_selection"],
+        "ai_titles": True,
+        "ai_template_selection": True,
+        "ai_summaries": False,
+        "ai_insights": False,
+        "ai_layout": False,
+        "ai_chart_recommendations": False,
+        "monthly_credits_limit":15,  # FIXED: Aligned with PPT limit (15 credits = 15 PPTs)
+        "max_sheets": 20,
         "template_access":{
             "basic_templates":True,
             "professional_templates":True,
@@ -308,13 +328,20 @@ PLAN_CONFIGS={
             "template_upload":False
         },
         "name":"Pro Plan",
-        "features":["15 presentations/month", "basic+professional templates", "faster processing"],
+        "features":["15 presentations/month", "All 10 professional templates", "AI titles + template selection", "Multi-sheet support (20 max)", "Faster processing"],
     },
-    SubscriptionPlan.ENTERPRISE:{
-        "price":99.99,
-        "presentations_limit":1000,
-        "ai_features":True,
-        "monthly_credits_limit":1000,
+    SubscriptionPlan.AI_PRO:{
+        "price":99.00,
+        "presentations_limit":-1,  # Unlimited
+        "ai_features":["title", "summary", "insights", "template_selection", "layout", "chart_type"],
+        "ai_titles": True,
+        "ai_template_selection": True,
+        "ai_summaries": True,
+        "ai_insights": True,
+        "ai_layout": True,
+        "ai_chart_recommendations": True,
+        "monthly_credits_limit":-1,  # FIXED: Unlimited (was 1000, now -1 to match unlimited PPTs)
+        "max_sheets": -1,  # Unlimited
         "template_access":{
             "basic_templates":True,
             "professional_templates":True,
@@ -323,8 +350,31 @@ PLAN_CONFIGS={
             "custom_template_upload":True,
             "template_upload":True
         },
-        "name":"AI Power Plan",
-        "features":["100 presentations/month"," all templates", "AI features"," priority support"]
+        "name":"AI Pro Plan",
+        "features":["Unlimited presentations", "All 10 professional templates", "All 6 AI features", "Unlimited sheets", "AI-generated titles", "AI summaries", "AI insights (5 bullets)", "AI layout optimization", "AI chart recommendations", "Priority support"]
+    },
+    SubscriptionPlan.ENTERPRISE:{
+        "price":99.99,
+        "presentations_limit":1000,
+        "ai_features":["title", "summary", "insights", "template_selection", "layout", "chart_type"],
+        "ai_titles": True,
+        "ai_template_selection": True,
+        "ai_summaries": True,
+        "ai_insights": True,
+        "ai_layout": True,
+        "ai_chart_recommendations": True,
+        "monthly_credits_limit":1000,  # Aligned with PPT limit (1000 credits = 1000 PPTs)
+        "max_sheets": -1,
+        "template_access":{
+            "basic_templates":True,
+            "professional_templates":True,
+            "premium_templates":True,
+            "custom_templates":True,
+            "custom_template_upload":True,
+            "template_upload":True
+        },
+        "name":"Enterprise Plan (Legacy)",
+        "features":["1000 presentations/month", "All templates", "All AI features", "Priority support"]
     },
 }
 

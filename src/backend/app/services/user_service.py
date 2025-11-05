@@ -172,18 +172,21 @@ async def upgrade_subscription(user_id:str,new_plan:SubscriptionPlan)->bool:
     user=await get_user_by_id(user_id)
     if not user:
         return False
+    # FIXED: Aligned credits with PPT limits (1 credit = 1 PPT)
     plan_credits={
         SubscriptionPlan.FREE:1,
-        SubscriptionPlan.BASIC:20,
-        SubscriptionPlan.PRO:100,
-        SubscriptionPlan.ENTERPRISE:500
+        SubscriptionPlan.BASIC:7,  # FIXED: Was 20, now 7 to match PPT limit
+        SubscriptionPlan.PRO:15,  # FIXED: Was 100, now 15 to match PPT limit
+        SubscriptionPlan.AI_PRO:-1,  # FIXED: Added AI_PRO with unlimited (-1)
+        SubscriptionPlan.ENTERPRISE:1000  # FIXED: Was 500, now 1000 to match PPT limit
     }
     
     plan_prices={
         SubscriptionPlan.FREE: 0.0,
         SubscriptionPlan.BASIC: 25.0,
-        SubscriptionPlan.PRO: 50.0,
-        SubscriptionPlan.ENTERPRISE: 100.0
+        SubscriptionPlan.PRO: 49.0,  # FIXED: Was 50.0, now 49.0 to match tier pricing
+        SubscriptionPlan.AI_PRO: 99.0,  # Added AI_PRO pricing
+        SubscriptionPlan.ENTERPRISE: 99.99  # FIXED: Was 100.0, now 99.99 to match tier pricing
     }
 
     users_collection=get_collection("users")
