@@ -16,19 +16,61 @@
     const cancelBtn = document.getElementById('cancelBtn');
     const messageDiv = document.getElementById('message');
 
-    if (emailText) emailText.textContent = email || 'your email';
+    // For redeem, hide resend button and adjust UI
+    const isRedeem = (purpose === 'redeem');
+    
+    if (isRedeem && resendBtn) {
+        resendBtn.style.display = 'none'; // Hide resend for upgrade codes
+    }
+    
+    // Fetch user email from auth if not provided (for redeem flow)
+    if (isRedeem && !email) {
+        fetchUserEmail();
+    } else {
+        if (emailText) emailText.textContent = email || 'your email';
+    }
+    
     if (purposeText) {
-        const label = purpose === 'login_verification' ? 'Login verification' : purpose === 'redeem' ? 'Redeem code' : 'Email verification';
+        const label = purpose === 'login_verification' ? 'Login verification' : purpose === 'redeem' ? 'Redeem Upgrade Code' : 'Email verification';
         purposeText.textContent = label + (plan ? ` — ${plan}` : '');
     }
 
     // Show code format info to the user
-    const codeInfo = 'Code format: 8 characters (A-Z and digits 2-9), displayed as XXXX-XXXX (9 chars including the hyphen).';
+    const codeInfo = isRedeem 
+        ? 'Enter your upgrade code (format: PLAN-XXXXXXXXXXXX, e.g. AI_PRO-XUPGIQ97OEOE)'
+        : 'Code format: 8 characters (A-Z and digits 2-9), displayed as XXXX-XXXX (9 chars including the hyphen).';
     showMessage(codeInfo, 'info');
 
     function showMessage(text, cls){
         messageDiv.className = cls || '';
         messageDiv.textContent = text;
+    }
+    
+    async function fetchUserEmail() {
+        try {
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                if (emailText) emailText.textContent = 'Please log in';
+                return;
+            }
+            
+            const base = window.apiConfig ? window.apiConfig.API_BASE : '';
+            const url = base ? `${base}/auth/me` : '/api/v1/auth/me';
+            
+            const res = await fetch(url, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (res.ok) {
+                const data = await res.json();
+                const userEmail = data.email || 'your email';
+                if (emailText) emailText.textContent = userEmail;
+                return userEmail;
+            }
+        } catch (err) {
+            console.warn('Failed to fetch user email:', err);
+        }
+        if (emailText) emailText.textContent = 'your email';
     }
 
     async function apiPost(path, body){
@@ -105,12 +147,18 @@
     async function verifyCode() {
         const raw = codeInput.value.trim();
         if (!raw) { showMessage('Enter the verification code', 'error'); return; }
+        
+        // For redeem flow, call redeem endpoint with auth
+        if (isRedeem) {
+            return await redeemUpgradeCode(raw);
+        }
+        
         showMessage('Verifying…');
         // disable buttons during verify
         if (verifyBtn) verifyBtn.disabled = true;
         if (resendBtn) resendBtn.disabled = true;
 
-            const payload = { code: raw, email: email, purpose: purpose };
+        const payload = { code: raw, email: email, purpose: purpose };
         try {
             const base = window.apiConfig ? window.apiConfig.API_BASE : '';
             const url = base ? `${base}/codes/verify` : '/api/v1/codes/verify';
@@ -118,9 +166,7 @@
             if (result && (result.ok || result.success)) {
                 showMessage('Verified successfully! Redirecting…', 'success');
                 setTimeout(() => {
-                    // Redirect based on purpose
-                    if (purpose === 'redeem') window.location.href = 'mainpage.html';
-                    else window.location.href = 'mainpage.html';
+                    window.location.href = 'mainpage.html';
                 }, 900);
             } else {
                 showMessage('Verification completed. Redirecting…', 'success');
@@ -141,10 +187,61 @@
             if (resendBtn) resendBtn.disabled = false;
         }
     }
+    
+    async function redeemUpgradeCode(code) {
+        showMessage('Redeeming upgrade code…');
+        if (verifyBtn) verifyBtn.disabled = true;
+        
+        const token = localStorage.getItem('authToken');
+        if (!token) {
+            showMessage('Please log in to redeem upgrade code.', 'error');
+            if (verifyBtn) verifyBtn.disabled = false;
+            return;
+        }
+        
+        try {
+            const base = window.apiConfig ? window.apiConfig.API_BASE : '';
+            const url = base ? `${base}/upgrades/redeem-upgrade-code` : '/api/v1/upgrades/redeem-upgrade-code';
+            
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ code: code })
+            });
+            
+            const data = await res.json();
+            
+            if (res.ok && data.success) {
+                showMessage(`🎉 Success! Upgraded to ${data.new_plan}. Redirecting…`, 'success');
+                setTimeout(() => {
+                    window.location.href = 'mainpage.html';
+                }, 1500);
+            } else {
+                const msg = data.detail || data.message || 'Failed to redeem code';
+                showMessage(msg, 'error');
+            }
+        } catch (err) {
+            const msg = err.body?.detail || err.message || 'Network error';
+            showMessage('Redeem failed: ' + msg, 'error');
+        } finally {
+            if (verifyBtn) verifyBtn.disabled = false;
+        }
+    }
 
     // Format code input: uppercase, allow A-Z and digits 2-9, auto-insert hyphen after 4 characters
     function formatCodeInput(value) {
         if (!value) return '';
+        
+        // For redeem (upgrade codes), allow much longer codes with hyphens/underscores
+        if (isRedeem) {
+            // Just uppercase and allow A-Z, 0-9, hyphens, underscores
+            return value.toUpperCase().replace(/[^A-Z0-9\-_]/g, '');
+        }
+        
+        // Standard verification code format
         // remove non-alphanumeric and hyphen
         let cleaned = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
         // keep only characters from allowed alphabet (A-Z and 2-9)
@@ -169,8 +266,16 @@
     }
 
     if (codeInput) {
-        // Ensure maxlength matches pattern (9 including hyphen)
-        codeInput.setAttribute('maxlength', '9');
+        // Set maxlength based on purpose
+        if (isRedeem) {
+            codeInput.setAttribute('maxlength', '30'); // Upgrade codes are longer
+            codeInput.setAttribute('placeholder', 'AI_PRO-XUPGIQ97OEOE');
+            codeInput.classList.add('redeem'); // Add CSS class for styling
+        } else {
+            codeInput.setAttribute('maxlength', '9');
+            codeInput.setAttribute('placeholder', 'XXXX-XXXX');
+        }
+        
         codeInput.addEventListener('input', handleInputFormat);
         codeInput.addEventListener('paste', (ev)=>{
             setTimeout(()=> handleInputFormat({ target: codeInput }), 0);
@@ -182,8 +287,8 @@
     if (verifyBtn) verifyBtn.addEventListener('click', (e)=>{ e.preventDefault(); verifyCode(); });
     if (cancelBtn) cancelBtn.addEventListener('click', (e)=>{ e.preventDefault(); window.location.href = 'mainpage.html'; });
 
-    // auto-send code when page opens (if email provided)
-    if (email) {
+    // auto-send code when page opens (if email provided) - but NOT for redeem
+    if (email && !isRedeem) {
         // slight delay for UX
         setTimeout(() => sendCode(), 450);
     }

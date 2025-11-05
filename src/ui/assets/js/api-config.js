@@ -43,6 +43,14 @@ class APIConfig {
             conversions: {
                 convert: `${this.API_BASE}/conversions/convert`,
                 templates: `${this.API_BASE}/conversions/templates`
+            },
+            
+            // Upgrade code endpoints
+            upgrades: {
+                redeem: `${this.API_BASE}/upgrades/redeem-upgrade-code`,
+                myCodes: `${this.API_BASE}/upgrades/my-upgrade-codes`,
+                generate: `${this.API_BASE}/upgrades/generate-upgrade-code`,
+                allCodes: `${this.API_BASE}/upgrades/admin/all-upgrade-codes`
             }
         };
         

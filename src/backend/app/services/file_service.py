@@ -48,9 +48,14 @@ async def validate_file_upload(user_id:str,filename:str,file_size:int,
         if file_size>MAX_FILE_SIZE:
             return False,f"File size exceeds the maximum limit of {MAX_FILE_SIZE/(1024*1024)} MB."
         
-        user_plan=user.subscription.plan if hasattr(user.subscription.plan,"value")else user.subscription.plan
-        if not validate_template_access(template_category,user_plan):
-            return False,f"Template category {template_category.value} not available for{user_plan} plan."
+        # Extract plan value properly (handle both enum and string)
+        user_plan = user.subscription.plan
+        if hasattr(user_plan, "value"):
+            user_plan = user_plan.value  # Extract value from enum
+        user_plan = str(user_plan).lower()  # Normalize to lowercase string
+        
+        if not validate_template_access(template_category, user_plan):
+            return False, f"Template category {template_category.value} not available for {user_plan} plan."
         
         limits=get_subscription_limits(user_plan)
         files_collection=get_collection("files")
@@ -60,8 +65,11 @@ async def validate_file_upload(user_id:str,filename:str,file_size:int,
             "user_id":ObjectId(user_id),
             "created_at":{"$gte":current_month_start}
         })
-        if monthly_file_count>=limits["monthly_file_limit"]:
-            return False,f"Monthly file limit reached({limits['monthly_file_limit']}files)"
+        
+        # Check if limit is -1 (unlimited) before comparing
+        file_limit = limits["monthly_file_limit"]
+        if file_limit != -1 and monthly_file_count >= file_limit:
+            return False,f"Monthly file limit reached({file_limit} files)"
         return True,"File upload validated successfully."
     except Exception as e:
         return False,f"Validation error:{e}"

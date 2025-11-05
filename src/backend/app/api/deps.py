@@ -164,8 +164,13 @@ def require_credits(required_credits: int):
         current_user: UserInDB = Depends(get_current_active_user)
     ) -> UserInDB:
         """Require minimum credits"""
-        remaining_credits = (current_user.subscription.monthly_credits_limit - 
-                            current_user.subscription.monthly_credits_used)
+        credit_limit = current_user.subscription.monthly_credits_limit
+        
+        # Check if unlimited credits (-1 or very high number like 200+)
+        if credit_limit == -1 or credit_limit >= 200:
+            return current_user  # Unlimited, skip check
+        
+        remaining_credits = credit_limit - current_user.subscription.monthly_credits_used
         
         if remaining_credits < required_credits:
             raise HTTPException(

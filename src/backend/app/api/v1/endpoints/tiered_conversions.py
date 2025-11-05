@@ -453,3 +453,141 @@ def get_upgrade_options(current_tier: str) -> List[Dict[str, Any]]:
             })
     
     return upgrades
+
+
+@router.post("/test-all-tiers")
+async def test_all_tiers_conversion(
+    request: Request,
+    file: UploadFile = File(...),
+    presentation_title: Optional[str] = Form(None),
+    current_user: UserInDB = Depends(get_current_active_user)
+):
+    """
+    Test endpoint: Generate presentations for ALL tiers (FREE, BASIC, PRO, AI_PRO)
+    
+    This creates 4 separate presentations with different features:
+    - FREE: Basic 6-slide presentation
+    - BASIC: 7 slides with Executive Summary
+    - PRO: 7 slides with enhanced charts and templates
+    - AI_PRO: 8 slides with all features including AI insights
+    
+    Returns a ZIP file containing all 4 presentations
+    """
+    import zipfile
+    
+    try:
+        # Validate file type
+        if not file.filename.lower().endswith(('.xlsx', '.xls', '.csv')):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="File must be an Excel file (.xlsx, .xls) or CSV file"
+            )
+        
+        # Save uploaded file temporarily
+        with tempfile.NamedTemporaryFile(delete=False, suffix=Path(file.filename).suffix) as tmp_excel:
+            content = await file.read()
+            tmp_excel.write(content)
+            excel_path = tmp_excel.name
+        
+        # Create temp directory for all presentations
+        temp_dir = tempfile.mkdtemp()
+        presentations = []
+        
+        # Generate presentation for each tier
+        tiers_to_test = ["free", "basic", "pro", "ai_pro"]
+        
+        for tier in tiers_to_test:
+            try:
+                # Create output path for this tier
+                tier_name = tier.upper().replace("_", " ")
+                output_filename = f"{Path(file.filename).stem}_{tier.upper()}_Tier.pptx"
+                output_path = os.path.join(temp_dir, output_filename)
+                
+                print(f"\n{'='*80}")
+                print(f"📊 Generating {tier_name} Tier Presentation")
+                print(f"{'='*80}")
+                
+                # Convert with tier-specific features
+                result = convert_excel_to_ppt(
+                    excel_path=excel_path,
+                    output_path=output_path,
+                    user_tier=tier,
+                    template_name=None,  # Use default for each tier
+                    presentation_title=presentation_title or Path(file.filename).stem,
+                    user_ppt_count=0  # Testing mode, no limits
+                )
+                
+                if result['success']:
+                    presentations.append({
+                        'tier': tier,
+                        'path': output_path,
+                        'filename': output_filename,
+                        'slides': result.get('slides_created', 0),
+                        'template': result.get('template_used'),
+                        'ai_features': result.get('ai_features_used', [])
+                    })
+                    print(f"✅ {tier_name} Tier: {result.get('slides_created')} slides created")
+                else:
+                    print(f"❌ {tier_name} Tier: Failed - {result.get('error')}")
+                    
+            except Exception as e:
+                print(f"❌ Error generating {tier} tier: {str(e)}")
+                continue
+        
+        # Create ZIP file with all presentations
+        zip_path = os.path.join(temp_dir, f"{Path(file.filename).stem}_ALL_TIERS.zip")
+        
+        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            for ppt in presentations:
+                zipf.write(ppt['path'], ppt['filename'])
+        
+        # Clean up input file
+        if os.path.exists(excel_path):
+            os.unlink(excel_path)
+        
+        # Prepare summary response
+        summary = {
+            "total_presentations": len(presentations),
+            "presentations": [
+                {
+                    "tier": p['tier'],
+                    "filename": p['filename'],
+                    "slides_created": p['slides'],
+                    "template_used": p['template'],
+                    "ai_features": p['ai_features']
+                }
+                for p in presentations
+            ]
+        }
+        
+        print(f"\n{'='*80}")
+        print(f"✅ All Tiers Generated Successfully!")
+        print(f"{'='*80}")
+        print(f"📦 Total Presentations: {len(presentations)}")
+        print(f"📁 ZIP File: {zip_path}")
+        
+        # Return the ZIP file
+        return FileResponse(
+            path=zip_path,
+            filename=f"{Path(file.filename).stem}_ALL_TIERS.zip",
+            media_type='application/zip',
+            headers={
+                "X-Total-Presentations": str(len(presentations)),
+                "X-Summary": str(summary)
+            }
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        # Clean up temp files
+        if 'excel_path' in locals() and os.path.exists(excel_path):
+            os.unlink(excel_path)
+        if 'temp_dir' in locals():
+            import shutil
+            shutil.rmtree(temp_dir, ignore_errors=True)
+        
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Test conversion failed: {str(e)}"
+        )

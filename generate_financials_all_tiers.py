@@ -49,7 +49,12 @@ def prepare_financials_data():
         
         summary_product['Profit_Margin_%'] = (summary_product['Profit'] / summary_product['Sales'] * 100).round(2)
         summary_product['Market_Share_%'] = (summary_product['Sales'] / summary_product['Sales'].sum() * 100).round(2)
-        summary_product.columns = ['Ticker', 'Sales', 'Profit', 'Units_Sold', 'COGS', 'Return_1Y_%', 'MarketCap']
+        
+        # Use Sales values as MarketCap (already in millions from the large sales numbers)
+        # This will give us proper billion/million scale for display
+        summary_product['MarketCap_Value'] = summary_product['Sales']
+        
+        summary_product.columns = ['Ticker', 'Sales', 'Profit', 'Units_Sold', 'COGS', 'Return_1Y_%', 'Market_Share_%', 'MarketCap']
         summary_product['Name'] = summary_product['Ticker'] + ' Product'
         summary_product['Sector'] = 'Consumer Goods'
         summary_product['TrailingPE'] = (summary_product['Sales'] / summary_product['Profit']).round(2)

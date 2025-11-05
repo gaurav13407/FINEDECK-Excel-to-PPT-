@@ -77,13 +77,16 @@ class SmartChartAnalyzer:
                 'limit': 8
             })
         
-        # 3. Pie Chart: Category distribution
+        # 3. Horizontal Bar Chart: Category distribution (better than pie)
         if 'Sector' in df.columns:
             charts['comparison'].append({
-                'type': 'pie',
+                'type': 'bar_horizontal',
                 'title': 'Distribution by Sector',
-                'category_col': 'Sector',
-                'value_col': value_col if value_col in df.columns else 'Sales'
+                'x_col': 'Sector',
+                'y_col': value_col if value_col in df.columns else 'Sales',
+                'sort': 'desc',
+                'limit': 10,
+                'format': 'currency' if value_col in ['Sales', 'Profit', 'MarketCap'] else 'number'
             })
         
         # 4. Scatter Plot: Correlation analysis
@@ -179,29 +182,43 @@ class SmartChartAnalyzer:
 
 
 def format_value(value: float, format_type: str = 'number') -> str:
-    """Format values for display"""
-    if pd.isna(value) or np.isnan(value):
+    """Format values for display with smart scaling"""
+    if pd.isna(value) or (isinstance(value, float) and np.isnan(value)):
         return "N/A"
     
+    # Convert to float if not already
+    try:
+        value = float(value)
+    except:
+        return str(value)
+    
     if format_type == 'currency':
+        # Smart scaling - use appropriate unit
         if abs(value) >= 1e9:
-            return f"${value/1e9:.1f}B"
+            return f"${value/1e9:.2f}B"
         elif abs(value) >= 1e6:
-            return f"${value/1e6:.1f}M"
+            return f"${value/1e6:.2f}M"
         elif abs(value) >= 1e3:
-            return f"${value/1e3:.1f}K"
-        else:
+            return f"${value/1e3:.2f}K"
+        elif abs(value) >= 1:
             return f"${value:.2f}"
+        else:
+            return f"${value:.4f}"
     
     elif format_type == 'percentage':
         return f"{value:.1f}%"
     
     elif format_type == 'number':
-        if abs(value) >= 1e6:
-            return f"{value/1e6:.1f}M"
+        # Smart scaling for numbers
+        if abs(value) >= 1e9:
+            return f"{value/1e9:.2f}B"
+        elif abs(value) >= 1e6:
+            return f"{value/1e6:.2f}M"
         elif abs(value) >= 1e3:
-            return f"{value/1e3:.1f}K"
+            return f"{value/1e3:.2f}K"
+        elif abs(value) >= 1:
+            return f"{value:.2f}"
         else:
-            return f"{value:.0f}"
+            return f"{value:.4f}"
     
     return str(value)

@@ -14,7 +14,7 @@ def test_improved_financials():
     print("="*80)
     
     excel_path = "examples/Company_Data/financials_bundle.xlsx"
-    output_path = "examples/professional_demo/Financials_IMPROVED_AI_PRO.pptx"
+    output_path = "examples/professional_demo/Financials_FINAL_IMPROVED.pptx"
     
     if not os.path.exists(excel_path):
         print(f"❌ Excel file not found: {excel_path}")

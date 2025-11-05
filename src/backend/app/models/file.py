@@ -200,6 +200,7 @@ def validate_template_access(template_category:TemplateCategory,user_subscriptio
         "free":[TemplateCategory.BASIC],
         "basic":[TemplateCategory.BASIC],
         "pro":[TemplateCategory.BASIC,TemplateCategory.PROFESSIONAL],
+        "ai_pro":[TemplateCategory.BASIC,TemplateCategory.PROFESSIONAL,TemplateCategory.PREMIUM,TemplateCategory.CUSTOM],  # FIXED: Added AI_PRO with full access
         "enterprise":[TemplateCategory.BASIC,TemplateCategory.PROFESSIONAL,TemplateCategory.PREMIUM,TemplateCategory.CUSTOM]
     }
     return template_category in access_map.get(user_subscription,[])

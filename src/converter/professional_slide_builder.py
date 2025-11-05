@@ -677,35 +677,46 @@ class ProfessionalSlideBuilder:
             sector_counts = self.summary_df['Sector'].value_counts().reset_index()
             sector_counts.columns = ['Sector', 'Count']
             
-            # Add pie chart with proper legend
-            chart_added = self._add_category_chart(
-                slide, sector_counts,
-                left=Inches(1.5), top=Inches(1.5),
-                width=Inches(7), height=Inches(4)
-            )
+            # Use smart analyzer to get best chart
+            analyzer = SmartChartAnalyzer(self.summary_df, [])
+            recommended_charts = analyzer.get_recommended_charts('comparison')
             
-            # Generate natural language AI insight
-            if self.ai_service and self.user_tier in ['pro', 'ai_pro']:
-                try:
-                    ai_response = self.ai_service.generate_category_insight(sector_counts)
-                    ai_insight = ai_response.get('insight', '')
-                    ai_used = True
-                except Exception as e:
-                    print(f"⚠️  AI category insight failed: {e}")
-                    # Generate natural fallback
-                    top_sector = sector_counts.iloc[0]['Sector']
-                    top_count = int(sector_counts.iloc[0]['Count'])
-                    total = int(sector_counts['Count'].sum())
-                    pct = (top_count / total * 100) if total > 0 else 0
-                    ai_insight = f"{top_sector} shows strong representation with {top_count} companies ({pct:.1f}% market share), demonstrating sector leadership in our portfolio."
+            # Create horizontal bar chart instead of pie (cleaner, easier to read)
+            if recommended_charts:
+                chart_spec = recommended_charts[0]
+                chart_added = self._create_dynamic_chart(
+                    slide, chart_spec, self.summary_df,
+                    left=Inches(1.5), top=Inches(1.5),
+                    width=Inches(7), height=Inches(4)
+                )
             else:
-                # Natural language fallback
+                # Fallback: Add horizontal bar chart (better than pie)
+                chart_spec = {
+                    'type': 'bar_horizontal',
+                    'title': 'Distribution by Sector',
+                    'x_col': 'Sector',
+                    'y_col': 'Count',
+                    'sort': 'desc',
+                    'limit': 10,
+                    'format': 'number'
+                }
+                chart_added = self._create_horizontal_bar_chart(
+                    slide, chart_spec, sector_counts,
+                    left=Inches(1.5), top=Inches(1.5),
+                    width=Inches(7), height=Inches(4)
+                )
+            
+            # Generate simple data insight (no AI fluff)
+            try:
                 if not sector_counts.empty:
                     top_sector = sector_counts.iloc[0]['Sector']
                     top_count = int(sector_counts.iloc[0]['Count'])
                     total = int(sector_counts['Count'].sum())
                     pct = (top_count / total * 100) if total > 0 else 0
-                    ai_insight = f"{top_sector} shows strong representation with {top_count} companies ({pct:.1f}% market share), demonstrating sector leadership in our portfolio."
+                    ai_insight = f"{top_sector}: {top_count} out of {total} entities ({pct:.1f}%)"
+            except Exception as e:
+                print(f"⚠️  Category insight failed: {e}")
+                ai_insight = "Sector distribution analysis complete"
             
             # Add insight text at bottom with better styling
             if ai_insight:
@@ -810,13 +821,12 @@ class ProfessionalSlideBuilder:
                                   sheets_data: List[Tuple[str, pd.DataFrame]],
                                   template: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Create AI insights slide with market intelligence and predictions
+        Create data insights slide with key findings from the dataset
         
-        💼 Slide 7 — AI Insights & Predictions
-        - Natural language AI-generated insights
-        - Market analysis and trends
-        - Anomaly detection
-        - Forward-looking predictions
+        � Slide 7 — Key Data Insights
+        - Top performers based on actual data
+        - Notable observations from the data
+        - Data-driven recommendations
         """
         slide = prs.slides.add_slide(prs.slide_layouts[6])
         
@@ -829,22 +839,26 @@ class ProfessionalSlideBuilder:
         # Title
         title_box = slide.shapes.add_textbox(Inches(0.5), Inches(0.4), Inches(9), Inches(0.6))
         title_frame = title_box.text_frame
-        title_frame.text = "💼 AI Insights & Market Predictions"
+        title_frame.text = "� Key Data Insights"
         title_para = title_frame.paragraphs[0]
         title_para.font.size = Pt(32)
         title_para.font.bold = True
         title_para.font.color.rgb = RGBColor(*FINANCE_THEME['colors']['navy'])
         
-        # Generate AI insights
+        # Generate simple data-driven insights (NO AI, just facts)
         insights_data = {
             'top_performers': [],
-            'anomalies': [],
-            'predictions': []
+            'observations': [],
+            'recommendations': []
         }
         
         ai_used = False
         
-        if self.ai_service:
+        # Generate insights directly from data
+        insights_data = self._generate_simple_data_insights(all_data, sheets_data)
+        
+        # Fallback if needed
+        if not insights_data or not any(insights_data.values()):
             try:
                 data_summary = self._prepare_data_summary(all_data, sheets_data)
                 ai_response = self.ai_service.generate_advanced_insights(data_summary)
@@ -856,75 +870,46 @@ class ProfessionalSlideBuilder:
         else:
             insights_data = self._generate_fallback_ai_insights(all_data, sheets_data)
         
-        # Layout: 3 sections vertically
-        sections = [
-            {
-                'icon': '📈',
-                'title': 'Top 3 Performers',
-                'content': insights_data.get('top_performers', ['No data available']),
-                'top': Inches(1.5),
-                'color': RGBColor(46, 125, 50)  # Green
-            },
-            {
-                'icon': '⚠️',
-                'title': 'Anomalies Detected',
-                'content': insights_data.get('anomalies', ['No anomalies detected']),
-                'top': Inches(3.3),
-                'color': RGBColor(230, 81, 0)  # Orange
-            },
-            {
-                'icon': '💡',
-                'title': 'Predicted Trends',
-                'content': insights_data.get('predictions', ['Insufficient data for prediction']),
-                'top': Inches(5.1),
-                'color': RGBColor(25, 118, 210)  # Blue
-            }
-        ]
+        # Simple single-section layout with all insights in one clean list
+        # Combine all insights into one list
+        all_insights = []
+        all_insights.extend(insights_data.get('top_performers', []))
+        all_insights.extend(insights_data.get('observations', []))
+        all_insights.extend(insights_data.get('recommendations', []))
         
-        for section in sections:
-            # Add colored accent bar
-            accent_bar = slide.shapes.add_shape(
-                1,  # Rectangle
-                Inches(0.8), section['top'], Inches(0.15), Inches(1.5)
-            )
-            accent_bar.fill.solid()
-            accent_bar.fill.fore_color.rgb = section['color']
-            accent_bar.line.fill.background()
+        if not all_insights:
+            all_insights = ['No data insights available']
+        
+        # Add decorative background box
+        bg_box = slide.shapes.add_shape(
+            1,  # Rectangle
+            Inches(0.8), Inches(1.5), Inches(8.4), Inches(5.0)
+        )
+        bg_box.fill.solid()
+        bg_box.fill.fore_color.rgb = RGBColor(248, 249, 250)  # Light gray background
+        bg_box.line.width = Pt(2)
+        bg_box.line.color.rgb = RGBColor(33, 150, 243)  # Blue border
+        
+        # Add insights as clean bullet points
+        insights_box = slide.shapes.add_textbox(Inches(1.2), Inches(2.0), Inches(7.6), Inches(4.2))
+        insights_frame = insights_box.text_frame
+        insights_frame.word_wrap = True
+        insights_frame.margin_left = Inches(0.2)
+        
+        for i, insight in enumerate(all_insights[:10]):  # Max 10 insights
+            if i == 0:
+                p = insights_frame.paragraphs[0]
+            else:
+                p = insights_frame.add_paragraph()
             
-            # Background box for section
-            bg_box = slide.shapes.add_shape(
-                1,  # Rectangle
-                Inches(1.0), section['top'], Inches(8), Inches(1.5)
-            )
-            bg_box.fill.solid()
-            bg_box.fill.fore_color.rgb = RGBColor(250, 250, 250)
-            bg_box.line.width = Pt(1)
-            bg_box.line.color.rgb = RGBColor(220, 220, 220)
-            
-            # Icon + Title
-            header_box = slide.shapes.add_textbox(Inches(1.2), section['top'] + Inches(0.1), Inches(7.5), Inches(0.4))
-            header_frame = header_box.text_frame
-            header_frame.text = f"{section['icon']} {section['title']}"
-            header_para = header_frame.paragraphs[0]
-            header_para.font.size = Pt(22)
-            header_para.font.bold = True
-            header_para.font.color.rgb = section['color']
-            
-            # Content
-            content_box = slide.shapes.add_textbox(Inches(1.4), section['top'] + Inches(0.5), 
-                                                   Inches(7.3), Inches(0.9))
-            content_frame = content_box.text_frame
-            content_frame.word_wrap = True
-            
-            for i, item in enumerate(section['content'][:3]):  # Max 3 items per section
-                if i == 0:
-                    p = content_frame.paragraphs[0]
-                else:
-                    p = content_frame.add_paragraph()
-                p.text = f"→ {item}"
-                p.font.size = Pt(14)
-                p.space_after = Pt(3)
-                p.line_spacing = 1.2
+            p.text = f"✓ {insight}"
+            p.font.size = Pt(16)
+            p.font.name = 'Calibri'
+            p.font.color.rgb = RGBColor(*FINANCE_THEME['colors']['charcoal'])
+            p.space_after = Pt(12)
+            p.space_before = Pt(5)
+            p.level = 0
+            p.line_spacing = 1.3
         
         return {
             'slide_type': 'ai_insights',
@@ -1185,13 +1170,28 @@ class ProfessionalSlideBuilder:
             df = self.summary_df.copy()
             
             try:
-                # KPI 1: Total Market Cap
+                # KPI 1: Total Market Cap (with smart formatting - auto units)
                 if 'MarketCap' in df.columns:
                     total_market_cap = df['MarketCap'].sum()
                     if pd.notna(total_market_cap) and not np.isnan(total_market_cap):
-                        market_cap_b = total_market_cap / 1e9
-                        kpis['Total Market Cap'] = {
-                            'value': f"${market_cap_b:.1f}B",
+                        # Use smart formatting that automatically shows Billions, Millions, or Thousands
+                        formatted_value = format_value(total_market_cap, 'currency')
+                        
+                        # Determine unit for display label
+                        if total_market_cap >= 1e9:
+                            unit_label = "Billions"
+                        elif total_market_cap >= 1e6:
+                            unit_label = "Millions"
+                        elif total_market_cap >= 1e3:
+                            unit_label = "Thousands"
+                        else:
+                            unit_label = ""
+                        
+                        # Add unit to the label for clarity
+                        label = f"Total Market Cap ({unit_label})" if unit_label else "Total Market Cap"
+                        
+                        kpis[label] = {
+                            'value': formatted_value,
                             'change': '↗️ +12.5%'
                         }
                 
@@ -1420,15 +1420,36 @@ class ProfessionalSlideBuilder:
             if 'Ticker' not in summary_df.columns or 'MarketCap' not in summary_df.columns:
                 return False
             
-            # Prepare data
+            # Prepare data with smart scaling
             chart_data = CategoryChartData()
             
             # Get companies and MarketCap values
             tickers = summary_df['Ticker'].astype(str).tolist()
-            marketcaps = (summary_df['MarketCap'] / 1e9).fillna(0).tolist()  # Convert to billions
+            marketcaps_raw = summary_df['MarketCap'].fillna(0).tolist()
+            
+            # Determine best scale based on values
+            max_value = max(marketcaps_raw) if marketcaps_raw else 0
+            
+            if max_value >= 1e9:
+                # Use billions
+                marketcaps = [(val / 1e9) for val in marketcaps_raw]
+                unit = "Billions"
+            elif max_value >= 1e6:
+                # Use millions
+                marketcaps = [(val / 1e6) for val in marketcaps_raw]
+                unit = "Millions"
+            elif max_value >= 1e3:
+                # Use thousands
+                marketcaps = [(val / 1e3) for val in marketcaps_raw]
+                unit = "Thousands"
+            else:
+                # Use actual values
+                marketcaps = marketcaps_raw
+                unit = ""
             
             chart_data.categories = tickers
-            chart_data.add_series('Market Cap (B)', marketcaps)
+            series_label = f'Market Cap ({unit})' if unit else 'Market Cap'
+            chart_data.add_series(series_label, marketcaps)
             
             # Add bar chart
             chart = slide.shapes.add_chart(
@@ -1437,7 +1458,7 @@ class ProfessionalSlideBuilder:
             
             # Set chart title
             chart.has_title = True
-            chart.chart_title.text_frame.text = "Market Capitalization Comparison"
+            chart.chart_title.text_frame.text = f"Market Capitalization Comparison ({unit})" if unit else "Market Capitalization Comparison"
             title_para = chart.chart_title.text_frame.paragraphs[0]
             title_para.font.size = Pt(16)
             title_para.font.bold = True
@@ -1834,6 +1855,68 @@ class ProfessionalSlideBuilder:
         
         return "Category analysis completed"
     
+    def _generate_simple_data_insights(self, all_data: pd.DataFrame, sheets_data: List[Tuple[str, pd.DataFrame]]) -> Dict[str, List[str]]:
+        """
+        Generate simple, factual insights directly from data (NO AI fluff)
+        Just straightforward observations from the numbers
+        """
+        insights = {
+            'top_performers': [],
+            'observations': [],
+            'recommendations': []
+        }
+        
+        try:
+            if hasattr(self, 'summary_df') and self.summary_df is not None and not self.summary_df.empty:
+                df = self.summary_df
+                
+                # TOP PERFORMERS - Just list them with their values
+                if 'Return_1Y_%' in df.columns:
+                    top_3 = df.nlargest(3, 'Return_1Y_%')
+                    for idx, row in top_3.iterrows():
+                        ticker = row.get('Ticker', 'Unknown')
+                        return_val = row.get('Return_1Y_%', 0)
+                        if pd.notna(return_val):
+                            insights['top_performers'].append(
+                                f"{ticker}: {return_val:.1f}% return"
+                            )
+                
+                # OBSERVATIONS - Simple facts from the data
+                total_count = len(df)
+                insights['observations'].append(f"Total entities analyzed: {total_count}")
+                
+                if 'MarketCap' in df.columns:
+                    total_cap = df['MarketCap'].sum()
+                    if pd.notna(total_cap):
+                        formatted_cap = format_value(total_cap, 'currency')
+                        insights['observations'].append(f"Combined value: {formatted_cap}")
+                
+                if 'Sector' in df.columns:
+                    sector_count = df['Sector'].nunique()
+                    top_sector = df['Sector'].value_counts().index[0] if not df['Sector'].value_counts().empty else 'N/A'
+                    insights['observations'].append(f"{sector_count} sectors represented, led by {top_sector}")
+                
+                # RECOMMENDATIONS - Data-driven suggestions
+                if 'Return_1Y_%' in df.columns:
+                    positive_count = (df['Return_1Y_%'] > 0).sum()
+                    pct_positive = (positive_count / total_count * 100) if total_count > 0 else 0
+                    insights['recommendations'].append(f"{pct_positive:.0f}% showing positive performance")
+                
+                if 'TrailingPE' in df.columns:
+                    avg_pe = df['TrailingPE'].mean()
+                    if pd.notna(avg_pe):
+                        insights['recommendations'].append(f"Average P/E ratio: {avg_pe:.1f}x")
+                
+                # Add a diversity note if multiple sectors
+                if 'Sector' in df.columns and df['Sector'].nunique() > 2:
+                    insights['recommendations'].append(f"Portfolio shows good sector diversification")
+        
+        except Exception as e:
+            print(f"⚠️  Simple data insights generation failed: {e}")
+            insights['observations'].append("Data analysis in progress")
+        
+        return insights
+    
     def _generate_fallback_ai_insights(self, all_data: pd.DataFrame, sheets_data: List[Tuple[str, pd.DataFrame]]) -> Dict[str, List[str]]:
         """Generate natural language insights using Summary data (NO nan% bug!)"""
         insights = {
@@ -1860,9 +1943,10 @@ class ProfessionalSlideBuilder:
                         # Check for valid return value (NO NAN%)
                         if pd.notna(return_val) and not np.isnan(return_val):
                             if 'MarketCap' in row and pd.notna(row['MarketCap']):
-                                market_cap_b = row['MarketCap'] / 1e9
+                                # Use smart formatting for market cap
+                                formatted_cap = format_value(row['MarketCap'], 'currency')
                                 insights['top_performers'].append(
-                                    f"{ticker} showed strong momentum with {return_val:.1f}% annual return and ${market_cap_b:.1f}B market cap, demonstrating solid investor confidence."
+                                    f"{ticker} showed strong momentum with {return_val:.1f}% annual return and {formatted_cap} market cap, demonstrating solid investor confidence."
                                 )
                             else:
                                 insights['top_performers'].append(

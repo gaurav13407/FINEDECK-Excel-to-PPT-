@@ -9,7 +9,7 @@
 from fastapi import APIRouter
 
 # Import all v1 endpoint modules (including codes and templates)
-from api.v1.endpoints import auth, users, files, conversions, codes, templates, tiered_conversions
+from api.v1.endpoints import auth, users, files, conversions, codes, templates, tiered_conversions, plan_upgrades
 from api.v1.endpoints import oauth
 
 api_router = APIRouter()
@@ -58,4 +58,10 @@ api_router.include_router(
     tiered_conversions.router,
     prefix="/tiered",
     tags=["tiered-conversions"]
+)
+
+api_router.include_router(
+    plan_upgrades.router,
+    prefix="/upgrades",
+    tags=["plan-upgrades"]
 )
