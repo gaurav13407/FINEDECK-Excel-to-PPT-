@@ -413,34 +413,60 @@ class AdvancedChartBuilder:
             return self._create_fallback_chart(slide, data, x, y, width, height)
     
     def _prepare_category_data(self, data: pd.DataFrame, chart_type: str) -> CategoryChartData:
-        """Prepare data for category-based charts"""
+        """Prepare data for category-based charts with intelligent limits"""
         chart_data = CategoryChartData()
         
         numeric_cols = data.select_dtypes(include=[np.number]).columns
         text_cols = data.select_dtypes(include=['object']).columns
         
-        # Determine categories
-        if len(text_cols) > 0:
-            categories = data[text_cols[0]].head(15).tolist()
-            data_subset = data.head(15)
+        # Intelligent data limits based on chart type
+        if chart_type in ['pie', 'doughnut']:
+            max_items = 6  # Fewer for pie charts (easier to read)
+        elif chart_type in ['bar', 'column']:
+            max_items = 10  # Good balance for bar/column
         else:
-            categories = [f"Item {i+1}" for i in range(min(15, len(data)))]
-            data_subset = data.head(15)
+            max_items = 12  # More for other types
+        
+        # Determine categories and sort by value for better visualization
+        if len(text_cols) > 0 and len(numeric_cols) > 0:
+            # Sort by first numeric column (descending) to show top performers
+            sorted_data = data.sort_values(by=numeric_cols[0], ascending=False)
+            categories = sorted_data[text_cols[0]].head(max_items).tolist()
+            data_subset = sorted_data.head(max_items)
+            
+            # Truncate long category names for readability
+            categories = [str(cat)[:30] + '...' if len(str(cat)) > 30 else str(cat) 
+                         for cat in categories]
+        elif len(numeric_cols) > 0:
+            # No text columns, use generic labels
+            data_subset = data.head(max_items)
+            categories = [f"Item {i+1}" for i in range(len(data_subset))]
+        else:
+            # Fallback
+            categories = ['No Data']
+            data_subset = pd.DataFrame({'Value': [0]})
         
         chart_data.categories = categories
         
         # Add series based on chart type
         if chart_type in ['column_stacked', 'column_stacked_100', 'area_stacked']:
-            # Multiple series
-            for col in numeric_cols[:3]:  # Max 3 series
+            # Multiple series - limit to 3 for clarity
+            for i, col in enumerate(numeric_cols[:3]):
+                # Clean column name
+                clean_name = str(col)[:20]
                 values = data_subset[col].fillna(0).tolist()
-                chart_data.add_series(col, values)
+                # Round values for cleaner display
+                values = [round(float(v), 2) if abs(v) < 1000 else round(float(v), 0) for v in values]
+                chart_data.add_series(clean_name, values)
         else:
             # Single series
             if len(numeric_cols) > 0:
                 col = numeric_cols[0]
+                clean_name = str(col)[:20]
                 values = data_subset[col].fillna(0).tolist()
-                chart_data.add_series(col, values)
+                # Round values for cleaner display
+                values = [round(float(v), 2) if abs(v) < 1000 else round(float(v), 0) for v in values]
+                chart_data.add_series(clean_name, values)
         
         return chart_data
     
@@ -464,31 +490,132 @@ class AdvancedChartBuilder:
         return chart_data
     
     def _apply_chart_styling(self, chart, chart_type: str, title: str = None):
-        """Apply professional styling to chart"""
-        # Title
+        """Apply professional styling to chart with enhanced visuals"""
+        
+        # ============ TITLE STYLING ============
         if title:
             chart.has_title = True
             chart.chart_title.text_frame.text = title
-            chart.chart_title.text_frame.paragraphs[0].font.size = Pt(18)
-            chart.chart_title.text_frame.paragraphs[0].font.bold = True
+            title_para = chart.chart_title.text_frame.paragraphs[0]
+            title_para.font.size = Pt(20)
+            title_para.font.bold = True
+            title_para.font.color.rgb = RGBColor(25, 42, 86)  # Navy blue
         
-        # Legend
+        # ============ LEGEND STYLING ============
+        chart.has_legend = True
         if chart_type not in ['pie', 'doughnut']:
-            chart.has_legend = True
             chart.legend.position = XL_LEGEND_POSITION.BOTTOM
-            chart.legend.font.size = Pt(10)
+            chart.legend.font.size = Pt(11)
         else:
-            chart.has_legend = True
             chart.legend.position = XL_LEGEND_POSITION.RIGHT
-            chart.legend.font.size = Pt(10)
+            chart.legend.font.size = Pt(11)
         
-        # Data labels for pie/doughnut
-        if chart_type in ['pie', 'doughnut']:
+        # Make legend text clearer
+        chart.legend.font.bold = False
+        
+        # ============ DATA LABELS ============
+        try:
             plot = chart.plots[0]
-            plot.has_data_labels = True
-            data_labels = plot.data_labels
-            data_labels.font.size = Pt(10)
-            data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
+            
+            if chart_type in ['pie', 'doughnut']:
+                # Pie/Doughnut: Show percentages
+                plot.has_data_labels = True
+                data_labels = plot.data_labels
+                data_labels.font.size = Pt(11)
+                data_labels.font.bold = True
+                data_labels.font.color.rgb = RGBColor(255, 255, 255)  # White text
+                data_labels.position = XL_LABEL_POSITION.INSIDE_END
+                
+                # Show percentage
+                try:
+                    data_labels.number_format = '0%'
+                    data_labels.show_percentage = True
+                    data_labels.show_value = False
+                except:
+                    pass
+            
+            elif chart_type in ['column', 'bar']:
+                # Bar/Column: Show values on top
+                plot.has_data_labels = True
+                data_labels = plot.data_labels
+                data_labels.font.size = Pt(9)
+                data_labels.font.bold = True
+                data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
+                try:
+                    data_labels.number_format = '#,##0'
+                except:
+                    pass
+        
+        except Exception as e:
+            print(f"   Note: Data labels not fully supported: {e}")
+        
+        # ============ AXIS STYLING ============
+        try:
+            # Category axis (X-axis for column, Y-axis for bar)
+            category_axis = chart.category_axis if hasattr(chart, 'category_axis') else None
+            if category_axis:
+                category_axis.tick_label_position = 'low'
+                category_axis.tick_labels.font.size = Pt(10)
+                category_axis.tick_labels.font.color.rgb = RGBColor(89, 89, 89)
+                
+                # Rotate labels if needed
+                if chart_type == 'column':
+                    try:
+                        category_axis.tick_labels.rotation = -45  # Angle labels for readability
+                    except:
+                        pass
+            
+            # Value axis (Y-axis for column, X-axis for bar)
+            value_axis = chart.value_axis if hasattr(chart, 'value_axis') else None
+            if value_axis:
+                value_axis.tick_labels.font.size = Pt(10)
+                value_axis.tick_labels.font.color.rgb = RGBColor(89, 89, 89)
+                value_axis.tick_labels.number_format = '#,##0'
+                
+                # Show major gridlines for easier reading
+                value_axis.has_major_gridlines = True
+                value_axis.has_minor_gridlines = False
+                
+                # Set visible min to 0 for bar/column charts
+                if chart_type in ['column', 'bar', 'column_stacked']:
+                    try:
+                        value_axis.minimum_scale = 0
+                    except:
+                        pass
+        
+        except Exception as e:
+            print(f"   Note: Axis styling not fully supported: {e}")
+        
+        # ============ SERIES COLORS (Professional palette) ============
+        try:
+            professional_colors = [
+                RGBColor(41, 128, 185),   # Professional Blue
+                RGBColor(39, 174, 96),    # Success Green
+                RGBColor(230, 126, 34),   # Warning Orange
+                RGBColor(231, 76, 60),    # Danger Red
+                RGBColor(142, 68, 173),   # Royal Purple
+                RGBColor(241, 196, 15),   # Gold
+                RGBColor(52, 152, 219),   # Light Blue
+                RGBColor(26, 188, 156),   # Turquoise
+            ]
+            
+            for idx, series in enumerate(chart.series):
+                color = professional_colors[idx % len(professional_colors)]
+                
+                # Apply color to series
+                fill = series.format.fill
+                fill.solid()
+                fill.fore_color.rgb = color
+                
+                # Add smooth lines for line charts
+                if chart_type in ['line', 'line_markers', 'area', 'area_stacked']:
+                    try:
+                        series.smooth = True
+                    except:
+                        pass
+        
+        except Exception as e:
+            print(f"   Note: Series colors not fully applied: {e}")
     
     def _create_fallback_chart(self, slide, data: pd.DataFrame, 
                                x: Inches, y: Inches, width: Inches, height: Inches):
@@ -512,26 +639,67 @@ class AdvancedChartBuilder:
 
 
 # ============================================================================
-# HELPER FUNCTIONS
+# HELPER FUNCTIONS FOR BETTER CHART READABILITY
 # ============================================================================
 
 def format_large_number(value: float) -> str:
-    """Format large numbers with K, M, B suffixes"""
-    if abs(value) >= 1e9:
-        return f"{value/1e9:.1f}B"
-    elif abs(value) >= 1e6:
-        return f"{value/1e6:.1f}M"
-    elif abs(value) >= 1e3:
-        return f"{value/1e3:.1f}K"
-    else:
-        return f"{value:.1f}"
+    """Format large numbers with K, M, B suffixes for cleaner display"""
+    try:
+        value = float(value)
+        if abs(value) >= 1e9:
+            return f"{value/1e9:.1f}B"
+        elif abs(value) >= 1e6:
+            return f"{value/1e6:.1f}M"
+        elif abs(value) >= 1e3:
+            return f"{value/1e3:.1f}K"
+        else:
+            return f"{value:.1f}"
+    except:
+        return str(value)
 
 
 def get_trend_arrow(current: float, previous: float) -> str:
     """Get trend arrow emoji based on change"""
-    if current > previous:
-        return "↗️"
-    elif current < previous:
-        return "↘️"
-    else:
+    try:
+        if current > previous:
+            return "↗️"
+        elif current < previous:
+            return "↘️"
+        else:
+            return "→"
+    except:
         return "→"
+
+
+def calculate_percentage_change(current: float, previous: float) -> str:
+    """Calculate and format percentage change"""
+    try:
+        if previous == 0:
+            return "N/A"
+        change = ((current - previous) / previous) * 100
+        sign = "+" if change > 0 else ""
+        return f"{sign}{change:.1f}%"
+    except:
+        return "N/A"
+
+
+def clean_chart_title(title: str, max_length: int = 50) -> str:
+    """Clean and truncate chart titles for better display"""
+    if not title:
+        return "Data Visualization"
+    
+    title = str(title).strip()
+    if len(title) > max_length:
+        return title[:max_length-3] + "..."
+    return title
+
+
+def round_to_significant(value: float, sig_figs: int = 3) -> float:
+    """Round number to significant figures for cleaner display"""
+    try:
+        if value == 0:
+            return 0
+        import math
+        return round(value, -int(math.floor(math.log10(abs(value)))) + (sig_figs - 1))
+    except:
+        return round(value, 2)
