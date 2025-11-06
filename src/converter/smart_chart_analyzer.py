@@ -52,10 +52,22 @@ class SmartChartAnalyzer:
         numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
         categorical_cols = df.select_dtypes(include=['object']).columns.tolist()
         
+        # Determine value column (use first if specific ones not found)
+        value_col = None
+        if 'MarketCap' in df.columns:
+            value_col = 'MarketCap'
+        elif 'Sales' in df.columns:
+            value_col = 'Sales'
+        elif 'Profit' in df.columns:
+            value_col = 'Profit'
+        elif 'Value' in df.columns:
+            value_col = 'Value'
+        elif len(numeric_cols) > 0:
+            value_col = numeric_cols[0]
+        
         # 1. Bar Chart: Top items by value
-        if 'MarketCap' in df.columns or 'Sales' in df.columns or 'Profit' in df.columns:
-            value_col = 'MarketCap' if 'MarketCap' in df.columns else ('Sales' if 'Sales' in df.columns else 'Profit')
-            label_col = 'Ticker' if 'Ticker' in df.columns else ('Name' if 'Name' in df.columns else df.columns[0])
+        if value_col:
+            label_col = 'Ticker' if 'Ticker' in df.columns else ('Name' if 'Name' in df.columns else ('Asset' if 'Asset' in df.columns else df.columns[0]))
             
             charts['dashboard'].append({
                 'type': 'bar_horizontal',
@@ -64,7 +76,7 @@ class SmartChartAnalyzer:
                 'y_col': value_col,
                 'sort': 'desc',
                 'limit': 10,
-                'format': 'currency' if value_col in ['Sales', 'Profit', 'MarketCap'] else 'number'
+                'format': 'currency' if value_col in ['Sales', 'Profit', 'MarketCap', 'Value'] else 'number'
             })
         
         # 2. Comparison Chart: Multiple metrics
@@ -78,15 +90,15 @@ class SmartChartAnalyzer:
             })
         
         # 3. Horizontal Bar Chart: Category distribution (better than pie)
-        if 'Sector' in df.columns:
+        if 'Sector' in df.columns and value_col:
             charts['comparison'].append({
                 'type': 'bar_horizontal',
                 'title': 'Distribution by Sector',
                 'x_col': 'Sector',
-                'y_col': value_col if value_col in df.columns else 'Sales',
+                'y_col': value_col,
                 'sort': 'desc',
                 'limit': 10,
-                'format': 'currency' if value_col in ['Sales', 'Profit', 'MarketCap'] else 'number'
+                'format': 'currency' if value_col in ['Sales', 'Profit', 'MarketCap', 'Value'] else 'number'
             })
         
         # 4. Scatter Plot: Correlation analysis

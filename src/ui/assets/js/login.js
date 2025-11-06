@@ -223,11 +223,23 @@ class NeumorphismLoginForm {
             const userProfile = await window.apiService.getCurrentUser();
             console.log('User profile retrieved:', userProfile);
             
+            // Extract plan from multiple possible field names
+            let userPlan = 'Free';
+            if (userProfile.ai_pro) userPlan = 'AI Pro';
+            else if (userProfile.subscription_tier) userPlan = userProfile.subscription_tier;
+            else if (userProfile.tier) userPlan = userProfile.tier;
+            else if (userProfile.plan) userPlan = userProfile.plan;
+            else if (userProfile.subscription_plan) userPlan = userProfile.subscription_plan;
+            else if (userProfile.planType) userPlan = userProfile.planType;
+            else if (userProfile.subscription?.plan) userPlan = userProfile.subscription.plan;
+            
+            console.log('🔍 Detected plan:', userPlan, 'from user profile:', userProfile);
+            
             // Create user data for local auth manager
             const userData = {
                 name: userProfile.name,
                 email: userProfile.email,
-                plan: userProfile.subscription?.plan || 'Free',
+                plan: userPlan,
                 conversions: userProfile.subscription?.monthly_credits_used || 0,
                 templates: 0,
                 loginTime: new Date().toISOString(),

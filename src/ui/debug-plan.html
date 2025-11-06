@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan Detection Debugger</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #0d6efd;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #0d6efd;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+        button {
+            background: #0d6efd;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0b5ed7;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 FinDeck Plan Detection Debugger</h1>
+        
+        <div class="test-section">
+            <h2>1. Check Backend Connection</h2>
+            <button onclick="testBackendConnection()">Test Backend</button>
+            <div id="backendResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>2. Check Authentication</h2>
+            <button onclick="checkAuth()">Check Auth Token</button>
+            <div id="authResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>3. Fetch User Profile</h2>
+            <button onclick="fetchUserProfile()">Get User Profile</button>
+            <div id="userResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>4. Fetch Files/Conversions</h2>
+            <button onclick="fetchFiles()">Get Files</button>
+            <div id="filesResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>5. Test Plan Detection</h2>
+            <button onclick="testPlanDetection()">Test Plan Detection</button>
+            <div id="planResult"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>6. Check LocalStorage</h2>
+            <button onclick="checkLocalStorage()">View LocalStorage</button>
+            <div id="storageResult"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api/v1';
+
+        function getAuthToken() {
+            return localStorage.getItem('authToken') || localStorage.getItem('token');
+        }
+
+        async function testBackendConnection() {
+            const resultDiv = document.getElementById('backendResult');
+            resultDiv.innerHTML = '<div class="info">Testing connection...</div>';
+
+            try {
+                const response = await fetch(API_BASE + '/health', {
+                    method: 'GET'
+                });
+
+                if (response.ok) {
+                    resultDiv.innerHTML = '<div class="success">✅ Backend is running and accessible!</div>';
+                } else {
+                    resultDiv.innerHTML = `<div class="error">❌ Backend returned status: ${response.status}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Cannot connect to backend: ${error.message}<br><br>
+                    <strong>Make sure your backend is running at:</strong> ${API_BASE}</div>`;
+            }
+        }
+
+        function checkAuth() {
+            const resultDiv = document.getElementById('authResult');
+            const token = getAuthToken();
+
+            if (token) {
+                resultDiv.innerHTML = `
+                    <div class="success">✅ Auth token found!</div>
+                    <pre>${token.substring(0, 50)}...</pre>
+                `;
+            } else {
+                resultDiv.innerHTML = '<div class="error">❌ No auth token found. Please log in first.</div>';
+            }
+        }
+
+        async function fetchUserProfile() {
+            const resultDiv = document.getElementById('userResult');
+            const token = getAuthToken();
+
+            if (!token) {
+                resultDiv.innerHTML = '<div class="error">❌ No auth token. Please log in first.</div>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<div class="info">Fetching user profile...</div>';
+
+            try {
+                const response = await fetch(API_BASE + '/users/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const user = await response.json();
+                
+                // Check for plan in various fields
+                const planFields = {
+                    'ai_pro': user.ai_pro,
+                    'subscription_tier': user.subscription_tier,
+                    'tier': user.tier,
+                    'plan': user.plan,
+                    'subscription_plan': user.subscription_plan,
+                    'planType': user.planType,
+                    'subscription?.plan': user.subscription?.plan
+                };
+
+                let foundPlan = 'Unknown';
+                let foundField = 'None';
+                
+                for (const [field, value] of Object.entries(planFields)) {
+                    if (value) {
+                        foundPlan = value;
+                        foundField = field;
+                        break;
+                    }
+                }
+
+                resultDiv.innerHTML = `
+                    <div class="success">✅ User profile loaded!</div>
+                    <div class="info">
+                        <strong>Plan Found:</strong> ${foundPlan}<br>
+                        <strong>Field Name:</strong> ${foundField}
+                    </div>
+                    <h3>Full User Object:</h3>
+                    <pre>${JSON.stringify(user, null, 2)}</pre>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        async function fetchFiles() {
+            const resultDiv = document.getElementById('filesResult');
+            const token = getAuthToken();
+
+            if (!token) {
+                resultDiv.innerHTML = '<div class="error">❌ No auth token. Please log in first.</div>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<div class="info">Fetching files...</div>';
+
+            try {
+                const response = await fetch(API_BASE + '/files?limit=10', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const files = await response.json();
+                
+                if (files.length === 0) {
+                    resultDiv.innerHTML = '<div class="warning">⚠️ No files found. Upload some conversions first!</div>';
+                } else {
+                    let totalSlides = 0;
+                    files.forEach(file => {
+                        totalSlides += (file.slides_count || file.total_slides || 0);
+                    });
+
+                    resultDiv.innerHTML = `
+                        <div class="success">✅ Files loaded!</div>
+                        <div class="info">
+                            <strong>Total Conversions:</strong> ${files.length}<br>
+                            <strong>Total Slides:</strong> ${totalSlides}
+                        </div>
+                        <h3>Recent Files:</h3>
+                        <pre>${JSON.stringify(files.slice(0, 3), null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        async function testPlanDetection() {
+            const resultDiv = document.getElementById('planResult');
+            const token = getAuthToken();
+
+            if (!token) {
+                resultDiv.innerHTML = '<div class="error">❌ No auth token. Please log in first.</div>';
+                return;
+            }
+
+            resultDiv.innerHTML = '<div class="info">Testing plan detection...</div>';
+
+            try {
+                const response = await fetch(API_BASE + '/users/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const user = await response.json();
+
+                // Test the same logic used in dashboard
+                let tier = 'free';
+                let detectionLog = [];
+
+                if (user.subscription_tier) {
+                    tier = user.subscription_tier;
+                    detectionLog.push('✅ Found in: subscription_tier');
+                } else if (user.tier) {
+                    tier = user.tier;
+                    detectionLog.push('✅ Found in: tier');
+                } else if (user.plan) {
+                    tier = user.plan;
+                    detectionLog.push('✅ Found in: plan');
+                } else if (user.subscription_plan) {
+                    tier = user.subscription_plan;
+                    detectionLog.push('✅ Found in: subscription_plan');
+                } else if (user.planType) {
+                    tier = user.planType;
+                    detectionLog.push('✅ Found in: planType');
+                } else {
+                    detectionLog.push('❌ No plan field found, defaulting to "free"');
+                }
+
+                const normalizedTier = tier.toLowerCase().trim().replace(/[-_\s]/g, '_');
+                
+                const plans = {
+                    'free': { badge: '🆓 FREE', name: 'Free' },
+                    'basic': { badge: '⭐ BASIC', name: 'Basic' },
+                    'pro': { badge: '💎 PRO', name: 'Pro' },
+                    'ai_pro': { badge: '🤖 AI PRO', name: 'AI Pro' }
+                };
+
+                const selectedPlan = plans[normalizedTier] || plans[tier] || plans['free'];
+
+                resultDiv.innerHTML = `
+                    <div class="success">✅ Plan Detection Complete!</div>
+                    <div class="info">
+                        <strong>Raw Tier Value:</strong> ${tier}<br>
+                        <strong>Normalized Tier:</strong> ${normalizedTier}<br>
+                        <strong>Selected Plan:</strong> ${selectedPlan.name}<br>
+                        <strong>Plan Badge:</strong> ${selectedPlan.badge}<br>
+                        <br>
+                        <strong>Detection Log:</strong><br>
+                        ${detectionLog.join('<br>')}
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+            }
+        }
+
+        function checkLocalStorage() {
+            const resultDiv = document.getElementById('storageResult');
+            
+            const authData = localStorage.getItem('finDeckAuth');
+            const token = localStorage.getItem('authToken');
+            const user = localStorage.getItem('user');
+
+            let html = '<h3>LocalStorage Contents:</h3>';
+
+            if (authData) {
+                try {
+                    const parsed = JSON.parse(authData);
+                    html += `<h4>finDeckAuth:</h4><pre>${JSON.stringify(parsed, null, 2)}</pre>`;
+                } catch (e) {
+                    html += `<div class="error">❌ Error parsing finDeckAuth</div>`;
+                }
+            } else {
+                html += '<div class="warning">⚠️ No finDeckAuth found</div>';
+            }
+
+            if (token) {
+                html += `<h4>authToken:</h4><pre>${token.substring(0, 100)}...</pre>`;
+            } else {
+                html += '<div class="warning">⚠️ No authToken found</div>';
+            }
+
+            if (user) {
+                try {
+                    const parsed = JSON.parse(user);
+                    html += `<h4>user:</h4><pre>${JSON.stringify(parsed, null, 2)}</pre>`;
+                } catch (e) {
+                    html += `<div class="error">❌ Error parsing user</div>`;
+                }
+            }
+
+            resultDiv.innerHTML = html;
+        }
+
+        // Auto-run basic checks on load
+        window.onload = () => {
+            console.log('🔍 Plan Detection Debugger Loaded');
+            console.log('Click the buttons to run tests');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FinDeck - Storage Inspector</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #f5f7fa;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+        }
+        .section h2 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        .key {
+            color: #3498db;
+            font-weight: bold;
+        }
+        .value {
+            color: #27ae60;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+            color: #856404;
+        }
+        .error {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+            color: #721c24;
+        }
+        .success {
+            background: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        button.danger {
+            background: #e74c3c;
+        }
+        button.danger:hover {
+            background: #c0392b;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background: #34495e;
+            color: white;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 FinDeck Storage Inspector</h1>
+        <p class="subtitle">Diagnose localStorage issues and view stored user data</p>
+
+        <div class="section">
+            <h2>Quick Actions</h2>
+            <button onclick="refreshAll()">🔄 Refresh All Data</button>
+            <button onclick="exportData()">📥 Export Data</button>
+            <button class="danger" onclick="clearAll()">🗑️ Clear All Storage</button>
+        </div>
+
+        <div id="content"></div>
+    </div>
+
+    <script>
+        function refreshAll() {
+            displayAllData();
+        }
+
+        function displayAllData() {
+            const content = document.getElementById('content');
+            let html = '';
+
+            // 1. Check for finDeckAuth
+            html += '<div class="section">';
+            html += '<h2>1. finDeckAuth (Primary Auth Data)</h2>';
+            const authData = localStorage.getItem('finDeckAuth');
+            if (authData) {
+                try {
+                    const parsed = JSON.parse(authData);
+                    html += '<div class="success">✅ Found</div>';
+                    html += '<pre>' + JSON.stringify(parsed, null, 2) + '</pre>';
+                    
+                    if (parsed.user && parsed.user.plan) {
+                        html += `<p><strong>User Plan:</strong> <span class="value">${parsed.user.plan}</span></p>`;
+                    }
+                } catch (e) {
+                    html += '<div class="error">❌ Found but invalid JSON</div>';
+                    html += '<pre>' + authData + '</pre>';
+                }
+            } else {
+                html += '<div class="warning">⚠️ Not found</div>';
+            }
+            html += '</div>';
+
+            // 2. Check for authToken
+            html += '<div class="section">';
+            html += '<h2>2. authToken (API Token)</h2>';
+            const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+            if (token) {
+                html += '<div class="success">✅ Found</div>';
+                html += '<pre>' + token.substring(0, 100) + '...</pre>';
+            } else {
+                html += '<div class="warning">⚠️ Not found</div>';
+            }
+            html += '</div>';
+
+            // 3. Check for user object
+            html += '<div class="section">';
+            html += '<h2>3. user (Cached User Data)</h2>';
+            const userData = localStorage.getItem('user');
+            if (userData) {
+                try {
+                    const parsed = JSON.parse(userData);
+                    html += '<div class="success">✅ Found</div>';
+                    html += '<pre>' + JSON.stringify(parsed, null, 2) + '</pre>';
+                    
+                    // Check for plan fields
+                    html += '<h3>Plan Detection:</h3>';
+                    html += '<table>';
+                    html += '<tr><th>Field Name</th><th>Value</th></tr>';
+                    const fields = ['ai_pro', 'subscription_tier', 'tier', 'plan', 'subscription_plan', 'planType'];
+                    fields.forEach(field => {
+                        const value = parsed[field];
+                        html += `<tr><td><code>${field}</code></td><td>${value ? '<span class="value">' + value + '</span>' : '<span style="color: #999;">undefined</span>'}</td></tr>`;
+                    });
+                    html += '</table>';
+                } catch (e) {
+                    html += '<div class="error">❌ Found but invalid JSON</div>';
+                    html += '<pre>' + userData + '</pre>';
+                }
+            } else {
+                html += '<div class="warning">⚠️ Not found</div>';
+            }
+            html += '</div>';
+
+            // 4. All localStorage keys
+            html += '<div class="section">';
+            html += '<h2>4. All LocalStorage Keys</h2>';
+            html += '<table>';
+            html += '<tr><th>Key</th><th>Value Preview</th><th>Size</th></tr>';
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                const preview = value.length > 100 ? value.substring(0, 100) + '...' : value;
+                html += `<tr><td><code>${key}</code></td><td>${preview}</td><td>${value.length} chars</td></tr>`;
+            }
+            html += '</table>';
+            html += '</div>';
+
+            // 5. Diagnosis
+            html += '<div class="section">';
+            html += '<h2>5. Diagnosis</h2>';
+            
+            let diagnosis = [];
+            
+            if (!authData && !userData && !token) {
+                diagnosis.push('<div class="error">❌ <strong>NOT LOGGED IN</strong> - No authentication data found. Please log in.</div>');
+            } else {
+                if (authData) {
+                    try {
+                        const parsed = JSON.parse(authData);
+                        if (parsed.user && parsed.user.plan) {
+                            diagnosis.push(`<div class="success">✅ User is logged in with plan: <strong>${parsed.user.plan}</strong></div>`);
+                        } else {
+                            diagnosis.push('<div class="warning">⚠️ finDeckAuth exists but no plan info found</div>');
+                        }
+                    } catch (e) {}
+                }
+                
+                if (token) {
+                    diagnosis.push('<div class="success">✅ API token exists - backend calls should work</div>');
+                } else {
+                    diagnosis.push('<div class="warning">⚠️ No API token - backend calls will fail</div>');
+                }
+                
+                if (userData) {
+                    try {
+                        const parsed = JSON.parse(userData);
+                        const planFields = ['ai_pro', 'subscription_tier', 'tier', 'plan', 'subscription_plan', 'planType'];
+                        const foundField = planFields.find(f => parsed[f]);
+                        if (foundField) {
+                            diagnosis.push(`<div class="success">✅ Plan data found in field: <strong>${foundField}</strong> = ${parsed[foundField]}</div>`);
+                        } else {
+                            diagnosis.push('<div class="error">❌ User object exists but NO PLAN FIELD FOUND!</div>');
+                        }
+                    } catch (e) {}
+                }
+            }
+            
+            html += diagnosis.join('');
+            html += '</div>';
+
+            content.innerHTML = html;
+        }
+
+        function exportData() {
+            const data = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                try {
+                    data[key] = JSON.parse(localStorage.getItem(key));
+                } catch {
+                    data[key] = localStorage.getItem(key);
+                }
+            }
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'findeck-storage-export.json';
+            a.click();
+            
+            alert('Storage data exported!');
+        }
+
+        function clearAll() {
+            if (confirm('⚠️ This will clear ALL localStorage data and log you out. Are you sure?')) {
+                localStorage.clear();
+                alert('All storage cleared! Please refresh and log in again.');
+                displayAllData();
+            }
+        }
+
+        // Load on page load
+        displayAllData();
+    </script>
+</body>
+</html>

@@ -1212,21 +1212,24 @@ class FinDeckApp {
                 
                 this.updateConversionProgress(
                     (i / this.uploadedFiles.length) * 100,
-                    `🤖 AI analyzing ${file.name}...`
+                    `🤖 AI PRO: Creating professional presentation for ${file.name}...`
                 );
                 
                 // Convert each file - use the original file for tiered conversion
                 const fileId = file._id || file.id || file.name;
                 console.log('📤 Calling AI conversion with file ID:', fileId);
                 
-                // Prepare conversion options with AI features
+                // Prepare conversion options with AI PRO features for professional look
                 const conversionOptions = {
                     fileName: file.name,
-                    // template_name: null, // Let backend choose default template
+                    template_name: 'corporate_blue', // Use professional template
                     presentation_title: file.name.replace(/\.[^/.]+$/, ''), // Remove extension
                     useTieredConversion: true, // Enable AI features
+                    tier: 'ai_pro', // Force AI PRO tier for professional styling
                     originalFile: file.originalFile || file // Pass the actual File object for direct upload
                 };
+                
+                console.log('🎨 Using AI PRO tier with professional styling:', conversionOptions);
                 
                 const result = await this.apiService.convertExcelToPPT(fileId, conversionOptions);
                 console.log('📥 AI Conversion Response:', result);

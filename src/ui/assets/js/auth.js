@@ -165,7 +165,7 @@ class AuthManager {
                             <div class="user-details">
                                 <h4>${this.currentUser.name || 'User'}</h4>
                                 <p>${this.currentUser.email || ''}</p>
-                                <span class="user-plan">${this.currentUser.plan || 'Free'} Plan</span>
+                                <span class="user-plan">${this.formatPlanName(this.currentUser.plan || 'Free')} Plan</span>
                             </div>
                         </div>
                         
@@ -304,7 +304,7 @@ class AuthManager {
                                 </div>
                                 <div class="col-md-4">
                                     <div class="stat-card">
-                                        <h3>${this.currentUser.plan || 'Free'}</h3>
+                                        <h3>${this.formatPlanName(this.currentUser.plan || 'Free')}</h3>
                                         <p>Current Plan</p>
                                     </div>
                                 </div>
@@ -365,6 +365,26 @@ class AuthManager {
         
         this.updateUI();
         return true;
+    }
+
+    // Format plan name for display
+    formatPlanName(plan) {
+        if (!plan) return 'Free';
+        
+        const planStr = String(plan).toLowerCase().trim();
+        
+        // Map various plan names to display format
+        const planMap = {
+            'ai_pro': 'AI Pro',
+            'ai-pro': 'AI Pro',
+            'ai pro': 'AI Pro',
+            'aipro': 'AI Pro',
+            'pro': 'Pro',
+            'basic': 'Basic',
+            'free': 'Free'
+        };
+        
+        return planMap[planStr] || plan;
     }
 }
 

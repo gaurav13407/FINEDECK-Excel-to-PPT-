@@ -20,6 +20,7 @@ from src.converter.excel_reader import excel_reader_all_sheets
 from src.converter.chart_detector import detect_chart_type, should_create_chart
 from src.templates.template_manager import TemplateManager
 from src.converter.professional_slide_builder import ProfessionalSlideBuilder
+from src.converter.enhanced_professional_builder import EnhancedProfessionalBuilder
 
 # Import AI service (optional, only for paid tiers)
 try:
@@ -355,43 +356,70 @@ class ExcelToPPTConverter:
                 presentation_title = os.path.splitext(os.path.basename(excel_path))[0]
                 presentation_title = presentation_title.replace('_', ' ').title()
             
-            # Use professional slide builder
-            print(f"\n🎨 Building professional {self.user_tier.upper()} presentation...")
-            slide_builder = ProfessionalSlideBuilder(
-                user_tier=self.user_tier,
-                ai_service=self.ai_service,
-                user_metadata=self.user_metadata
-            )
+            # Check if we should use the ENHANCED 8+ slide builder
+            use_enhanced = self.user_tier in ['ai_pro', 'pro'] or use_professional_structure
             
-            # Build all slides
-            build_results = slide_builder.build_professional_presentation(
-                prs=prs,
-                sheets_data=sheets_data,
-                project_name=presentation_title,
-                template=template,
-                excel_path=excel_path  # Pass excel path for Summary and price data
-            )
-            
-            # Save presentation
-            prs.save(output_path)
-            print(f"\n✅ Professional presentation saved: {output_path}")
-            print(f"📊 Total slides: {build_results['total_slides']}")
-            print(f"🤖 AI features used: {len(build_results['ai_features_used'])}")
-            
-            if build_results['errors']:
-                print(f"⚠️  Errors encountered: {len(build_results['errors'])}")
-                for error in build_results['errors']:
-                    print(f"   - {error}")
+            if use_enhanced:
+                # Use ENHANCED professional slide builder with 8+ slides
+                print(f"\n🎨 Building ENHANCED professional presentation with 8+ comprehensive slides...")
+                print("   📄 Includes: Executive Summary, Key Metrics, Data Insights,")
+                print("                Sector Distribution, Key Data Insights, Top Performers,")
+                print("                Trend Analysis, and more!")
+                
+                slide_builder = EnhancedProfessionalBuilder(
+                    ai_service=self.ai_service,
+                    user_metadata=self.user_metadata,
+                    user_tier=self.user_tier  # Pass tier for differentiation
+                )
+                
+                # Build all slides (Executive Summary, Key Metrics, Data Insights, Sector Distribution, etc.)
+                build_results = slide_builder.build_presentation(
+                    prs=prs,
+                    sheets_data=sheets_data,
+                    project_name=presentation_title,
+                    template=template
+                )
+                
+                # Save presentation
+                prs.save(output_path)
+                print(f"\n✅ ENHANCED Professional presentation saved: {output_path}")
+                print(f"📊 Total slides: {build_results['slides_created']}")
+                print(f"📄 Slides: {', '.join(build_results['slide_names'])}")
+                print(f"🤖 AI features: {len(build_results['ai_features_used'])}")
+            else:
+                # Use original professional slide builder
+                print(f"\n🎨 Building professional {self.user_tier.upper()} presentation...")
+                slide_builder = ProfessionalSlideBuilder(
+                    user_tier=self.user_tier,
+                    ai_service=self.ai_service,
+                    user_metadata=self.user_metadata
+                )
+                
+                # Build all slides
+                build_results = slide_builder.build_professional_presentation(
+                    prs=prs,
+                    sheets_data=sheets_data,
+                    project_name=presentation_title,
+                    template=template,
+                    excel_path=excel_path  # Pass excel path for Summary and price data
+                )
+                
+                # Save presentation
+                prs.save(output_path)
+                print(f"\n✅ Professional presentation saved: {output_path}")
+                print(f"📊 Total slides: {build_results['total_slides']}")
+                print(f"🤖 AI features used: {len(build_results['ai_features_used'])}")
             
             return {
                 'success': True,
                 'output_path': output_path,
-                'slides_created': build_results['total_slides'],
+                'slides_created': build_results.get('slides_created', build_results.get('total_slides', 0)),
+                'slide_names': build_results.get('slide_names', []),
                 'template_used': template_name,
                 'user_tier': self.user_tier,
-                'ai_features_used': build_results['ai_features_used'],
-                'presentation_type': 'professional_7_slide',
-                'errors': build_results['errors']
+                'ai_features_used': build_results.get('ai_features_used', []),
+                'presentation_type': 'enhanced_professional_8plus_slides',
+                'errors': build_results.get('errors', [])
             }
             
         except Exception as e:

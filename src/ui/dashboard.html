@@ -101,6 +101,54 @@
 
             <!-- Dashboard Grid -->
             <div class="dashboard-grid">
+                <!-- Subscription Plan Card -->
+                <div class="plan-section">
+                    <div class="plan-card">
+                        <div class="plan-header">
+                            <div class="plan-badge" id="currentPlanBadge">FREE</div>
+                            <h2 id="currentPlanName">Free Plan</h2>
+                        </div>
+                        <div class="plan-features">
+                            <div class="feature-item" id="conversionsUsed">
+                                <div class="feature-progress">
+                                    <div class="feature-label">
+                                        <span>Conversions This Month</span>
+                                        <span class="feature-count" id="conversionsCount">0 / 5</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" id="conversionsProgress" style="width: 0%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20,6 9,17 4,12"/>
+                                </svg>
+                                <span id="slidesLimit">Up to 5 slides per presentation</span>
+                            </div>
+                            <div class="feature-item">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20,6 9,17 4,12"/>
+                                </svg>
+                                <span id="templatesAccess">1 basic template</span>
+                            </div>
+                            <div class="feature-item locked" id="aiFeature">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                                </svg>
+                                <span>AI Features (Upgrade to unlock)</span>
+                            </div>
+                        </div>
+                        <a href="#" class="upgrade-btn" id="upgradeBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 19V6M5 12l7-7 7 7"/>
+                            </svg>
+                            Upgrade Plan
+                        </a>
+                    </div>
+                </div>
+
                 <!-- Quick Stats -->
                 <div class="stats-section">
                     <h2>Quick Stats</h2>
@@ -108,27 +156,13 @@
                         <div class="stat-card">
                             <div class="stat-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14,2 14,8 20,8"/>
                                 </svg>
                             </div>
                             <div class="stat-info">
-                                <h3>127</h3>
+                                <h3 id="totalConversions">0</h3>
                                 <p>Total Conversions</p>
-                                <span class="stat-change positive">+12% this month</span>
-                            </div>
-                        </div>
-
-                        <div class="stat-card">
-                            <div class="stat-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"/>
-                                    <polyline points="12,6 12,12 16,14"/>
-                                </svg>
-                            </div>
-                            <div class="stat-info">
-                                <h3>24.5h</h3>
-                                <p>Time Saved</p>
-                                <span class="stat-change positive">+8% this month</span>
                             </div>
                         </div>
 
@@ -141,137 +175,101 @@
                                 </svg>
                             </div>
                             <div class="stat-info">
-                                <h3>1,247</h3>
+                                <h3 id="totalSlides">0</h3>
                                 <p>Slides Created</p>
-                                <span class="stat-change positive">+15% this month</span>
                             </div>
                         </div>
 
                         <div class="stat-card">
                             <div class="stat-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
                                 </svg>
                             </div>
                             <div class="stat-info">
-                                <h3>4.8</h3>
-                                <p>Avg. Rating</p>
-                                <span class="stat-change neutral">Same as last month</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Activity -->
-                <div class="activity-section">
-                    <h2>Recent Activity</h2>
-                    <div class="activity-list">
-                        <div class="activity-item">
-                            <div class="activity-icon success">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="20,6 9,17 4,12"/>
-                                </svg>
-                            </div>
-                            <div class="activity-info">
-                                <h4>Quarterly Report.xlsx converted</h4>
-                                <p>15 slides generated • 2 hours ago</p>
-                            </div>
-                            <div class="activity-meta">
-                                <button class="download-btn">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                        <polyline points="7,10 12,15 17,10"/>
-                                        <line x1="12" y1="15" x2="12" y2="3"/>
-                                    </svg>
-                                </button>
+                                <h3 id="activeTemplate">Minimal White</h3>
+                                <p>Active Template</p>
                             </div>
                         </div>
 
-                        <div class="activity-item">
-                            <div class="activity-icon success">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="20,6 9,17 4,12"/>
-                                </svg>
-                            </div>
-                            <div class="activity-info">
-                                <h4>Budget Analysis.xlsx converted</h4>
-                                <p>22 slides generated • 5 hours ago</p>
-                            </div>
-                            <div class="activity-meta">
-                                <button class="download-btn">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                        <polyline points="7,10 12,15 17,10"/>
-                                        <line x1="12" y1="15" x2="12" y2="3"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="activity-item">
-                            <div class="activity-icon processing">
+                        <div class="stat-card">
+                            <div class="stat-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="10"/>
                                     <polyline points="12,6 12,12 16,14"/>
                                 </svg>
                             </div>
-                            <div class="activity-info">
-                                <h4>Sales Data.xlsx processing</h4>
-                                <p>Processing started • 1 hour ago</p>
-                            </div>
-                            <div class="activity-meta">
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width: 65%"></div>
-                                </div>
+                            <div class="stat-info">
+                                <h3 id="lastConversion">Never</h3>
+                                <p>Last Conversion</p>
                             </div>
                         </div>
-
-                        <div class="activity-item">
-                            <div class="activity-icon success">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="20,6 9,17 4,12"/>
-                                </svg>
-                            </div>
-                            <div class="activity-info">
-                                <h4>Market Research.xlsx converted</h4>
-                                <p>8 slides generated • Yesterday</p>
-                            </div>
-                            <div class="activity-meta">
-                                <button class="download-btn">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                        <polyline points="7,10 12,15 17,10"/>
-                                        <line x1="12" y1="15" x2="12" y2="3"/>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="activity-footer">
-                        <a href="#" class="view-all-link">View All Activity</a>
                     </div>
                 </div>
 
-                <!-- Usage Chart -->
-                <div class="chart-section">
-                    <h2>Monthly Usage</h2>
-                    <div class="chart-container">
-                        <div class="chart-placeholder">
-                            <div class="chart-bar" style="height: 60%" data-value="24"></div>
-                            <div class="chart-bar" style="height: 80%" data-value="32"></div>
-                            <div class="chart-bar" style="height: 45%" data-value="18"></div>
-                            <div class="chart-bar" style="height: 90%" data-value="36"></div>
-                            <div class="chart-bar" style="height: 70%" data-value="28"></div>
-                            <div class="chart-bar" style="height: 85%" data-value="34"></div>
+                <!-- Recent Conversions -->
+                <div class="activity-section">
+                    <div class="section-header">
+                        <h2>Recent Conversions</h2>
+                        <a href="mainpage.html" class="view-all-link">View All</a>
+                    </div>
+                    <div class="activity-list" id="recentConversionsList">
+                        <!-- Empty state -->
+                        <div class="empty-state" id="emptyState">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="9" y1="9" x2="15" y2="15"/>
+                                <line x1="15" y1="9" x2="9" y2="15"/>
+                            </svg>
+                            <h3>No conversions yet</h3>
+                            <p>Upload your first Excel file to get started!</p>
+                            <a href="mainpage.html" class="neu-button primary">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="17,8 12,3 7,8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
+                                </svg>
+                                Convert Now
+                            </a>
                         </div>
-                        <div class="chart-labels">
-                            <span>May</span>
-                            <span>Jun</span>
-                            <span>Jul</span>
-                            <span>Aug</span>
-                            <span>Sep</span>
-                            <span>Oct</span>
+                    </div>
+                </div>
+
+                <!-- Tips & Resources -->
+                <div class="tips-section">
+                    <h2>Tips & Resources</h2>
+                    <div class="tips-grid">
+                        <div class="tip-card">
+                            <div class="tip-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 16v-4"/>
+                                    <path d="M12 8h.01"/>
+                                </svg>
+                            </div>
+                            <h4>Best Practices</h4>
+                            <p>Structure your Excel data with clear headers and consistent formatting for best results.</p>
+                        </div>
+                        <div class="tip-card">
+                            <div class="tip-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                    <polyline points="15,3 21,3 21,9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                            </div>
+                            <h4>Pro Tip</h4>
+                            <p>Use our premium templates for professional presentations with AI-powered insights.</p>
+                        </div>
+                        <div class="tip-card">
+                            <div class="tip-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22,4 12,14.01 9,11.01"/>
+                                </svg>
+                            </div>
+                            <h4>Quick Start</h4>
+                            <p>Check out our example files to see how FinDeck transforms your data into slides.</p>
                         </div>
                     </div>
                 </div>
@@ -280,16 +278,16 @@
                 <div class="actions-section">
                     <h2>Quick Actions</h2>
                     <div class="actions-grid">
-                        <a href="mainpage.html" class="action-card">
+                        <a href="mainpage.html" class="action-card primary">
                             <div class="action-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                    <polyline points="7,10 12,15 17,10"/>
-                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                    <polyline points="17,8 12,3 7,8"/>
+                                    <line x1="12" y1="3" x2="12" y2="15"/>
                                 </svg>
                             </div>
-                            <h3>Convert File</h3>
-                            <p>Upload and convert Excel to PowerPoint</p>
+                            <h3>New Conversion</h3>
+                            <p>Upload Excel file</p>
                         </a>
 
                         <a href="templates.html" class="action-card">
@@ -301,19 +299,19 @@
                                     <rect x="7" y="14" width="10" height="3"/>
                                 </svg>
                             </div>
-                            <h3>Browse Templates</h3>
-                            <p>Explore PowerPoint templates</p>
+                            <h3>Templates</h3>
+                            <p>Browse templates</p>
                         </a>
 
-                        <a href="#" class="action-card">
+                        <a href="mainpage.html#my-files" class="action-card">
                             <div class="action-icon">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M3 3v18h18"/>
-                                    <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+                                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                                    <polyline points="13,2 13,9 20,9"/>
                                 </svg>
                             </div>
-                            <h3>View Analytics</h3>
-                            <p>Detailed usage statistics</p>
+                            <h3>My Files</h3>
+                            <p>View all files</p>
                         </a>
 
                         <a href="help.html" class="action-card">
@@ -324,8 +322,8 @@
                                     <circle cx="12" cy="17" r="1"/>
                                 </svg>
                             </div>
-                            <h3>Get Help</h3>
-                            <p>FAQ and support resources</p>
+                            <h3>Help</h3>
+                            <p>Get support</p>
                         </a>
                     </div>
                 </div>
@@ -334,6 +332,630 @@
     </main>
 
     <script>
+        // Dashboard Data Manager
+        class DashboardManager {
+            constructor() {
+                this.apiBase = 'http://localhost:8000/api/v1';
+            }
+
+            async loadDashboardData() {
+                try {
+                    // Load user data from backend API
+                    const user = await this.getCurrentUser();
+                    if (user) {
+                        this.updatePlanInfo(user);
+                    }
+
+                    // Load stats from backend or localStorage
+                    await this.loadStats(user);
+                    
+                    // Load recent conversions from backend
+                    await this.loadRecentConversions();
+
+                } catch (error) {
+                    console.error('Error loading dashboard data:', error);
+                }
+            }
+
+            async getCurrentUser() {
+                try {
+                    // PRIORITY 1: Check finDeckAuth (from login.js/auth.js)
+                    const authStr = localStorage.getItem('finDeckAuth');
+                    if (authStr) {
+                        const authObj = JSON.parse(authStr);
+                        if (authObj?.user) {
+                            console.log('✅ User loaded from finDeckAuth:', authObj.user);
+                            return authObj.user;
+                        }
+                    }
+
+                    // PRIORITY 2: Try backend API
+                    const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+                    if (token) {
+                        try {
+                            console.log('🔄 Fetching from backend...');
+                            
+                            // Try /auth/me first (correct endpoint per api-config.js)
+                            let response = await fetch(`${this.apiBase}/auth/me`, {
+                                headers: { 
+                                    'Authorization': `Bearer ${token}`,
+                                    'Accept': 'application/json'
+                                }
+                            });
+
+                            // If /auth/me fails, try /users/me as fallback
+                            if (!response.ok) {
+                                console.log('⚠️ /auth/me failed, trying /users/me...');
+                                response = await fetch(`${this.apiBase}/users/me`, {
+                                    headers: { 
+                                        'Authorization': `Bearer ${token}`,
+                                        'Accept': 'application/json'
+                                    }
+                                });
+                            }
+
+                            if (response.ok) {
+                                const user = await response.json();
+                                console.log('✅ User loaded from backend API:', user);
+                                localStorage.setItem('user', JSON.stringify(user));
+                                return user;
+                            } else {
+                                console.error('❌ Backend returned:', response.status);
+                            }
+                        } catch (apiError) {
+                            console.error('❌ Backend error:', apiError.message);
+                        }
+                    } else {
+                        console.warn('⚠️ No auth token found');
+                    }
+                    
+                    // PRIORITY 3: Fallback to localStorage
+                    const userStr = localStorage.getItem('user');
+                    if (userStr) {
+                        const user = JSON.parse(userStr);
+                        console.log('📦 Using cached user:', user);
+                        return user;
+                    }
+                } catch (error) {
+                    console.error('❌ Error getting user:', error);
+                }
+                
+                console.error('❌ NO USER FOUND - Please log in again');
+                return null;
+            }
+
+            updatePlanInfo(user) {
+                console.log('🔍 Full user object:', JSON.stringify(user, null, 2));
+                
+                // Get tier from user object - check various possible field names
+                let tier = 'free';
+                
+                // SPECIAL CHECK: If ai_pro field exists and is true/truthy, user has AI Pro
+                if (user.ai_pro === true || user.ai_pro === 'true' || user.ai_pro === 1 || user.ai_pro === 'active') {
+                    tier = 'ai_pro';
+                    console.log('✅ AI Pro detected via ai_pro field:', user.ai_pro);
+                }
+                // Try standard plan field names
+                else if (user.subscription_tier) tier = user.subscription_tier;
+                else if (user.tier) tier = user.tier;
+                else if (user.plan) tier = user.plan;
+                else if (user.subscription_plan) tier = user.subscription_plan;
+                else if (user.planType) tier = user.planType;
+                
+                tier = String(tier).toLowerCase().trim();
+                
+                console.log('📊 Raw tier value:', tier);
+                console.log('📊 All checked fields:', {
+                    ai_pro: user.ai_pro,
+                    subscription_tier: user.subscription_tier,
+                    tier: user.tier,
+                    plan: user.plan,
+                    subscription_plan: user.subscription_plan,
+                    planType: user.planType
+                });
+                
+                const planBadge = document.getElementById('currentPlanBadge');
+                const planName = document.getElementById('currentPlanName');
+                const upgradeBtn = document.getElementById('upgradeBtn');
+                
+                // Plan configurations
+                const plans = {
+                    'free': {
+                        name: 'Free Plan',
+                        badge: 'FREE',
+                        conversions: 5,
+                        slides: 5,
+                        templates: '1 basic template',
+                        showUpgrade: true
+                    },
+                    'basic': {
+                        name: 'Basic Plan',
+                        badge: 'BASIC',
+                        conversions: 50,
+                        slides: 10,
+                        templates: '5 templates',
+                        showUpgrade: true
+                    },
+                    'pro': {
+                        name: 'Pro Plan',
+                        badge: 'PRO',
+                        conversions: 200,
+                        slides: 20,
+                        templates: 'All templates',
+                        showUpgrade: true
+                    },
+                    'ai_pro': {
+                        name: 'AI Pro Plan',
+                        badge: 'AI PRO',
+                        conversions: 999,
+                        slides: 30,
+                        templates: 'All templates + AI',
+                        showUpgrade: false
+                    }
+                };
+
+                // Normalize tier name for matching
+                const normalizedTier = tier.replace(/[-_\s]/g, '_');
+                const plan = plans[normalizedTier] || plans[tier] || plans['free'];
+                
+                console.log('✅ Selected plan:', plan);
+                
+                if (planBadge) {
+                    planBadge.textContent = plan.badge;
+                    // Use proper CSS class name
+                    const cssClass = tier.replace('_', '-');
+                    planBadge.className = 'plan-badge ' + cssClass;
+                    console.log('✅ Applied CSS class:', 'plan-badge ' + cssClass);
+                }
+                if (planName) planName.textContent = plan.name;
+                
+                // Update feature limits
+                document.getElementById('slidesLimit').textContent = `Up to ${plan.slides} slides per presentation`;
+                document.getElementById('templatesAccess').textContent = plan.templates;
+                
+                // Update conversions usage - check multiple field names
+                const conversionsUsed = user.conversions_this_month || user.conversions_used || user.monthly_conversions || 0;
+                const conversionsLimit = plan.conversions;
+                const percentage = Math.min((conversionsUsed / conversionsLimit) * 100, 100);
+                
+                document.getElementById('conversionsCount').textContent = `${conversionsUsed} / ${conversionsLimit}`;
+                document.getElementById('conversionsProgress').style.width = percentage + '%';
+                
+                // Show/hide AI feature lock
+                const aiFeature = document.getElementById('aiFeature');
+                if (tier === 'ai_pro') {
+                    aiFeature.classList.remove('locked');
+                    aiFeature.querySelector('span').textContent = 'AI-Powered Features (Active)';
+                    aiFeature.querySelector('svg').innerHTML = '<polyline points="20,6 9,17 4,12"/>';
+                }
+                
+                // Hide upgrade button for AI Pro
+                if (!plan.showUpgrade && upgradeBtn) {
+                    upgradeBtn.style.display = 'none';
+                }
+            }
+
+            async loadStats(user) {
+                console.log('📊 Loading stats...');
+                
+                // Try to load from backend files API
+                try {
+                    const token = localStorage.getItem('authToken');
+                    if (token) {
+                        // Fetch all user files to calculate stats
+                        const response = await fetch(`${this.apiBase}/files?limit=1000`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        
+                        if (response.ok) {
+                            const files = await response.json();
+                            console.log('✅ Files loaded from backend:', files.length);
+                            
+                            // Calculate stats from files
+                            const totalConversions = files.length;
+                            const totalSlides = files.reduce((sum, file) => {
+                                return sum + (file.slides_count || file.total_slides || 0);
+                            }, 0);
+                            
+                            // Find most recent conversion
+                            let lastConversion = 'Never';
+                            if (files.length > 0) {
+                                const sortedFiles = files.sort((a, b) => 
+                                    new Date(b.created_at || b.upload_date) - new Date(a.created_at || a.upload_date)
+                                );
+                                lastConversion = sortedFiles[0].created_at || sortedFiles[0].upload_date;
+                            }
+                            
+                            this.updateStats({
+                                totalConversions,
+                                totalSlides,
+                                lastConversion
+                            });
+                            
+                            // Save to localStorage for offline use
+                            localStorage.setItem('totalConversions', totalConversions.toString());
+                            localStorage.setItem('totalSlides', totalSlides.toString());
+                            localStorage.setItem('lastConversion', lastConversion);
+                            return;
+                        }
+                    }
+                } catch (error) {
+                    console.log('🔄 Backend not available, using localStorage:', error.message);
+                }
+
+                // Fallback to localStorage
+                console.log('📦 Loading stats from localStorage...');
+                
+                // Try to get from stored conversions
+                let totalConversions = 0;
+                let totalSlides = 0;
+                let lastConversion = 'Never';
+                
+                try {
+                    const storedConversions = localStorage.getItem('recentConversions');
+                    if (storedConversions) {
+                        const conversions = JSON.parse(storedConversions);
+                        totalConversions = conversions.length;
+                        totalSlides = conversions.reduce((sum, file) => 
+                            sum + (file.slides_count || file.total_slides || 0), 0);
+                        if (conversions.length > 0) {
+                            lastConversion = conversions[0].created_at || conversions[0].upload_date;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error parsing stored conversions:', e);
+                }
+                
+                // Override with explicit stats if available
+                const explicitConversions = localStorage.getItem('totalConversions');
+                const explicitSlides = localStorage.getItem('totalSlides');
+                const explicitLastConversion = localStorage.getItem('lastConversion');
+                
+                if (explicitConversions) totalConversions = parseInt(explicitConversions) || totalConversions;
+                if (explicitSlides) totalSlides = parseInt(explicitSlides) || totalSlides;
+                if (explicitLastConversion) lastConversion = explicitLastConversion;
+                
+                const localStats = {
+                    totalConversions,
+                    totalSlides,
+                    lastConversion
+                };
+                
+                console.log('✅ Local stats loaded:', localStats);
+                this.updateStats(localStats);
+            }
+
+            updateStats(stats) {
+                document.getElementById('totalConversions').textContent = stats.totalConversions || 0;
+                document.getElementById('totalSlides').textContent = stats.totalSlides || 0;
+                
+                // Active template
+                const selectedTemplate = localStorage.getItem('selectedTemplate');
+                const templateNames = {
+                    'minimal_white': 'Minimal White',
+                    'corporate_blue': 'Corporate Blue',
+                    'modern_tech': 'Modern Tech',
+                    'elegant_gray': 'Elegant Gray',
+                    'ocean_blue': 'Ocean Blue',
+                    'dark_finance': 'Dark Finance',
+                    'vibrant_gradient': 'Vibrant Gradient',
+                    'sunset_orange': 'Sunset Orange',
+                    'forest_green': 'Forest Green',
+                    'royal_purple': 'Royal Purple'
+                };
+                document.getElementById('activeTemplate').textContent = templateNames[selectedTemplate] || 'Minimal White';
+                
+                // Last conversion time
+                if (stats.lastConversion && stats.lastConversion !== 'Never') {
+                    const lastTime = new Date(stats.lastConversion);
+                    const now = new Date();
+                    const diff = now - lastTime;
+                    const hours = Math.floor(diff / (1000 * 60 * 60));
+                    const days = Math.floor(hours / 24);
+                    
+                    let timeText = 'Never';
+                    if (days > 0) timeText = `${days} day${days > 1 ? 's' : ''} ago`;
+                    else if (hours > 0) timeText = `${hours} hour${hours > 1 ? 's' : ''} ago`;
+                    else timeText = 'Recently';
+                    
+                    document.getElementById('lastConversion').textContent = timeText;
+                } else {
+                    document.getElementById('lastConversion').textContent = stats.lastConversion || 'Never';
+                }
+            }
+
+            async loadRecentConversions() {
+                console.log('📁 Loading recent conversions...');
+                const conversionsList = document.getElementById('recentConversionsList');
+                const emptyState = document.getElementById('emptyState');
+
+                // Try to load from backend
+                try {
+                    const token = localStorage.getItem('authToken');
+                    if (token) {
+                        const response = await fetch(`${this.apiBase}/files?limit=5`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        
+                        if (response.ok) {
+                            const files = await response.json();
+                            console.log('✅ Recent files loaded from backend:', files.length, files);
+                            
+                            if (files && files.length > 0) {
+                                emptyState.style.display = 'none';
+                                
+                                // Sort by most recent first
+                                const sortedFiles = files.sort((a, b) => 
+                                    new Date(b.created_at || b.upload_date) - new Date(a.created_at || a.upload_date)
+                                );
+                                
+                                // Save to localStorage for offline use
+                                localStorage.setItem('recentConversions', JSON.stringify(sortedFiles.slice(0, 5)));
+                                
+                                this.renderConversions(sortedFiles);
+                                return;
+                            }
+                        } else {
+                            console.error('Failed to load files:', response.status);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error loading conversions from backend:', error.message);
+                }
+
+                // Fallback to localStorage
+                console.log('🔄 Trying to load conversions from localStorage...');
+                try {
+                    const storedConversions = localStorage.getItem('recentConversions');
+                    if (storedConversions) {
+                        const conversions = JSON.parse(storedConversions);
+                        console.log('✅ Loaded from localStorage:', conversions.length, conversions);
+                        
+                        if (conversions && conversions.length > 0) {
+                            emptyState.style.display = 'none';
+                            this.renderConversions(conversions);
+                            return;
+                        }
+                    }
+                    
+                    // Also check for old conversionHistory format
+                    const oldHistory = localStorage.getItem('conversionHistory');
+                    if (oldHistory) {
+                        const history = JSON.parse(oldHistory);
+                        console.log('✅ Loaded from old conversionHistory:', history.length);
+                        if (history && history.length > 0) {
+                            emptyState.style.display = 'none';
+                            this.renderConversions(history.slice(0, 5));
+                            return;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error parsing localStorage conversions:', error);
+                }
+
+                // Show empty state if no conversions found
+                console.log('⚠️ No conversions found in backend or localStorage');
+                emptyState.style.display = 'flex';
+            }
+
+            renderConversions(conversions) {
+                const conversionsList = document.getElementById('recentConversionsList');
+                
+                const html = conversions.map(conv => {
+                    // Get status icon and class
+                    const status = (conv.processing_status || conv.status || 'completed').toLowerCase();
+                    const statusClass = status === 'completed' ? 'success' : 
+                                       status === 'processing' ? 'processing' : 
+                                       status === 'failed' ? 'error' : 'success';
+                    
+                    // Get slides count
+                    const slidesCount = conv.slides_count || conv.total_slides || 0;
+                    
+                    // Get filename
+                    const filename = conv.filename || conv.original_filename || 'Unknown file';
+                    
+                    // Get date field
+                    const dateField = conv.created_at || conv.upload_date || conv.updated_at;
+                    
+                    return `
+                        <div class="activity-item">
+                            <div class="activity-icon ${statusClass}">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    ${statusClass === 'success' ? '<polyline points="20,6 9,17 4,12"/>' : 
+                                      statusClass === 'processing' ? '<circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/>' :
+                                      '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'}
+                                </svg>
+                            </div>
+                            <div class="activity-info">
+                                <h4>${filename}</h4>
+                                <p>${slidesCount} slides • ${this.formatDate(dateField)}</p>
+                            </div>
+                            <div class="activity-meta">
+                                <button class="download-btn" onclick="downloadFile('${conv.id}')" title="Download presentation">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="7,10 12,15 17,10"/>
+                                        <line x1="12" y1="15" x2="12" y2="3"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                conversionsList.innerHTML = html;
+            }
+
+            formatDate(dateStr) {
+                if (!dateStr) return 'Unknown';
+                const date = new Date(dateStr);
+                const now = new Date();
+                const diff = now - date;
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const days = Math.floor(hours / 24);
+                
+                if (days > 7) return date.toLocaleDateString();
+                if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`;
+                if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+                return 'Just now';
+            }
+
+            // Add sample conversion data for testing
+            addSampleData() {
+                console.log('📝 Adding sample conversion data to localStorage...');
+                
+                const sampleConversions = [
+                    {
+                        id: 'sample-1',
+                        filename: 'Q4 Financial Report.xlsx',
+                        original_filename: 'Q4 Financial Report.xlsx',
+                        slides_count: 12,
+                        total_slides: 12,
+                        status: 'completed',
+                        processing_status: 'completed',
+                        created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                        upload_date: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+                    },
+                    {
+                        id: 'sample-2',
+                        filename: 'Sales Data 2024.xlsx',
+                        original_filename: 'Sales Data 2024.xlsx',
+                        slides_count: 8,
+                        total_slides: 8,
+                        status: 'completed',
+                        processing_status: 'completed',
+                        created_at: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+                        upload_date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+                    },
+                    {
+                        id: 'sample-3',
+                        filename: 'Marketing Analysis.xlsx',
+                        original_filename: 'Marketing Analysis.xlsx',
+                        slides_count: 15,
+                        total_slides: 15,
+                        status: 'completed',
+                        processing_status: 'completed',
+                        created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+                        upload_date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+                    },
+                    {
+                        id: 'sample-4',
+                        filename: 'Portfolio Overview.xlsx',
+                        original_filename: 'Portfolio Overview.xlsx',
+                        slides_count: 10,
+                        total_slides: 10,
+                        status: 'completed',
+                        processing_status: 'completed',
+                        created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+                        upload_date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
+                    },
+                    {
+                        id: 'sample-5',
+                        filename: 'Budget Planning.xlsx',
+                        original_filename: 'Budget Planning.xlsx',
+                        slides_count: 6,
+                        total_slides: 6,
+                        status: 'completed',
+                        processing_status: 'completed',
+                        created_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
+                        upload_date: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString()
+                    }
+                ];
+
+                // Save to localStorage
+                localStorage.setItem('recentConversions', JSON.stringify(sampleConversions));
+                
+                // Calculate and save stats
+                const totalConversions = sampleConversions.length;
+                const totalSlides = sampleConversions.reduce((sum, conv) => sum + conv.slides_count, 0);
+                const lastConversion = sampleConversions[0].created_at;
+                
+                localStorage.setItem('totalConversions', totalConversions.toString());
+                localStorage.setItem('totalSlides', totalSlides.toString());
+                localStorage.setItem('lastConversion', lastConversion);
+                
+                console.log('✅ Sample data added:');
+                console.log(`   📊 ${totalConversions} conversions`);
+                console.log(`   📄 ${totalSlides} total slides`);
+                console.log(`   🕐 Last: ${new Date(lastConversion).toLocaleString()}`);
+                
+                // Reload dashboard
+                this.loadDashboardData();
+            }
+        }
+
+        // Initialize dashboard
+        const dashboardManager = new DashboardManager();
+
+        // Download file function
+        async function downloadFile(fileId) {
+            try {
+                console.log(`📥 Downloading file: ${fileId}`);
+                
+                const token = localStorage.getItem('authToken');
+                if (!token) {
+                    alert('Please log in to download files');
+                    return;
+                }
+                
+                // Show loading state
+                const btn = event.target.closest('.download-btn');
+                if (btn) {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.5';
+                }
+                
+                // Fetch download URL from backend
+                const response = await fetch(`http://localhost:8000/api/v1/files/${fileId}/download`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`Download failed: ${response.statusText}`);
+                }
+                
+                // Get the blob
+                const blob = await response.blob();
+                
+                // Get filename from headers or use default
+                const contentDisposition = response.headers.get('Content-Disposition');
+                let filename = 'presentation.pptx';
+                if (contentDisposition) {
+                    const match = contentDisposition.match(/filename="?(.+)"?/);
+                    if (match) filename = match[1];
+                }
+                
+                // Create download link
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                console.log('✅ File downloaded successfully');
+                
+                // Reset button state
+                if (btn) {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                }
+                
+            } catch (error) {
+                console.error('Download error:', error);
+                alert(`Failed to download file: ${error.message}`);
+                
+                // Reset button state
+                const btn = event.target.closest('.download-btn');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                }
+            }
+        }
+
         // Profile dropdown functionality (same as mainpage.html)
         function toggleProfileDropdown() {
             const dropdown = document.getElementById('profileDropdown');
@@ -354,8 +976,11 @@
             }
         }
 
-        // Initialize profile button functionality
+        // Initialize profile button functionality and dashboard
         document.addEventListener('DOMContentLoaded', function() {
+            // Load dashboard data
+            dashboardManager.loadDashboardData();
+
             const profileBtn = document.getElementById('profileBtn');
             if (profileBtn) {
                 profileBtn.addEventListener('click', function(e) {
@@ -387,16 +1012,16 @@
                     e.stopPropagation();
                 });
             }
+
+            // Upgrade button handler
+            const upgradeBtn = document.getElementById('upgradeBtn');
+            if (upgradeBtn) {
+                upgradeBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    alert('Upgrade to PRO or AI PRO to unlock more features!\n\n✨ PRO Plan:\n- 200 conversions/month\n- Up to 20 slides\n- All templates\n\n🚀 AI PRO Plan:\n- Unlimited conversions\n- Up to 30 slides\n- AI-powered insights\n- Priority support');
+                });
+            }
         });
-
-        // Modal placeholder functions
-        function openModal(modalId) {
-            alert(modalId + ' - Coming Soon! This will show detailed settings.');
-        }
-
-        function showTemplateSettings() {
-            alert('Template Manager - Coming Soon!');
-        }
     </script>
     
     <!-- Authentication JS -->
