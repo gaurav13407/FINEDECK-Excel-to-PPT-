@@ -221,23 +221,42 @@ class AdvancedChartBuilder:
             confidence = recommended.get('confidence', 0)
             reasoning = recommended.get('reasoning', '')
             
-            # Map AI recommendations to our chart types
+            # Map AI recommendations to ONLY 4 PRACTICAL CHART TYPES
+            # Column, Bar, Doughnut, Line - that's it!
             chart_mapping = {
+                # Direct mappings
                 'bar': 'bar',
                 'column': 'column',
                 'line': 'line_markers',
-                'pie': 'pie',
-                'scatter': 'scatter',
-                'area': 'area',
-                'stacked_bar': 'column_stacked',
-                'stacked_column': 'column_stacked',
-                'horizontal_bar': 'bar',
+                'pie': 'doughnut',
+                'doughnut': 'doughnut',
+                
+                # Everything else → simplify to basic types
+                'scatter': 'column',          # Scatter → Column
+                'area': 'line_markers',       # Area → Line
+                'stacked_bar': 'column',      # Stacked → Column
+                'stacked_column': 'column',   # Stacked → Column
+                'horizontal_bar': 'bar',      # Keep as Bar
+                'bubble': 'column',           # Bubble → Column
+                'waterfall': 'column',        # Waterfall → Column
+                
+                # Intent-based mappings
                 'trend': 'line_markers',
-                'distribution': 'pie',
-                'comparison': 'column'
+                'distribution': 'doughnut',
+                'comparison': 'column',
+                'ranking': 'bar',
+                'breakdown': 'doughnut',
+                'composition': 'doughnut'
             }
             
-            mapped_type = chart_mapping.get(chart_type, 'column')
+            mapped_type = chart_mapping.get(chart_type.lower(), 'column')
+            
+            # Quality gate: Override if confidence is too low (< 70%)
+            if confidence < 0.7:
+                print(f"   ⚠️  Low AI confidence ({confidence:.0%}), using safe column chart")
+                mapped_type = 'column'
+            
+            print(f"   🤖 AI recommends: '{chart_type}' → mapped to '{mapped_type}' (confidence: {confidence:.0%})")
             
             return {
                 'type': mapped_type,
@@ -299,7 +318,10 @@ class AdvancedChartBuilder:
     # ========================================================================
     
     def _analyze_data_structure(self, data: pd.DataFrame, context: str) -> Dict[str, Any]:
-        """Analyze data structure to determine best chart type"""
+        """
+        Analyze data structure to determine best chart type
+        ONLY USES 4 PRACTICAL CHART TYPES: Column, Bar, Doughnut, Line
+        """
         numeric_cols = data.select_dtypes(include=[np.number]).columns
         text_cols = data.select_dtypes(include=['object']).columns
         date_cols = data.select_dtypes(include=['datetime64']).columns
@@ -307,36 +329,47 @@ class AdvancedChartBuilder:
         n_rows = len(data)
         n_numeric = len(numeric_cols)
         n_text = len(text_cols)
-        n_dates = len(date_cols)
         
-        # Time series detection
-        if n_dates > 0 or self._is_time_series_data(data):
-            if n_numeric > 1:
-                return {'type': 'area_stacked', 'ppt_type': XL_CHART_TYPE.AREA_STACKED}
+        # ============================================================
+        # CONTEXT-FIRST APPROACH (Most Important)
+        # ============================================================
+        
+        if context in ['distribution', 'breakdown', 'composition', 'sector']:
+            # Distribution context → ALWAYS use doughnut
+            print("   📊 Context 'distribution' → Doughnut chart")
+            return {'type': 'doughnut', 'ppt_type': XL_CHART_TYPE.DOUGHNUT, 'source': 'context'}
+        
+        if context in ['trend', 'time', 'timeline', 'growth', 'over_time']:
+            # Trend context → ALWAYS use line chart
+            print("   📈 Context 'trend' → Line chart")
+            return {'type': 'line_markers', 'ppt_type': XL_CHART_TYPE.LINE_MARKERS, 'source': 'context'}
+        
+        if context in ['comparison', 'ranking', 'top', 'versus']:
+            # Comparison context → Column or bar
+            if n_rows <= 8:
+                print("   📊 Context 'comparison' → Column chart")
+                return {'type': 'column', 'ppt_type': XL_CHART_TYPE.COLUMN_CLUSTERED, 'source': 'context'}
             else:
-                return {'type': 'line_markers', 'ppt_type': XL_CHART_TYPE.LINE_MARKERS}
+                print("   📊 Context 'comparison' → Bar chart")
+                return {'type': 'bar', 'ppt_type': XL_CHART_TYPE.BAR_CLUSTERED, 'source': 'context'}
         
-        # Distribution analysis (few categories)
-        if n_text > 0 and n_numeric > 0 and n_rows <= 8:
-            return {'type': 'doughnut', 'ppt_type': XL_CHART_TYPE.DOUGHNUT}
+        # ============================================================
+        # DATA STRUCTURE ANALYSIS (Fallback)
+        # ============================================================
         
-        # Comparison (many categories)
-        if n_text > 0 and n_numeric > 0 and n_rows > 8:
-            return {'type': 'bar', 'ppt_type': XL_CHART_TYPE.BAR_CLUSTERED}
+        # Few items with categories → Doughnut
+        if n_text > 0 and n_numeric == 1 and n_rows <= 6:
+            print("   📊 Few items → Doughnut chart")
+            return {'type': 'doughnut', 'ppt_type': XL_CHART_TYPE.DOUGHNUT, 'source': 'structure'}
         
-        # Multiple series comparison
-        if n_numeric >= 2 and n_text > 0:
-            if context == 'percentage' or 'percent' in str(data.columns).lower():
-                return {'type': 'column_stacked_100', 'ppt_type': XL_CHART_TYPE.COLUMN_STACKED_100}
-            else:
-                return {'type': 'column_stacked', 'ppt_type': XL_CHART_TYPE.COLUMN_STACKED}
+        # Many items → Bar chart (horizontal for long labels)
+        if n_text > 0 and n_rows > 10:
+            print("   📊 Many items → Bar chart")
+            return {'type': 'bar', 'ppt_type': XL_CHART_TYPE.BAR_CLUSTERED, 'source': 'structure'}
         
-        # Correlation analysis (two numeric columns)
-        if n_numeric >= 2 and n_rows > 10:
-            return {'type': 'scatter_lines', 'ppt_type': XL_CHART_TYPE.XY_SCATTER_LINES}
-        
-        # Default: column chart
-        return {'type': 'column', 'ppt_type': XL_CHART_TYPE.COLUMN_CLUSTERED}
+        # Default: Column chart (most universal)
+        print("   📊 Default → Column chart")
+        return {'type': 'column', 'ppt_type': XL_CHART_TYPE.COLUMN_CLUSTERED, 'source': 'default'}
     
     def _is_time_series_data(self, data: pd.DataFrame) -> bool:
         """Detect if data represents time series"""
@@ -413,7 +446,7 @@ class AdvancedChartBuilder:
             return self._create_fallback_chart(slide, data, x, y, width, height)
     
     def _prepare_category_data(self, data: pd.DataFrame, chart_type: str) -> CategoryChartData:
-        """Prepare data for category-based charts with intelligent limits"""
+        """Prepare data for category-based charts with intelligent limits and value validation"""
         chart_data = CategoryChartData()
         
         numeric_cols = data.select_dtypes(include=[np.number]).columns
@@ -427,16 +460,32 @@ class AdvancedChartBuilder:
         else:
             max_items = 12  # More for other types
         
+        # Filter out zero/negative values for pie/doughnut charts (they don't make sense)
+        if chart_type in ['pie', 'doughnut'] and len(numeric_cols) > 0:
+            value_col = numeric_cols[0]
+            data = data[data[value_col] > 0].copy()
+        
         # Determine categories and sort by value for better visualization
         if len(text_cols) > 0 and len(numeric_cols) > 0:
             # Sort by first numeric column (descending) to show top performers
-            sorted_data = data.sort_values(by=numeric_cols[0], ascending=False)
+            value_col = numeric_cols[0]
+            sorted_data = data.sort_values(by=value_col, ascending=False)
+            
+            # Remove any rows with invalid/null category names
+            sorted_data = sorted_data[sorted_data[text_cols[0]].notna()]
+            
             categories = sorted_data[text_cols[0]].head(max_items).tolist()
             data_subset = sorted_data.head(max_items)
             
             # Truncate long category names for readability
             categories = [str(cat)[:30] + '...' if len(str(cat)) > 30 else str(cat) 
                          for cat in categories]
+            
+            # Ensure we have valid data
+            if len(categories) == 0:
+                categories = ['No Valid Data']
+                data_subset = pd.DataFrame({value_col: [0]})
+                
         elif len(numeric_cols) > 0:
             # No text columns, use generic labels
             data_subset = data.head(max_items)
@@ -448,25 +497,49 @@ class AdvancedChartBuilder:
         
         chart_data.categories = categories
         
-        # Add series based on chart type
+        # Add series based on chart type - SIMPLIFIED
         if chart_type in ['column_stacked', 'column_stacked_100', 'area_stacked']:
-            # Multiple series - limit to 3 for clarity
-            for i, col in enumerate(numeric_cols[:3]):
+            # Multiple series - limit to 2 for clarity (not 3)
+            for i, col in enumerate(numeric_cols[:2]):
                 # Clean column name
                 clean_name = str(col)[:20]
                 values = data_subset[col].fillna(0).tolist()
-                # Round values for cleaner display
-                values = [round(float(v), 2) if abs(v) < 1000 else round(float(v), 0) for v in values]
-                chart_data.add_series(clean_name, values)
+                
+                # Smart rounding based on magnitude
+                rounded_values = []
+                for v in values:
+                    v = float(v)
+                    if abs(v) < 0.01:
+                        rounded_values.append(0)
+                    elif abs(v) < 10:
+                        rounded_values.append(round(v, 2))
+                    elif abs(v) < 1000:
+                        rounded_values.append(round(v, 1))
+                    else:
+                        rounded_values.append(round(v, 0))
+                
+                chart_data.add_series(clean_name, rounded_values)
         else:
-            # Single series
+            # Single series - MOST COMMON
             if len(numeric_cols) > 0:
                 col = numeric_cols[0]
                 clean_name = str(col)[:20]
                 values = data_subset[col].fillna(0).tolist()
-                # Round values for cleaner display
-                values = [round(float(v), 2) if abs(v) < 1000 else round(float(v), 0) for v in values]
-                chart_data.add_series(clean_name, values)
+                
+                # Smart rounding for readability
+                rounded_values = []
+                for v in values:
+                    v = float(v)
+                    if abs(v) < 0.01:
+                        rounded_values.append(0)
+                    elif abs(v) < 10:
+                        rounded_values.append(round(v, 2))
+                    elif abs(v) < 1000:
+                        rounded_values.append(round(v, 1))
+                    else:
+                        rounded_values.append(round(v, 0))
+                
+                chart_data.add_series(clean_name, rounded_values)
         
         return chart_data
     

@@ -628,16 +628,17 @@ class EnhancedProfessionalBuilder:
                                      Inches(5.2), Inches(1.3), Inches(4.3), Inches(3.5))
             
             elif self.user_tier == 'ai_pro':
-                # AI_PRO: Full AI + Advanced Chart Builder
+                # AI_PRO: Full AI + Advanced Chart Builder with better context
                 print("🤖 AI_PRO tier: Using AI + Advanced Chart Builder")
                 if self.advanced_chart_builder:
-                    chart_config = self.advanced_chart_builder.select_chart_type(data, context='dashboard')
+                    # Use 'comparison' context for better chart selection
+                    chart_config = self.advanced_chart_builder.select_chart_type(data, context='comparison')
                     chart = self.advanced_chart_builder.create_chart(
                         slide, data, chart_config,
                         Inches(5.2), Inches(1.3), Inches(4.3), Inches(3.5),
                         title="Data Insights"
                     )
-                    print(f"   Chart: {chart_config.get('type')} from {chart_config.get('source', 'unknown')}")
+                    print(f"   ✓ Chart: {chart_config.get('type')} from {chart_config.get('source', 'unknown')}")
                 else:
                     chart_config = self._create_default_chart(data, numeric_cols)
                     self._render_chart(slide, data, chart_config, 
@@ -693,17 +694,20 @@ class EnhancedProfessionalBuilder:
             sector_df = sector_data.reset_index()
             sector_df.columns = [category_col, value_col]
             
-            # Use Advanced Chart Builder if available
-            if self.advanced_chart_builder:
+            # TIER-BASED CHART SELECTION
+            if self.user_tier == 'ai_pro' and self.advanced_chart_builder:
+                # AI PRO ONLY: Use Advanced Chart Builder
+                print("🤖 AI_PRO: Using advanced distribution chart")
                 chart_config = self.advanced_chart_builder.select_chart_type(sector_df, context='distribution')
                 chart = self.advanced_chart_builder.create_chart(
                     slide, sector_df, chart_config,
                     Inches(0.5), Inches(1.3), Inches(4.5), Inches(4),
                     title="Sector Distribution"
                 )
-                print(f"✅ Created sector chart: {chart_config.get('type')} from {chart_config.get('source')}")
+                print(f"   ✓ Chart: {chart_config.get('type')} from {chart_config.get('source')}")
             else:
-                # Legacy fallback
+                # BASIC & PRO: Simple doughnut chart
+                print(f"📊 {self.user_tier.upper()}: Using simple doughnut chart")
                 chart_data = CategoryChartData()
                 chart_data.categories = sector_data.index.tolist()
                 chart_data.add_series('Distribution', sector_data.values.tolist())
@@ -1056,9 +1060,10 @@ class EnhancedProfessionalBuilder:
             limit = min(20, len(data))
             trend_data = data.head(limit).copy()
             
-            # Use Advanced Chart Builder if available
-            if self.advanced_chart_builder:
-                # Select appropriate chart (will use AI, SmartAnalyzer, or data structure)
+            # TIER-BASED CHART SELECTION
+            if self.user_tier == 'ai_pro' and self.advanced_chart_builder:
+                # AI PRO ONLY: Use Advanced Chart Builder with AI
+                print("🤖 AI_PRO: Using AI-powered trend chart")
                 chart_config = self.advanced_chart_builder.select_chart_type(trend_data, context='trend')
                 
                 # Create chart
@@ -1067,9 +1072,10 @@ class EnhancedProfessionalBuilder:
                     Inches(5.2), Inches(1.3), Inches(4.3), Inches(3.5),
                     title="Trend Analysis"
                 )
-                print(f"✅ Created trend chart: {chart_config.get('type')} from {chart_config.get('source')}")
+                print(f"   ✓ Chart: {chart_config.get('type')} from {chart_config.get('source')}")
             else:
-                # Legacy fallback: Create standard line chart
+                # BASIC & PRO: Simple line chart
+                print(f"📊 {self.user_tier.upper()}: Using simple line chart")
                 chart_data = CategoryChartData()
                 
                 # Get categories
