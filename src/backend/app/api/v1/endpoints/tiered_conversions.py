@@ -620,3 +620,119 @@ async def test_all_tiers_conversion(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Test conversion failed: {str(e)}"
         )
+
+
+@router.get("/available-templates")
+async def get_available_templates(
+    current_user: UserInDB = Depends(get_current_active_user)
+):
+    """
+    Get list of available PowerPoint templates based on user's subscription tier
+    
+    Returns:
+    - templates: List of template objects with id, name, description, category
+    - tier: User's current tier
+    - tier_name: Display name of tier
+    - allowed_count: Number of templates allowed (or 'all')
+    """
+    try:
+        # Get user's tier
+        tier = get_converter_tier(current_user.subscription_plan)
+        tier_config = TIER_CONFIG.get(tier, TIER_CONFIG['free'])
+        
+        # Define all available templates
+        all_templates = [
+            {
+                "id": "corporate_blue",
+                "name": "Corporate Blue",
+                "description": "Professional corporate template with blue accents",
+                "category": "business"
+            },
+            {
+                "id": "modern_gradient",
+                "name": "Modern Gradient",
+                "description": "Contemporary design with vibrant gradients",
+                "category": "modern"
+            },
+            {
+                "id": "minimal_white",
+                "name": "Minimal White",
+                "description": "Clean and minimal design with white background",
+                "category": "minimal"
+            },
+            {
+                "id": "financial_pro",
+                "name": "Financial Pro",
+                "description": "Optimized for financial data and charts",
+                "category": "finance"
+            },
+            {
+                "id": "executive_suite",
+                "name": "Executive Suite",
+                "description": "Premium template for executive presentations",
+                "category": "executive"
+            },
+            {
+                "id": "tech_blue",
+                "name": "Tech Blue",
+                "description": "Modern template for technology companies",
+                "category": "technology"
+            },
+            {
+                "id": "creative_studio",
+                "name": "Creative Studio",
+                "description": "Bold and creative design for agencies",
+                "category": "creative"
+            },
+            {
+                "id": "luxury_gold",
+                "name": "Luxury Gold",
+                "description": "Elegant template with gold accents",
+                "category": "luxury"
+            },
+            {
+                "id": "startup_pitch",
+                "name": "Startup Pitch",
+                "description": "Dynamic template for startup presentations",
+                "category": "modern"
+            },
+            {
+                "id": "professional_gray",
+                "name": "Professional Gray",
+                "description": "Timeless gray corporate template",
+                "category": "business"
+            }
+        ]
+        
+        # Get tier name mapping
+        tier_names = {
+            "free": "Free",
+            "basic": "Basic",
+            "pro": "Pro",
+            "ai_pro": "AI Pro"
+        }
+        
+        # Filter templates based on tier
+        if tier == "free":
+            allowed_templates = all_templates[:1]  # Only first template
+            allowed_count = 1
+        elif tier == "basic":
+            allowed_templates = all_templates[:5]  # First 5 templates
+            allowed_count = 5
+        else:  # pro, ai_pro
+            allowed_templates = all_templates  # All templates
+            allowed_count = "all"
+        
+        return {
+            "templates": allowed_templates,
+            "tier": tier,
+            "tier_name": tier_names.get(tier, "Free"),
+            "allowed_count": allowed_count,
+            "total_available": len(all_templates)
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch templates: {str(e)}"
+        )

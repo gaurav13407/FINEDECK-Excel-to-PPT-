@@ -14,6 +14,12 @@ class FinDeckApp {
             'text/csv' // .csv
         ];
         
+        // Template selection properties
+        this.selectedTemplate = null;
+        this.availableTemplates = [];
+        this.userTier = null;
+        this.tierName = null;
+        
         // Initialize API service with retry mechanism
         this.initializeApiService();
         
@@ -465,6 +471,9 @@ class FinDeckApp {
         if (uploadSection) {
             uploadSection.style.display = 'none';
         }
+        
+        // Fetch templates when file list section is shown
+        this.fetchAvailableTemplates();
     }
 
     showUploadSection() {
@@ -479,6 +488,101 @@ class FinDeckApp {
             fileListSection.style.display = 'none';
         }
     }
+
+    // ============================================================================
+    // TEMPLATE SELECTION METHODS
+    // ============================================================================
+
+    async fetchAvailableTemplates() {
+        const templatesGrid = document.getElementById('templatesGrid');
+        const tierInfo = document.getElementById('tierInfo');
+
+        try {
+            console.log('📡 Loading templates...');
+            
+            if (tierInfo) {
+                tierInfo.textContent = 'Select a template for your PowerPoint';
+            }
+
+            // Hardcoded template list - simple and direct
+            const templates = [
+                { id: 'corporate_blue', name: 'Corporate Blue' },
+                { id: 'modern_gradient', name: 'Modern Gradient' },
+                { id: 'minimal_white', name: 'Minimal White' },
+                { id: 'financial_pro', name: 'Financial Pro' },
+                { id: 'executive_suite', name: 'Executive Suite' },
+                { id: 'tech_blue', name: 'Tech Blue' },
+                { id: 'creative_studio', name: 'Creative Studio' },
+                { id: 'luxury_gold', name: 'Luxury Gold' },
+                { id: 'startup_pitch', name: 'Startup Pitch' },
+                { id: 'professional_gray', name: 'Professional Gray' }
+            ];
+
+            this.availableTemplates = templates;
+
+            // Display templates as checkboxes
+            this.displayTemplates(templates);
+
+        } catch (error) {
+            console.error('❌ Error loading templates:', error);
+            // Set default template on error
+            this.selectedTemplate = 'corporate_blue';
+            this.enableConvertButton();
+        }
+    }
+
+    displayTemplates(templates) {
+        const templatesGrid = document.getElementById('templatesGrid');
+        
+        if (!templates || templates.length === 0) {
+            templatesGrid.innerHTML = '<p style="text-align: center; color: var(--text-muted);">No templates available</p>';
+            return;
+        }
+
+        // Create checkbox list
+        templatesGrid.innerHTML = templates.map((template, index) => `
+            <div class="template-checkbox-item">
+                <label class="checkbox-label">
+                    <input type="radio" name="templateSelection" value="${template.id}" 
+                           ${index === 0 ? 'checked' : ''} 
+                           onchange="finDeckApp.selectTemplate('${template.id}')">
+                    <div class="neu-checkbox">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    ${template.name}
+                </label>
+            </div>
+        `).join('');
+
+        // Auto-select first template
+        if (templates.length > 0) {
+            this.selectTemplate(templates[0].id);
+        }
+    }
+
+    selectTemplate(templateId) {
+        console.log('🎨 Template selected:', templateId);
+        
+        // Store selection
+        this.selectedTemplate = templateId;
+
+        // Enable convert button
+        this.enableConvertButton();
+    }
+
+    enableConvertButton() {
+        const convertBtn = document.getElementById('convertBtn');
+        if (convertBtn) {
+            convertBtn.disabled = false;
+            console.log('✅ Convert button enabled with template:', this.selectedTemplate);
+        }
+    }
+
+    // ============================================================================
+    // END TEMPLATE SELECTION METHODS
+    // ============================================================================
 
     initializeStepIndicator() {
         const steps = document.querySelectorAll('.step');
@@ -1137,6 +1241,20 @@ class FinDeckApp {
         document.body.style.overflow = 'auto';
     }
 
+    handleResize() {
+        // Handle responsive behavior on window resize
+        // This can be extended as needed for specific responsive features
+        const width = window.innerWidth;
+        
+        // Close mobile menu if window gets larger
+        if (width > 768) {
+            const navMenu = document.querySelector('.nav-menu');
+            if (navMenu) {
+                navMenu.classList.remove('active');
+            }
+        }
+    }
+
     initializeProgressTracking() {
         // Simulate progress tracking for demo
         const progressBars = document.querySelectorAll('.progress-bar');
@@ -1180,11 +1298,17 @@ class FinDeckApp {
     async startConversion() {
         console.log('🔄 Starting conversion process...');
         console.log('📁 Uploaded files:', this.uploadedFiles);
+        console.log('🎨 Selected template:', this.selectedTemplate);
         
         if (this.uploadedFiles.length === 0) {
             console.log('❌ No files uploaded');
             this.showNotification('Error', 'Please upload at least one file to convert.', 'error');
             return;
+        }
+
+        if (!this.selectedTemplate) {
+            console.log('⚠️ No template selected, using default');
+            this.selectedTemplate = 'corporate_blue';
         }
 
         if (!this.apiService) {
@@ -1219,17 +1343,17 @@ class FinDeckApp {
                 const fileId = file._id || file.id || file.name;
                 console.log('📤 Calling AI conversion with file ID:', fileId);
                 
-                // Prepare conversion options with AI PRO features for professional look
+                // Prepare conversion options with selected template
                 const conversionOptions = {
                     fileName: file.name,
-                    template_name: 'corporate_blue', // Use professional template
+                    template_name: this.selectedTemplate || 'corporate_blue', // Use selected template or fallback
                     presentation_title: file.name.replace(/\.[^/.]+$/, ''), // Remove extension
                     useTieredConversion: true, // Enable AI features
                     tier: 'ai_pro', // Force AI PRO tier for professional styling
                     originalFile: file.originalFile || file // Pass the actual File object for direct upload
                 };
                 
-                console.log('🎨 Using AI PRO tier with professional styling:', conversionOptions);
+                console.log('🎨 Using template:', this.selectedTemplate || 'corporate_blue (default)', conversionOptions);
                 
                 const result = await this.apiService.convertExcelToPPT(fileId, conversionOptions);
                 console.log('📥 AI Conversion Response:', result);

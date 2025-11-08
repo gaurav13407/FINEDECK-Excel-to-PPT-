@@ -333,61 +333,18 @@
                     <h3>Selected Files</h3>
                     <div class="file-list" id="fileList"></div>
                     
-                    <div class="conversion-options">
-                        <h4>Conversion Options</h4>
-                        <div class="options-grid">
-                            <div class="option-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="includeCharts" checked>
-                                    <div class="neu-checkbox">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                            <polyline points="20 6 9 17 4 12"/>
-                                        </svg>
-                                    </div>
-                                    Include Charts & Graphs
-                                </label>
-                            </div>
-                            
-                            <div class="option-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="autoFormat" checked>
-                                    <div class="neu-checkbox">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                            <polyline points="20 6 9 17 4 12"/>
-                                        </svg>
-                                    </div>
-                                    Auto-format Tables
-                                </label>
-                            </div>
-                            
-                            <div class="option-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="brandTemplate">
-                                    <div class="neu-checkbox">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                            <polyline points="20 6 9 17 4 12"/>
-                                        </svg>
-                                    </div>
-                                    Apply Brand Template
-                                </label>
-                            </div>
-                            
-                            <div class="option-group">
-                                <label class="checkbox-label">
-                                    <input type="checkbox" id="addSummary">
-                                    <div class="neu-checkbox">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                                            <polyline points="20 6 9 17 4 12"/>
-                                        </svg>
-                                    </div>
-                                    Generate Summary Slide
-                                </label>
-                            </div>
+                    <!-- Template Selection -->
+                    <div class="template-selection">
+                        <h4>Choose PowerPoint Template</h4>
+                        <p class="tier-info" id="tierInfo">Loading templates...</p>
+                        
+                        <div class="templates-grid" id="templatesGrid">
+                            <div class="neu-spinner"></div>
                         </div>
                     </div>
                     
-                    <button class="convert-btn neu-button" id="convertBtn" onclick="window.finDeckApp && window.finDeckApp.startConversion()">
-                        <span class="btn-text">Convert to PowerPoint</span>
+                    <button class="convert-btn neu-button" id="convertBtn" onclick="window.finDeckApp && window.finDeckApp.startConversion()" disabled>
+                        <span class="btn-text">Generate PowerPoint</span>
                         <div class="btn-loader">
                             <div class="neu-spinner"></div>
                         </div>
