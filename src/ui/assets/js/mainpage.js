@@ -504,18 +504,18 @@ class FinDeckApp {
                 tierInfo.textContent = 'Select a template for your PowerPoint';
             }
 
-            // Hardcoded template list - simple and direct
+            // Hardcoded template list - MUST MATCH ACTUAL TEMPLATE FILES IN src/templates/built_in/
             const templates = [
                 { id: 'corporate_blue', name: 'Corporate Blue' },
-                { id: 'modern_gradient', name: 'Modern Gradient' },
+                { id: 'dark_finance', name: 'Dark Finance' },
+                { id: 'elegant_gray', name: 'Elegant Gray' },
+                { id: 'forest_green', name: 'Forest Green' },
                 { id: 'minimal_white', name: 'Minimal White' },
-                { id: 'financial_pro', name: 'Financial Pro' },
-                { id: 'executive_suite', name: 'Executive Suite' },
-                { id: 'tech_blue', name: 'Tech Blue' },
-                { id: 'creative_studio', name: 'Creative Studio' },
-                { id: 'luxury_gold', name: 'Luxury Gold' },
-                { id: 'startup_pitch', name: 'Startup Pitch' },
-                { id: 'professional_gray', name: 'Professional Gray' }
+                { id: 'modern_tech', name: 'Modern Tech' },
+                { id: 'ocean_blue', name: 'Ocean Blue' },
+                { id: 'royal_purple', name: 'Royal Purple' },
+                { id: 'sunset_orange', name: 'Sunset Orange' },
+                { id: 'vibrant_gradient', name: 'Vibrant Gradient' }
             ];
 
             this.availableTemplates = templates;
@@ -545,7 +545,7 @@ class FinDeckApp {
                 <label class="checkbox-label">
                     <input type="radio" name="templateSelection" value="${template.id}" 
                            ${index === 0 ? 'checked' : ''} 
-                           onchange="finDeckApp.selectTemplate('${template.id}')">
+                           onchange="console.log('📻 Radio button changed to:', '${template.id}'); finDeckApp.selectTemplate('${template.id}')">
                     <div class="neu-checkbox">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
                             <polyline points="20 6 9 17 4 12"/>
@@ -556,6 +556,8 @@ class FinDeckApp {
             </div>
         `).join('');
 
+        console.log('✅ Templates rendered. First template ID:', templates[0]?.id);
+
         // Auto-select first template
         if (templates.length > 0) {
             this.selectTemplate(templates[0].id);
@@ -563,10 +565,15 @@ class FinDeckApp {
     }
 
     selectTemplate(templateId) {
+        console.log('🎨 ========= TEMPLATE SELECTION =========');
         console.log('🎨 Template selected:', templateId);
+        console.log('🎨 Previous template was:', this.selectedTemplate);
         
         // Store selection
         this.selectedTemplate = templateId;
+        
+        console.log('🎨 New template is now:', this.selectedTemplate);
+        console.log('🎨 ====================================');
 
         // Enable convert button
         this.enableConvertButton();
@@ -1342,6 +1349,11 @@ class FinDeckApp {
                 // Convert each file - use the original file for tiered conversion
                 const fileId = file._id || file.id || file.name;
                 console.log('📤 Calling AI conversion with file ID:', fileId);
+                console.log('🎨 SELECTED TEMPLATE VALUE:', this.selectedTemplate);
+                console.log('📋 ALL PROPERTIES:', { 
+                    selectedTemplate: this.selectedTemplate,
+                    availableTemplates: this.availableTemplates 
+                });
                 
                 // Prepare conversion options with selected template
                 const conversionOptions = {
@@ -1353,7 +1365,7 @@ class FinDeckApp {
                     originalFile: file.originalFile || file // Pass the actual File object for direct upload
                 };
                 
-                console.log('🎨 Using template:', this.selectedTemplate || 'corporate_blue (default)', conversionOptions);
+                console.log('🎨 CONVERSION OPTIONS:', JSON.stringify(conversionOptions, null, 2));
                 
                 const result = await this.apiService.convertExcelToPPT(fileId, conversionOptions);
                 console.log('📥 AI Conversion Response:', result);

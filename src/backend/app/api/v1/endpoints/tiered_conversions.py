@@ -76,6 +76,14 @@ async def tiered_convert_excel_to_ppt(
     user_tier = get_converter_tier(current_user.subscription.plan)
     config = PLAN_CONFIGS[current_user.subscription.plan]
     
+    # DEBUG: Log received template_name
+    print(f"\n🎨 ========== BACKEND TEMPLATE DEBUG ==========")
+    print(f"🎨 Received template_name from frontend: {template_name}")
+    print(f"🎨 Template type: {type(template_name)}")
+    print(f"🎨 User tier: {user_tier}")
+    print(f"🎨 Current plan: {current_user.subscription.plan}")
+    print(f"🎨 ==========================================\n")
+    
     # Get current month's PPT count
     users_collection = get_collection('users')
     user_obj_id = ObjectId(str(current_user.id)) if hasattr(current_user, 'id') else ObjectId(str(current_user._id))
@@ -127,6 +135,12 @@ async def tiered_convert_excel_to_ppt(
         
         # Use convert_professional for AI_PRO and PRO tiers to get nice slides
         if user_tier in ['ai_pro', 'pro']:
+            print(f"\n🎨 ========== CALLING CONVERTER ==========")
+            print(f"🎨 Template being passed to converter: {template_name}")
+            print(f"🎨 Presentation title: {presentation_title or default_title}")
+            print(f"🎨 User tier: {user_tier}")
+            print(f"🎨 =====================================\n")
+            
             result = converter.convert_professional(
                 excel_path=excel_path,
                 output_path=output_path,

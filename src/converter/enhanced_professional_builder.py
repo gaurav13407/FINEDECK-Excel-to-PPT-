@@ -111,22 +111,73 @@ class EnhancedProfessionalBuilder:
         self.user_metadata = user_metadata or {}
         self.user_tier = user_tier.lower() if user_tier else 'basic'
         self.use_finance_charts = use_finance_charts
+        
+        # Template will be set in build_presentation
+        self.template = None
+        self.template_colors = PROFESSIONAL_COLORS.copy()  # Default fallback
+        
         self.chart_colors = [
-            PROFESSIONAL_COLORS['blue'],
-            PROFESSIONAL_COLORS['green'],
-            PROFESSIONAL_COLORS['orange'],
-            PROFESSIONAL_COLORS['purple'],
-            PROFESSIONAL_COLORS['red'],
-            PROFESSIONAL_COLORS['yellow']
+            self.template_colors['blue'],
+            self.template_colors['green'],
+            self.template_colors['orange'],
+            self.template_colors['purple'],
+            self.template_colors['red'],
+            self.template_colors['yellow']
         ]
         self.chart_analyzer = None  # Will be initialized with data
         self.ai_chart_recommendations = {}  # Store AI recommendations
         self.advanced_chart_builder = None  # Advanced chart builder
     
+    def _load_template_colors(self, template):
+        """Convert template JSON colors to RGB tuples for use in presentation"""
+        if not template or 'colors' not in template:
+            print("⚠️  No template colors, using PROFESSIONAL_COLORS default")
+            return PROFESSIONAL_COLORS.copy()
+        
+        def hex_to_rgb(hex_color):
+            """Convert hex color #RRGGBB to RGB tuple"""
+            hex_color = hex_color.lstrip('#')
+            return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
+        
+        template_colors = {}
+        colors = template['colors']
+        
+        # Map template colors to our expected color names
+        template_colors['navy'] = hex_to_rgb(colors.get('primary', '#192A56'))
+        template_colors['blue'] = hex_to_rgb(colors.get('secondary', '#343A40'))
+        template_colors['light_blue'] = hex_to_rgb(colors.get('accent', '#FFC107'))
+        template_colors['green'] = hex_to_rgb(colors.get('success', '#2E7D32'))
+        template_colors['red'] = hex_to_rgb(colors.get('danger', '#D32F2F'))
+        template_colors['orange'] = hex_to_rgb(colors.get('accent', '#FFC107'))
+        template_colors['purple'] = hex_to_rgb(colors.get('secondary', '#343A40'))
+        template_colors['yellow'] = hex_to_rgb(colors.get('accent', '#FFC107'))
+        template_colors['gray'] = (127, 140, 141)
+        template_colors['dark_gray'] = (52, 73, 94)
+        template_colors['light_gray'] = hex_to_rgb(colors.get('light', '#ECEFF1'))
+        template_colors['white'] = hex_to_rgb(colors.get('white', '#FFFFFF'))
+        
+        # Update chart colors from template
+        if 'chart_colors' in colors and colors['chart_colors']:
+            self.chart_colors = [hex_to_rgb(c) for c in colors['chart_colors'][:6]]
+        
+        print(f"✅ Loaded template colors: primary={template_colors['navy']}, accent={template_colors['light_blue']}")
+        return template_colors
+    
     def build_presentation(self, prs, sheets_data, project_name, template=None):
         """
         Build complete 8+ slide professional presentation with AI-powered charts
         """
+        # Store template and load colors
+        self.template = template
+        self.template_colors = self._load_template_colors(template)
+        
+        print(f"\n🎨 ========== TEMPLATE APPLICATION ==========")
+        print(f"🎨 Template name: {template.get('name', 'Unknown') if template else 'None'}")
+        print(f"🎨 Primary color (navy): {self.template_colors['navy']}")
+        print(f"🎨 Accent color (light_blue): {self.template_colors['light_blue']}")
+        print(f"🎨 Chart colors: {self.chart_colors}")
+        print(f"🎨 =========================================\n")
+        
         results = {
             'slides_created': 0,
             'slide_names': [],
@@ -253,8 +304,8 @@ class EnhancedProfessionalBuilder:
             prs.slide_width, prs.slide_height
         )
         background.fill.solid()
-        background.fill.fore_color.rgb = RGBColor(*PROFESSIONAL_COLORS['navy'])
-        background.line.color.rgb = RGBColor(*PROFESSIONAL_COLORS['navy'])
+        background.fill.fore_color.rgb = RGBColor(*self.template_colors['navy'])
+        background.line.color.rgb = RGBColor(*self.template_colors['navy'])
         
         # Title
         title_box = slide.shapes.add_textbox(
@@ -268,7 +319,7 @@ class EnhancedProfessionalBuilder:
         p.text = project_name
         p.font.size = Pt(54)
         p.font.bold = True
-        p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['white'])
+        p.font.color.rgb = RGBColor(*self.template_colors['white'])
         p.alignment = PP_ALIGN.CENTER
         
         # Subtitle
@@ -281,7 +332,7 @@ class EnhancedProfessionalBuilder:
         p = subtitle_frame.paragraphs[0]
         p.text = f"Comprehensive Business Analysis | {datetime.now().strftime('%B %Y')}"
         p.font.size = Pt(24)
-        p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['light_blue'])
+        p.font.color.rgb = RGBColor(*self.template_colors['light_blue'])
         p.alignment = PP_ALIGN.CENTER
         
         # Accent bar
@@ -291,7 +342,7 @@ class EnhancedProfessionalBuilder:
             Inches(4), Inches(0.05)
         )
         accent.fill.solid()
-        accent.fill.fore_color.rgb = RGBColor(*PROFESSIONAL_COLORS['light_blue'])
+        accent.fill.fore_color.rgb = RGBColor(*self.template_colors['light_blue'])
         accent.line.fill.background()
     
     # ========================================================================
@@ -309,7 +360,7 @@ class EnhancedProfessionalBuilder:
         p.text = "Executive Summary"
         p.font.size = Pt(36)
         p.font.bold = True
-        p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['navy'])
+        p.font.color.rgb = RGBColor(*self.template_colors['navy'])
         
         # Generate insights
         insights = self._generate_executive_insights(data)
@@ -324,7 +375,7 @@ class EnhancedProfessionalBuilder:
                 Inches(0.15), Inches(0.15)
             )
             bullet.fill.solid()
-            bullet.fill.fore_color.rgb = RGBColor(*PROFESSIONAL_COLORS['blue'])
+            bullet.fill.fore_color.rgb = RGBColor(*self.template_colors['blue'])
             bullet.line.fill.background()
             
             # Insight text
@@ -337,7 +388,7 @@ class EnhancedProfessionalBuilder:
             p = tf.paragraphs[0]
             p.text = insight
             p.font.size = Pt(16)
-            p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['dark_gray'])
+            p.font.color.rgb = RGBColor(*self.template_colors['dark_gray'])
             p.space_after = Pt(6)
             
             y_position += 0.7
@@ -414,7 +465,7 @@ class EnhancedProfessionalBuilder:
         p.text = "Key Metrics Overview"
         p.font.size = Pt(36)
         p.font.bold = True
-        p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['navy'])
+        p.font.color.rgb = RGBColor(*self.template_colors['navy'])
         
         # Extract key metrics
         metrics = self._extract_key_metrics(data)
@@ -435,8 +486,8 @@ class EnhancedProfessionalBuilder:
                 Inches(2.8), Inches(1.8)
             )
             card.fill.solid()
-            card.fill.fore_color.rgb = RGBColor(*PROFESSIONAL_COLORS['light_gray'])
-            card.line.color.rgb = RGBColor(*PROFESSIONAL_COLORS['gray'])
+            card.fill.fore_color.rgb = RGBColor(*self.template_colors['light_gray'])
+            card.line.color.rgb = RGBColor(*self.template_colors['gray'])
             card.line.width = Pt(1)
             
             # Metric label
@@ -449,7 +500,7 @@ class EnhancedProfessionalBuilder:
             p.text = metric_name
             p.font.size = Pt(14)
             p.font.bold = True
-            p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['dark_gray'])
+            p.font.color.rgb = RGBColor(*self.template_colors['dark_gray'])
             
             # Metric value
             value_box = slide.shapes.add_textbox(
@@ -461,7 +512,7 @@ class EnhancedProfessionalBuilder:
             p.text = metric_value
             p.font.size = Pt(28)
             p.font.bold = True
-            p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['navy'])
+            p.font.color.rgb = RGBColor(*self.template_colors['navy'])
             
             # Trend indicator
             trend_box = slide.shapes.add_textbox(
@@ -472,7 +523,7 @@ class EnhancedProfessionalBuilder:
             p = tf.paragraphs[0]
             p.text = trend
             p.font.size = Pt(12)
-            trend_color = PROFESSIONAL_COLORS['green'] if '↑' in trend else PROFESSIONAL_COLORS['red'] if '↓' in trend else PROFESSIONAL_COLORS['gray']
+            trend_color = self.template_colors['green'] if '↑' in trend else self.template_colors['red'] if '↓' in trend else self.template_colors['gray']
             p.font.color.rgb = RGBColor(*trend_color)
     
     def _extract_key_metrics(self, data):
@@ -535,7 +586,7 @@ class EnhancedProfessionalBuilder:
         p.text = "Data Insights & Analysis"
         p.font.size = Pt(36)
         p.font.bold = True
-        p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['navy'])
+        p.font.color.rgb = RGBColor(*self.template_colors['navy'])
         
         # Key insights text
         insights_box = slide.shapes.add_textbox(
@@ -550,7 +601,7 @@ class EnhancedProfessionalBuilder:
             p = tf.add_paragraph()
             p.text = f"• {insight}"
             p.font.size = Pt(14)
-            p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['dark_gray'])
+            p.font.color.rgb = RGBColor(*self.template_colors['dark_gray'])
             p.space_after = Pt(12)
         
         # Add chart if data available
@@ -666,7 +717,7 @@ class EnhancedProfessionalBuilder:
         p.text = "Sector Distribution"
         p.font.size = Pt(36)
         p.font.bold = True
-        p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['navy'])
+        p.font.color.rgb = RGBColor(*self.template_colors['navy'])
         
         if data.empty:
             # Add placeholder text
@@ -742,7 +793,7 @@ class EnhancedProfessionalBuilder:
         p.text = "Distribution Summary"
         p.font.size = Pt(16)
         p.font.bold = True
-        p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['navy'])
+        p.font.color.rgb = RGBColor(*self.template_colors['navy'])
         
         # Table rows
         y_pos = y_start + 0.5
@@ -792,7 +843,7 @@ class EnhancedProfessionalBuilder:
         p.text = "Key Data Insights"
         p.font.size = Pt(36)
         p.font.bold = True
-        p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['navy'])
+        p.font.color.rgb = RGBColor(*self.template_colors['navy'])
         
         # Generate deep insights
         deep_insights = self._generate_deep_insights(data)
@@ -806,8 +857,8 @@ class EnhancedProfessionalBuilder:
                 Inches(9), Inches(1.2)
             )
             card.fill.solid()
-            card.fill.fore_color.rgb = RGBColor(*PROFESSIONAL_COLORS['light_gray'])
-            card.line.color.rgb = RGBColor(*PROFESSIONAL_COLORS['blue'])
+            card.fill.fore_color.rgb = RGBColor(*self.template_colors['light_gray'])
+            card.line.color.rgb = RGBColor(*self.template_colors['blue'])
             card.line.width = Pt(2)
             
             # Title
@@ -820,7 +871,7 @@ class EnhancedProfessionalBuilder:
             p.text = insight_title
             p.font.size = Pt(16)
             p.font.bold = True
-            p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['navy'])
+            p.font.color.rgb = RGBColor(*self.template_colors['navy'])
             
             # Detail
             detail_box = slide.shapes.add_textbox(
@@ -832,7 +883,7 @@ class EnhancedProfessionalBuilder:
             p = tf.paragraphs[0]
             p.text = insight_detail
             p.font.size = Pt(13)
-            p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['dark_gray'])
+            p.font.color.rgb = RGBColor(*self.template_colors['dark_gray'])
             
             y_position += 1.4
     
@@ -894,7 +945,7 @@ class EnhancedProfessionalBuilder:
         p.text = "Top Performers"
         p.font.size = Pt(36)
         p.font.bold = True
-        p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['navy'])
+        p.font.color.rgb = RGBColor(*self.template_colors['navy'])
         
         if data.empty:
             text_box = slide.shapes.add_textbox(Inches(1), Inches(2), Inches(8), Inches(3))
@@ -929,7 +980,7 @@ class EnhancedProfessionalBuilder:
             p.text = header_text
             p.font.size = Pt(14)
             p.font.bold = True
-            p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['navy'])
+            p.font.color.rgb = RGBColor(*self.template_colors['navy'])
         
         y_position += 0.5
         
@@ -962,7 +1013,7 @@ class EnhancedProfessionalBuilder:
                     Inches(0.6), Inches(0.35)
                 )
                 rank_bg.fill.solid()
-                color = PROFESSIONAL_COLORS['yellow'] if i == 1 else PROFESSIONAL_COLORS['light_gray']
+                color = self.template_colors['yellow'] if i == 1 else self.template_colors['light_gray']
                 rank_bg.fill.fore_color.rgb = RGBColor(*color)
                 rank_bg.line.fill.background()
                 # Move to back
@@ -1003,7 +1054,7 @@ class EnhancedProfessionalBuilder:
             p = tf.paragraphs[0]
             p.text = f"✓ {status}"
             p.font.size = Pt(12)
-            p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['green'])
+            p.font.color.rgb = RGBColor(*self.template_colors['green'])
             
             y_position += 0.4
     
@@ -1022,7 +1073,7 @@ class EnhancedProfessionalBuilder:
         p.text = "Trend Analysis"
         p.font.size = Pt(36)
         p.font.bold = True
-        p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['navy'])
+        p.font.color.rgb = RGBColor(*self.template_colors['navy'])
         
         # Trend insights
         insights_box = slide.shapes.add_textbox(
@@ -1043,7 +1094,7 @@ class EnhancedProfessionalBuilder:
             p = tf.add_paragraph()
             p.text = f"• {trend}"
             p.font.size = Pt(14)
-            p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['dark_gray'])
+            p.font.color.rgb = RGBColor(*self.template_colors['dark_gray'])
             p.space_after = Pt(10)
         
         # Add trend chart
@@ -1136,7 +1187,7 @@ class EnhancedProfessionalBuilder:
             prs.slide_width, prs.slide_height
         )
         background.fill.solid()
-        background.fill.fore_color.rgb = RGBColor(*PROFESSIONAL_COLORS['navy'])
+        background.fill.fore_color.rgb = RGBColor(*self.template_colors['navy'])
         background.line.fill.background()
         
         # Title
@@ -1149,7 +1200,7 @@ class EnhancedProfessionalBuilder:
         p.text = "Summary & Next Steps"
         p.font.size = Pt(44)
         p.font.bold = True
-        p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['white'])
+        p.font.color.rgb = RGBColor(*self.template_colors['white'])
         p.alignment = PP_ALIGN.CENTER
         
         # Key takeaways
@@ -1170,7 +1221,7 @@ class EnhancedProfessionalBuilder:
             p = tf.add_paragraph()
             p.text = takeaway
             p.font.size = Pt(18)
-            p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['light_blue'])
+            p.font.color.rgb = RGBColor(*self.template_colors['light_blue'])
             p.alignment = PP_ALIGN.CENTER
             p.space_after = Pt(12)
         
@@ -1183,7 +1234,7 @@ class EnhancedProfessionalBuilder:
         p = tf.paragraphs[0]
         p.text = f"Generated by FinDeck | {datetime.now().strftime('%B %d, %Y')}"
         p.font.size = Pt(14)
-        p.font.color.rgb = RGBColor(*PROFESSIONAL_COLORS['light_gray'])
+        p.font.color.rgb = RGBColor(*self.template_colors['light_gray'])
         p.alignment = PP_ALIGN.CENTER
     
     # ========================================================================

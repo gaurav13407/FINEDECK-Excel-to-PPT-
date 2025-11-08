@@ -271,10 +271,19 @@ class APIService {
             
             // Add conversion options
             if (conversionOptions.template_name) {
+                console.log('📤 Adding template_name to FormData:', conversionOptions.template_name);
                 formData.append('template_name', conversionOptions.template_name);
+            } else {
+                console.warn('⚠️ No template_name in conversionOptions!');
             }
             if (conversionOptions.presentation_title) {
                 formData.append('presentation_title', conversionOptions.presentation_title);
+            }
+            
+            // Log all FormData entries
+            console.log('📋 FormData contents:');
+            for (let pair of formData.entries()) {
+                console.log('  -', pair[0], ':', pair[1]);
             }
 
             const response = await fetch(`${this.api.API_BASE}/tiered/tiered-convert`, {

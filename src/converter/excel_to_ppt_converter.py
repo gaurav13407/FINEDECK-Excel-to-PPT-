@@ -318,11 +318,19 @@ class ExcelToPPTConverter:
                 allowed_templates = self.get_allowed_templates()
                 template_name = allowed_templates[0] if allowed_templates else 'corporate_blue'
             
+            print(f"\n🎨 ========== CONVERTER TEMPLATE DEBUG ==========")
+            print(f"🎨 Received template_name parameter: {template_name}")
+            print(f"🎨 User tier: {self.user_tier}")
+            print(f"🎨 Allowed templates: {self.get_allowed_templates()}")
+            print(f"🎨 ===========================================\n")
+            
             # Validate template
             if template_name not in self.get_allowed_templates():
                 print(f"⚠️  Template {template_name} not allowed for tier. Using default.")
                 allowed_templates = self.get_allowed_templates()
                 template_name = allowed_templates[0] if allowed_templates else 'corporate_blue'
+            
+            print(f"🎨 Final template_name to load: {template_name}")
             
             # Load template or use FINANCE_THEME as fallback
             template = self.template_manager.load_template(template_name)
