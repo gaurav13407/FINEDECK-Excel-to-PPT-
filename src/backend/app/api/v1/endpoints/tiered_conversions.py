@@ -53,6 +53,7 @@ async def tiered_convert_excel_to_ppt(
     file: UploadFile = File(...),
     template_name: Optional[str] = Form(None),
     presentation_title: Optional[str] = Form(None),
+    use_finance_charts: Optional[bool] = Form(False),
     current_user: UserInDB = Depends(get_current_active_user)
 ):
     """
@@ -68,6 +69,7 @@ async def tiered_convert_excel_to_ppt(
         file: Excel file to convert
         template_name: Optional template name (must be allowed for tier)
         presentation_title: Optional custom title
+        use_finance_charts: Use finance-specific charts only (default: False)
     """
     
     # Get user's subscription tier
@@ -119,7 +121,8 @@ async def tiered_convert_excel_to_ppt(
                 'name': current_user.name or current_user.email.split('@')[0],
                 'email': current_user.email,
                 'company': getattr(current_user, 'company', 'FinDeck User')
-            }
+            },
+            use_finance_charts=use_finance_charts  # Pass finance chart preference
         )
         
         # Use convert_professional for AI_PRO and PRO tiers to get nice slides

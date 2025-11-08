@@ -75,7 +75,7 @@ class ExcelToPPTConverter:
     Excel to PowerPoint converter with tiered subscription support
     """
     
-    def __init__(self, user_tier: str = 'free', user_id: Optional[str] = None, user_metadata: Optional[Dict[str, str]] = None):
+    def __init__(self, user_tier: str = 'free', user_id: Optional[str] = None, user_metadata: Optional[Dict[str, str]] = None, use_finance_charts: bool = False):
         """
         Initialize converter with user tier
         
@@ -83,6 +83,7 @@ class ExcelToPPTConverter:
             user_tier: One of 'free', 'basic', 'pro', 'ai_pro'
             user_id: Optional user ID for tracking usage
             user_metadata: Optional dict with 'name', 'company', 'email' for branding
+            use_finance_charts: If True, use only finance-appropriate charts (default: False)
         """
         if user_tier not in TIER_CONFIG:
             raise ValueError(f"Invalid tier: {user_tier}. Must be one of: {list(TIER_CONFIG.keys())}")
@@ -90,6 +91,7 @@ class ExcelToPPTConverter:
         self.user_tier = user_tier
         self.user_id = user_id
         self.user_metadata = user_metadata or {}
+        self.use_finance_charts = use_finance_charts
         self.config = TIER_CONFIG[user_tier]
         self.template_manager = TemplateManager()
         
@@ -365,11 +367,14 @@ class ExcelToPPTConverter:
                 print("   📄 Includes: Executive Summary, Key Metrics, Data Insights,")
                 print("                Sector Distribution, Key Data Insights, Top Performers,")
                 print("                Trend Analysis, and more!")
+                if self.use_finance_charts:
+                    print("   💼 Using finance-specific charts only")
                 
                 slide_builder = EnhancedProfessionalBuilder(
                     ai_service=self.ai_service,
                     user_metadata=self.user_metadata,
-                    user_tier=self.user_tier  # Pass tier for differentiation
+                    user_tier=self.user_tier,  # Pass tier for differentiation
+                    use_finance_charts=self.use_finance_charts  # Pass finance chart preference
                 )
                 
                 # Build all slides (Executive Summary, Key Metrics, Data Insights, Sector Distribution, etc.)

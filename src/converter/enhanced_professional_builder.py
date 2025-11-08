@@ -106,10 +106,11 @@ class EnhancedProfessionalBuilder:
     - AI_PRO: 9 slides, full AI suite, advanced charts, deep insights
     """
     
-    def __init__(self, ai_service=None, user_metadata=None, user_tier='basic'):
+    def __init__(self, ai_service=None, user_metadata=None, user_tier='basic', use_finance_charts=False):
         self.ai_service = ai_service
         self.user_metadata = user_metadata or {}
         self.user_tier = user_tier.lower() if user_tier else 'basic'
+        self.use_finance_charts = use_finance_charts
         self.chart_colors = [
             PROFESSIONAL_COLORS['blue'],
             PROFESSIONAL_COLORS['green'],
@@ -631,8 +632,9 @@ class EnhancedProfessionalBuilder:
                 # AI_PRO: Full AI + Advanced Chart Builder with better context
                 print("🤖 AI_PRO tier: Using AI + Advanced Chart Builder")
                 if self.advanced_chart_builder:
-                    # Use 'comparison' context for better chart selection
-                    chart_config = self.advanced_chart_builder.select_chart_type(data, context='comparison')
+                    # Use 'finance' context if finance charts enabled, otherwise 'comparison'
+                    chart_context = 'finance_comparison' if self.use_finance_charts else 'comparison'
+                    chart_config = self.advanced_chart_builder.select_chart_type(data, context=chart_context)
                     chart = self.advanced_chart_builder.create_chart(
                         slide, data, chart_config,
                         Inches(5.2), Inches(1.3), Inches(4.3), Inches(3.5),
@@ -698,7 +700,8 @@ class EnhancedProfessionalBuilder:
             if self.user_tier == 'ai_pro' and self.advanced_chart_builder:
                 # AI PRO ONLY: Use Advanced Chart Builder
                 print("🤖 AI_PRO: Using advanced distribution chart")
-                chart_config = self.advanced_chart_builder.select_chart_type(sector_df, context='distribution')
+                chart_context = 'finance_distribution' if self.use_finance_charts else 'distribution'
+                chart_config = self.advanced_chart_builder.select_chart_type(sector_df, context=chart_context)
                 chart = self.advanced_chart_builder.create_chart(
                     slide, sector_df, chart_config,
                     Inches(0.5), Inches(1.3), Inches(4.5), Inches(4),
@@ -1064,7 +1067,8 @@ class EnhancedProfessionalBuilder:
             if self.user_tier == 'ai_pro' and self.advanced_chart_builder:
                 # AI PRO ONLY: Use Advanced Chart Builder with AI
                 print("🤖 AI_PRO: Using AI-powered trend chart")
-                chart_config = self.advanced_chart_builder.select_chart_type(trend_data, context='trend')
+                chart_context = 'finance_trend' if self.use_finance_charts else 'trend'
+                chart_config = self.advanced_chart_builder.select_chart_type(trend_data, context=chart_context)
                 
                 # Create chart
                 chart = self.advanced_chart_builder.create_chart(

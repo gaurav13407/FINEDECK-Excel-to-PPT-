@@ -160,41 +160,84 @@ class AdvancedChartBuilder:
     
     def select_chart_type(self, data: pd.DataFrame, context: str = 'general') -> Dict[str, Any]:
         """
-        Intelligently select chart type using priority system
+        Intelligently select chart type using priority system.
+        
+        Supports a finance-only mode when `context` contains 'finance'. In that
+        case the selected chart type will be restricted to finance-appropriate
+        charts (column, bar, line_markers, doughnut, column_stacked_100, scatter).
         
         Args:
             data: DataFrame to visualize
-            context: Context hint ('dashboard', 'detailed', 'comparison', 'trend')
+            context: Context hint ('dashboard', 'detailed', 'comparison', 'trend', 'finance')
         
         Returns:
             Chart configuration dictionary
         """
         if data.empty:
             return self._get_default_config()
-        
+
+        result_config = None
+
         # PRIORITY 1: AI Service Recommendations
         if self.ai_service:
             ai_config = self._get_ai_recommendation(data, context)
             if ai_config and ai_config.get('confidence', 0) > 0.7:
                 print(f"🤖 AI recommends: {ai_config['type']} (confidence: {ai_config['confidence']:.2f})")
-                return ai_config
-        
-        # PRIORITY 2: SmartChartAnalyzer
-        if self.smart_analyzer:
+                result_config = ai_config
+
+        # PRIORITY 2: SmartChartAnalyzer (only if no strong AI recommendation)
+        if result_config is None and self.smart_analyzer:
             smart_config = self._get_smart_analyzer_recommendation(data, context)
             if smart_config:
                 print(f"📊 SmartChartAnalyzer recommends: {smart_config['type']}")
-                return smart_config
-        
+                result_config = smart_config
+
         # PRIORITY 3: Data Structure Analysis
-        data_config = self._analyze_data_structure(data, context)
-        if data_config:
-            print(f"📈 Data structure analysis: {data_config['type']}")
-            return data_config
-        
+        if result_config is None:
+            data_config = self._analyze_data_structure(data, context)
+            if data_config:
+                print(f"📈 Data structure analysis: {data_config['type']}")
+                result_config = data_config
+
         # PRIORITY 4: Default fallback
-        print("⚙️  Using default chart configuration")
-        return self._get_default_config()
+        if result_config is None:
+            print("⚙️  Using default chart configuration")
+            result_config = self._get_default_config()
+
+        # If context asks for finance-only charts, filter the chosen type
+        if isinstance(context, str) and 'finance' in context.lower():
+            result_config = self._filter_for_finance(result_config)
+
+        return result_config
+
+    def _filter_for_finance(self, chart_config: Dict[str, Any]) -> Dict[str, Any]:
+        """Restrict chart types to finance-appropriate ones.
+
+        Allowed finance chart types: column, bar, line_markers, doughnut,
+        column_stacked_100, scatter, bubble
+        """
+        allowed = {'column', 'bar', 'line_markers', 'doughnut', 'column_stacked_100', 'scatter', 'bubble'}
+        ctype = chart_config.get('type', 'column')
+        if ctype in allowed:
+            return chart_config
+
+        # Map unsupported types to nearest finance-appropriate type
+        fallback_map = {
+            'area': 'line_markers',
+            'area_stacked': 'line_markers',
+            'column_stacked': 'column',
+            'column_stacked_100': 'column_stacked_100',
+            'pie': 'doughnut',
+            'bubble': 'bubble',
+            'scatter_lines': 'scatter',
+            'scatter': 'scatter'
+        }
+
+        new_type = fallback_map.get(ctype, 'column')
+        # Ensure ppt_type is updated
+        ppt_type = CHART_TYPES.get(new_type, CHART_TYPES['column'])['ppt_type']
+        print(f"   🔒 Finance mode: remapping '{ctype}' → '{new_type}'")
+        return {'type': new_type, 'ppt_type': ppt_type, 'source': chart_config.get('source', 'filtered')}
     
     # ========================================================================
     # PRIORITY 1: AI SERVICE INTEGRATION
@@ -570,35 +613,46 @@ class AdvancedChartBuilder:
             chart.has_title = True
             chart.chart_title.text_frame.text = title
             title_para = chart.chart_title.text_frame.paragraphs[0]
-            title_para.font.size = Pt(20)
+            # Slightly larger title for better presentation
+            title_para.font.size = Pt(22)
             title_para.font.bold = True
             title_para.font.color.rgb = RGBColor(25, 42, 86)  # Navy blue
         
         # ============ LEGEND STYLING ============
         chart.has_legend = True
-        if chart_type not in ['pie', 'doughnut']:
-            chart.legend.position = XL_LEGEND_POSITION.BOTTOM
-            chart.legend.font.size = Pt(11)
-        else:
-            chart.legend.position = XL_LEGEND_POSITION.RIGHT
-            chart.legend.font.size = Pt(11)
-        
-        # Make legend text clearer
-        chart.legend.font.bold = False
+        # Increase legend size and add breathing room
+        try:
+            if chart_type not in ['pie', 'doughnut']:
+                chart.legend.position = XL_LEGEND_POSITION.BOTTOM
+                chart.legend.font.size = Pt(12)
+            else:
+                chart.legend.position = XL_LEGEND_POSITION.RIGHT
+                chart.legend.font.size = Pt(11)
+
+            # Make legend text clearer
+            chart.legend.font.bold = False
+            # Do not force legend into layout so it doesn't squeeze the plot area
+            try:
+                chart.legend.include_in_layout = False
+            except Exception:
+                pass
+        except Exception as e:
+            print(f"   Note: Legend styling not fully supported: {e}")
         
         # ============ DATA LABELS ============
         try:
             plot = chart.plots[0]
-            
+
             if chart_type in ['pie', 'doughnut']:
                 # Pie/Doughnut: Show percentages
                 plot.has_data_labels = True
                 data_labels = plot.data_labels
-                data_labels.font.size = Pt(11)
+                # Slightly larger labels for readability
+                data_labels.font.size = Pt(12)
                 data_labels.font.bold = True
                 data_labels.font.color.rgb = RGBColor(255, 255, 255)  # White text
                 data_labels.position = XL_LABEL_POSITION.INSIDE_END
-                
+
                 # Show percentage
                 try:
                     data_labels.number_format = '0%'
@@ -606,19 +660,27 @@ class AdvancedChartBuilder:
                     data_labels.show_value = False
                 except:
                     pass
-            
+
             elif chart_type in ['column', 'bar']:
-                # Bar/Column: Show values on top
+                # Bar/Column: Show values on top and increase spacing
                 plot.has_data_labels = True
                 data_labels = plot.data_labels
-                data_labels.font.size = Pt(9)
+                data_labels.font.size = Pt(10)
                 data_labels.font.bold = True
                 data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
                 try:
                     data_labels.number_format = '#,##0'
                 except:
                     pass
-        
+
+                # Try to increase gap/spacing between bars for readability (best-effort)
+                try:
+                    for ser in chart.series:
+                        # no-op placeholder for series-level spacing adjustments; kept for future expansion
+                        _ = getattr(ser, 'format', None)
+                except Exception:
+                    pass
+
         except Exception as e:
             print(f"   Note: Data labels not fully supported: {e}")
         
@@ -627,28 +689,42 @@ class AdvancedChartBuilder:
             # Category axis (X-axis for column, Y-axis for bar)
             category_axis = chart.category_axis if hasattr(chart, 'category_axis') else None
             if category_axis:
-                category_axis.tick_label_position = 'low'
-                category_axis.tick_labels.font.size = Pt(10)
+                # Positioning and font improvements for category labels
+                try:
+                    category_axis.tick_label_position = 'low'
+                except Exception:
+                    pass
+                category_axis.tick_labels.font.size = Pt(11)
                 category_axis.tick_labels.font.color.rgb = RGBColor(89, 89, 89)
-                
-                # Rotate labels if needed
+
+                # Rotate labels if needed (less extreme angle)
                 if chart_type == 'column':
                     try:
-                        category_axis.tick_labels.rotation = -45  # Angle labels for readability
+                        category_axis.tick_labels.rotation = -30  # Angle labels for readability
                     except:
                         pass
             
             # Value axis (Y-axis for column, X-axis for bar)
             value_axis = chart.value_axis if hasattr(chart, 'value_axis') else None
             if value_axis:
-                value_axis.tick_labels.font.size = Pt(10)
+                # Improve value axis readability
+                value_axis.tick_labels.font.size = Pt(11)
                 value_axis.tick_labels.font.color.rgb = RGBColor(89, 89, 89)
                 value_axis.tick_labels.number_format = '#,##0'
-                
-                # Show major gridlines for easier reading
+
+                # Show major gridlines for easier reading and subtle style
                 value_axis.has_major_gridlines = True
                 value_axis.has_minor_gridlines = False
-                
+                try:
+                    # best-effort: make gridlines lighter if possible
+                    mg = value_axis.major_gridlines
+                    try:
+                        mg.format.line.color.rgb = RGBColor(220, 220, 220)
+                    except Exception:
+                        pass
+                except Exception:
+                    pass
+
                 # Set visible min to 0 for bar/column charts
                 if chart_type in ['column', 'bar', 'column_stacked']:
                     try:
@@ -674,18 +750,29 @@ class AdvancedChartBuilder:
             
             for idx, series in enumerate(chart.series):
                 color = professional_colors[idx % len(professional_colors)]
-                
-                # Apply color to series
-                fill = series.format.fill
-                fill.solid()
-                fill.fore_color.rgb = color
-                
-                # Add smooth lines for line charts
-                if chart_type in ['line', 'line_markers', 'area', 'area_stacked']:
+
+                # Apply color to series (safe operations)
+                try:
+                    fill = series.format.fill
+                    fill.solid()
+                    fill.fore_color.rgb = color
+                except Exception:
+                    pass
+
+                # Add smooth lines for line charts (best-effort)
+                if chart_type in ['line', 'line_markers']:
                     try:
                         series.smooth = True
                     except:
                         pass
+
+            # Provide additional breathing room by reducing visual clutter
+            try:
+                # If chart has a plot_area, set white fill so plot area looks cleaner
+                chart.plot_area.format.fill.solid()
+                chart.plot_area.format.fill.fore_color.rgb = RGBColor(255, 255, 255)
+            except Exception:
+                pass
         
         except Exception as e:
             print(f"   Note: Series colors not fully applied: {e}")
