@@ -78,8 +78,11 @@ async def tiered_convert_excel_to_ppt(
     
     # DEBUG: Log received template_name
     print(f"\n🎨 ========== BACKEND TEMPLATE DEBUG ==========")
-    print(f"🎨 Received template_name from frontend: {template_name}")
+    print(f"🎨 Received template_name from frontend: {repr(template_name)}")
     print(f"🎨 Template type: {type(template_name)}")
+    print(f"🎨 template_name is None: {template_name is None}")
+    print(f"🎨 template_name == 'None': {template_name == 'None'}")
+    print(f"🎨 template_name length: {len(template_name) if template_name else 0}")
     print(f"🎨 User tier: {user_tier}")
     print(f"🎨 Current plan: {current_user.subscription.plan}")
     print(f"🎨 ==========================================\n")
@@ -161,11 +164,22 @@ async def tiered_convert_excel_to_ppt(
         
         # Check if conversion was successful
         if not result['success']:
-            # Clean up temp files
+            # Clean up temp files with retry logic
             if os.path.exists(excel_path):
-                os.unlink(excel_path)
+                try:
+                    import time
+                    import gc
+                    gc.collect()
+                    time.sleep(0.1)
+                    os.unlink(excel_path)
+                except PermissionError:
+                    print(f"⚠️ Could not delete temp Excel file (locked): {excel_path}")
+            
             if os.path.exists(output_path):
-                os.unlink(output_path)
+                try:
+                    os.unlink(output_path)
+                except PermissionError:
+                    print(f"⚠️ Could not delete temp PPT file (locked): {output_path}")
             
             # Check if upgrade is required
             if result.get('upgrade_required'):
@@ -216,9 +230,18 @@ async def tiered_convert_excel_to_ppt(
             "created_at": datetime.utcnow()
         })
         
-        # Clean up input file
+        # Clean up input file with retry logic (Windows file locking issue)
         if os.path.exists(excel_path):
-            os.unlink(excel_path)
+            try:
+                import time
+                import gc
+                gc.collect()  # Force garbage collection to release file handles
+                time.sleep(0.1)  # Small delay to allow file handles to close
+                os.unlink(excel_path)
+            except PermissionError:
+                # If file is still locked, schedule it for deletion later
+                print(f"⚠️ Could not delete temp file immediately (file locked): {excel_path}")
+                # File will be cleaned up by OS temp folder cleanup
         
         # Generate filename for download
         ppt_filename = f"{Path(file.filename).stem}_converted.pptx"
@@ -240,11 +263,22 @@ async def tiered_convert_excel_to_ppt(
     except HTTPException:
         raise
     except Exception as e:
-        # Clean up temp files
+        # Clean up temp files with retry logic
         if 'excel_path' in locals() and os.path.exists(excel_path):
-            os.unlink(excel_path)
+            try:
+                import time
+                import gc
+                gc.collect()
+                time.sleep(0.1)
+                os.unlink(excel_path)
+            except PermissionError:
+                print(f"⚠️ Could not delete temp Excel file (locked): {excel_path}")
+        
         if 'output_path' in locals() and os.path.exists(output_path):
-            os.unlink(output_path)
+            try:
+                os.unlink(output_path)
+            except PermissionError:
+                print(f"⚠️ Could not delete temp PPT file (locked): {output_path}")
         
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

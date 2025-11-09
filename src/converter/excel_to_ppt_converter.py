@@ -314,14 +314,20 @@ class ExcelToPPTConverter:
                 print(f"⚠️  Limited to {max_sheets} sheets for {self.config['name']} tier")
             
             # AI Template Selection
-            if template_name is None:
-                allowed_templates = self.get_allowed_templates()
-                template_name = allowed_templates[0] if allowed_templates else 'corporate_blue'
-            
             print(f"\n🎨 ========== CONVERTER TEMPLATE DEBUG ==========")
-            print(f"🎨 Received template_name parameter: {template_name}")
+            print(f"🎨 RAW template_name parameter: {repr(template_name)}")
+            print(f"🎨 template_name is None: {template_name is None}")
+            print(f"🎨 template_name == 'None': {template_name == 'None'}")
             print(f"🎨 User tier: {self.user_tier}")
             print(f"🎨 Allowed templates: {self.get_allowed_templates()}")
+            
+            if template_name is None or template_name == 'None' or template_name == '':
+                print(f"⚠️  No template specified, using default")
+                allowed_templates = self.get_allowed_templates()
+                template_name = allowed_templates[0] if allowed_templates else 'corporate_blue'
+                print(f"🎨 Auto-selected template: {template_name}")
+            
+            print(f"🎨 Template to validate: {template_name}")
             print(f"🎨 ===========================================\n")
             
             # Validate template

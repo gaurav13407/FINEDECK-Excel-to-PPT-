@@ -14,7 +14,14 @@ from datetime import datetime
 class TemplateManager:
     """Manages presentation templates (built-in and custom)"""
     
-    def __init__(self, templates_dir: str = "templates"):
+    def __init__(self, templates_dir: str = None):
+        # If no directory specified, use absolute path relative to this file
+        if templates_dir is None:
+            # Get the project root (2 levels up from this file)
+            current_file = Path(__file__)
+            project_root = current_file.parent.parent.parent
+            templates_dir = project_root / "templates"
+        
         self.templates_dir = Path(templates_dir)
         self.built_in_dir = self.templates_dir / "built_in"
         self.custom_dir = self.templates_dir / "custom"

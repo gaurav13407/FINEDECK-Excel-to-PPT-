@@ -26,9 +26,17 @@ def check_ppt_charts(ppt_path):
             if shape.shape_type == MSO_SHAPE_TYPE.CHART:
                 slide_charts += 1
                 results['total_charts'] += 1
+                try:
+                    chart_title = shape.chart.chart_title.text_frame.text if shape.chart.has_title else 'Untitled'
+                    chart_type = shape.chart.chart_type
+                except:
+                    chart_title = 'Untitled'
+                    chart_type = 'Unknown'
+                    
                 results['chart_details'].append({
                     'slide': i,
-                    'chart_title': shape.chart.chart_title.text_frame.text if shape.chart.has_title else 'Untitled'
+                    'chart_title': chart_title,
+                    'chart_type': chart_type
                 })
         
         if slide_charts > 0:
@@ -38,19 +46,19 @@ def check_ppt_charts(ppt_path):
 
 # Check all generated PPTs
 ppts_to_check = [
-    'examples/professional_demo/tech_stocks_free_tier.pptx',
-    'examples/professional_demo/tech_stocks_basic_tier.pptx',
-    'examples/professional_demo/tech_stocks_ai_pro_tier.pptx'
+    'test_output/chart_comparison_demo.pptx',
+    'test_output/portfolio_with_pie_charts.pptx',
+    'test_output/backend_integration_test.pptx'
 ]
 
 print("=" * 80)
-print("📊 CHART VERIFICATION - Professional Presentations")
+print("📊 CHART VERIFICATION - Enhanced Chart Integration")
 print("=" * 80)
 
 for ppt_path in ppts_to_check:
-    tier = ppt_path.split('_')[-2].upper()
+    filename = os.path.basename(ppt_path)
     print(f"\n{'='*80}")
-    print(f"📄 {tier} TIER: {os.path.basename(ppt_path)}")
+    print(f"📄 {filename}")
     print(f"{'='*80}")
     
     results = check_ppt_charts(ppt_path)
@@ -66,9 +74,9 @@ for ppt_path in ppts_to_check:
     if results['total_charts'] > 0:
         print(f"\n✅ CHARTS FOUND:")
         for detail in results['chart_details']:
-            print(f"   Slide {detail['slide']}: {detail['chart_title']}")
+            print(f"   Slide {detail['slide']}: {detail['chart_title']} (Type: {detail['chart_type']})")
     else:
-        print("\n⚠️  NO CHARTS FOUND (placeholders only)")
+        print("\n⚠️  NO CHARTS FOUND")
     
     # Check file size
     file_size = os.path.getsize(ppt_path) / 1024
@@ -76,12 +84,12 @@ for ppt_path in ppts_to_check:
     
     # Verdict
     if results['total_charts'] >= 2:
-        print("✅ VERDICT: Good - Multiple charts present")
+        print("✅ VERDICT: ENHANCED CHARTS ARE PRESENT!")
     elif results['total_charts'] == 1:
-        print("⚠️  VERDICT: Acceptable - At least one chart present")
+        print("⚠️  VERDICT: Only one chart found")
     else:
-        print("❌ VERDICT: Needs improvement - No charts found")
+        print("❌ VERDICT: NO CHARTS - Feature may not be working")
 
 print(f"\n{'='*80}")
-print("✨ Chart Verification Complete")
-print(f"{'='*80}")
+print("✅ VERIFICATION COMPLETE")
+print(f"{'='*80}\n")

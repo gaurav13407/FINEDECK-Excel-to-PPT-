@@ -1,0 +1,39 @@
+{
+  "id": "vibrant_gradient",
+  "name": "Vibrant Gradient",
+  "description": "Bold gradient design with energetic colors for impactful presentations",
+  "category": "premium",
+  "colors": {
+    "primary": "#6A1B9A",
+    "secondary": "#8E24AA",
+    "accent": "#FF6F00",
+    "success": "#43A047",
+    "danger": "#E53935",
+    "light": "#F3E5F5",
+    "white": "#FFFFFF",
+    "chart_colors": ["#7B1FA2", "#FF6F00", "#00ACC1", "#D32F2F", "#43A047", "#FBC02D"]
+  },
+  "fonts": {
+    "title": {
+      "size": 44,
+      "bold": true,
+      "color": "#6A1B9A"
+    },
+    "subtitle": {
+      "size": 18,
+      "bold": false,
+      "color": "#616161"
+    },
+    "heading": {
+      "size": 28,
+      "bold": true,
+      "color": "#6A1B9A"
+    },
+    "body": {
+      "size": 14,
+      "bold": false,
+      "color": "#424242"
+    }
+  },
+  "preview_image": "/templates/previews/vibrant_gradient.png"
+}

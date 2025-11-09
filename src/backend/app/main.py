@@ -73,6 +73,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Slides-Created", "X-Template-Used", "X-AI-Features", "X-AI-Tokens", "X-AI-Cost"]  # Expose custom headers to frontend
 )
 
 # Register rate limiter

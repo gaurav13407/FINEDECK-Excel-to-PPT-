@@ -1,0 +1,39 @@
+{
+  "id": "dark_finance",
+  "name": "Dark Finance",
+  "description": "Professional dark theme with navy blue and gold accents, perfect for financial presentations",
+  "category": "premium",
+  "colors": {
+    "primary": "#192A56",
+    "secondary": "#343A40",
+    "accent": "#FFC107",
+    "success": "#2E7D32",
+    "danger": "#D32F2F",
+    "light": "#ECF0F1",
+    "white": "#FFFFFF",
+    "chart_colors": ["#2196F3", "#2E7D32", "#FFC107", "#D32F2F", "#9C27B0", "#FF9800"]
+  },
+  "fonts": {
+    "title": {
+      "size": 44,
+      "bold": true,
+      "color": "#192A56"
+    },
+    "subtitle": {
+      "size": 18,
+      "bold": false,
+      "color": "#646464"
+    },
+    "heading": {
+      "size": 28,
+      "bold": true,
+      "color": "#192A56"
+    },
+    "body": {
+      "size": 14,
+      "bold": false,
+      "color": "#343A40"
+    }
+  },
+  "preview_image": "/templates/previews/dark_finance.png"
+}
