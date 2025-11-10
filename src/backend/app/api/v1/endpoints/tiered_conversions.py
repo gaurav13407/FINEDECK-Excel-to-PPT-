@@ -53,7 +53,7 @@ async def tiered_convert_excel_to_ppt(
     file: UploadFile = File(...),
     template_name: Optional[str] = Form(None),
     presentation_title: Optional[str] = Form(None),
-    use_finance_charts: Optional[bool] = Form(False),
+    use_finance_charts: Optional[bool] = Form(True),  # ✅ DEFAULT TO TRUE - Use Advanced Finance Charts
     current_user: UserInDB = Depends(get_current_active_user)
 ):
     """
@@ -69,7 +69,7 @@ async def tiered_convert_excel_to_ppt(
         file: Excel file to convert
         template_name: Optional template name (must be allowed for tier)
         presentation_title: Optional custom title
-        use_finance_charts: Use finance-specific charts only (default: False)
+        use_finance_charts: Use Advanced Finance Charts with 12+ chart types (default: True)
     """
     
     # Get user's subscription tier

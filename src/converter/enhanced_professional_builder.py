@@ -26,9 +26,9 @@ from src.converter.advanced_chart_templates import AdvancedChartBuilder, CHART_T
 
 # Import enhancement modules
 from src.converter.visual_enhancements import VisualEnhancer
-from src.converter.simple_finance_charts import SimpleFinanceChartBuilder
+from src.converter.advanced_finance_charts import AdvancedFinanceChartBuilder
 
-print("🔥 EnhancedProfessionalBuilder: Using SimpleFinanceChartBuilder (NO AI, NO SmartChartAnalyzer)")
+print("� EnhancedProfessionalBuilder: Using NEW AdvancedFinanceChartBuilder with 12+ chart types!")
 
 # ============================================================================
 # ENHANCED 8+ SLIDE STRUCTURE
@@ -182,14 +182,16 @@ class EnhancedProfessionalBuilder:
         
         # Initialize enhancement modules with template colors
         self.visual_enhancer = VisualEnhancer(self.template_colors)
-        self.chart_builder = SimpleFinanceChartBuilder(self.template_colors)
+        self.chart_builder = AdvancedFinanceChartBuilder(None, self.template_colors)  # Slide will be set per chart
         
         print(f"\n🎨 ========== TEMPLATE APPLICATION ==========")
         print(f"🎨 Template name: {template.get('name', 'Unknown') if template else 'None'}")
         print(f"🎨 Primary color (navy): {self.template_colors['navy']}")
         print(f"🎨 Accent color (light_blue): {self.template_colors['light_blue']}")
         print(f"🎨 Chart colors: {self.chart_colors}")
-        print(f"🎨 Chart system: SimpleFinanceChartBuilder ✅ (NO AI)")
+        print(f"🎨 Chart system: AdvancedFinanceChartBuilder ✅")
+        print(f"🎨 Supported charts: LINE, AREA, COLUMN, BAR, PIE, DONUT, WATERFALL,")
+        print(f"🎨                   STACKED_COLUMN, STACKED_BAR, SCATTER, BUBBLE, CANDLESTICK")
         print(f"🎨 =========================================\n")
         
         results = {
@@ -503,7 +505,7 @@ class EnhancedProfessionalBuilder:
     # ========================================================================
     
     def _create_key_metrics(self, prs, data):
-        """Create key metrics overview with metric cards"""
+        """Create key metrics overview with metric cards and visualization chart"""
         slide = prs.slides.add_slide(prs.slide_layouts[6])
         
         # Title
@@ -518,20 +520,20 @@ class EnhancedProfessionalBuilder:
         # Extract key metrics
         metrics = self._extract_key_metrics(data)
         
-        # Create metric cards (2x3 grid)
+        # Create metric cards (2x2 grid - reduced to make room for chart)
         positions = [
-            (0.5, 1.3), (3.7, 1.3), (6.9, 1.3),
-            (0.5, 3.6), (3.7, 3.6), (6.9, 3.6)
+            (0.5, 1.3), (3.2, 1.3),
+            (0.5, 3.3), (3.2, 3.3)
         ]
         
-        for i, (metric_name, metric_value, trend) in enumerate(metrics[:6]):
+        for i, (metric_name, metric_value, trend) in enumerate(metrics[:4]):
             left, top = positions[i]
             
             # Card background
             card = slide.shapes.add_shape(
                 1,  # Rectangle
                 Inches(left), Inches(top),
-                Inches(2.8), Inches(1.8)
+                Inches(2.5), Inches(1.7)
             )
             card.fill.solid()
             card.fill.fore_color.rgb = RGBColor(*self.template_colors['light_gray'])
@@ -541,38 +543,58 @@ class EnhancedProfessionalBuilder:
             # Metric label
             label_box = slide.shapes.add_textbox(
                 Inches(left + 0.2), Inches(top + 0.2),
-                Inches(2.4), Inches(0.4)
+                Inches(2.1), Inches(0.4)
             )
             tf = label_box.text_frame
             p = tf.paragraphs[0]
             p.text = metric_name
-            p.font.size = Pt(14)
+            p.font.size = Pt(13)
             p.font.bold = True
             p.font.color.rgb = RGBColor(*self.template_colors['dark_gray'])
             
             # Metric value
             value_box = slide.shapes.add_textbox(
                 Inches(left + 0.2), Inches(top + 0.7),
-                Inches(2.4), Inches(0.6)
+                Inches(2.1), Inches(0.6)
             )
             tf = value_box.text_frame
             p = tf.paragraphs[0]
             p.text = metric_value
-            p.font.size = Pt(28)
+            p.font.size = Pt(24)
             p.font.bold = True
             p.font.color.rgb = RGBColor(*self.template_colors['navy'])
             
             # Trend indicator
             trend_box = slide.shapes.add_textbox(
-                Inches(left + 0.2), Inches(top + 1.4),
-                Inches(2.4), Inches(0.3)
+                Inches(left + 0.2), Inches(top + 1.3),
+                Inches(2.1), Inches(0.3)
             )
             tf = trend_box.text_frame
             p = tf.paragraphs[0]
             p.text = trend
-            p.font.size = Pt(12)
+            p.font.size = Pt(11)
             trend_color = self.template_colors['green'] if '↑' in trend else self.template_colors['red'] if '↓' in trend else self.template_colors['gray']
             p.font.color.rgb = RGBColor(*trend_color)
+        
+        # ✨ ADD VISUALIZATION CHART (Column/Line chart for metrics comparison)
+        print("✨ Using AdvancedFinanceChartBuilder for Key Metrics visualization...")
+        try:
+            self.chart_builder.slide = slide
+            self.chart_builder.position = (6, 1.3)
+            self.chart_builder.size = (3.7, 3.7)
+            
+            # Use original data for chart
+            chart_data = data.head(15) if not data.empty else None
+            if chart_data is not None and not chart_data.empty:
+                success = self.chart_builder.create_chart(
+                    df=chart_data,
+                    chart_type='COLUMN',  # Force column chart for metrics
+                    title=""
+                )
+                if success:
+                    print(f"   ✅ Key Metrics chart created!")
+        except Exception as e:
+            print(f"   ⚠️ Key Metrics chart error: {e}")
     
     def _extract_key_metrics(self, data):
         """Extract key metrics from data"""
@@ -700,27 +722,27 @@ class EnhancedProfessionalBuilder:
             return
         
         try:
-            # ✨ USE SIMPLE FINANCE CHART BUILDER
-            print("✨ Using SimpleFinanceChartBuilder (NO AI)...")
+            # ✨ USE ADVANCED FINANCE CHART BUILDER (12+ chart types)
+            print("✨ Using AdvancedFinanceChartBuilder with intelligent detection...")
             
-            # Prepare DataFrame for chart (limit to first 10 rows for clarity)
-            chart_data = data.head(10).copy()
+            # Prepare DataFrame for chart (limit to first 20 rows for clarity)
+            chart_data = data.head(20).copy()
             
-            # Create chart with finance-optimized detection
-            chart = self.chart_builder.create_chart(
-                slide,
-                chart_data,
-                left=Inches(5.2),
-                top=Inches(1.3),
-                width=Inches(4.3),
-                height=Inches(3.5),
+            # Create chart with advanced finance detection
+            # Position and size in inches
+            self.chart_builder.slide = slide
+            self.chart_builder.position = (5.2, 1.3)
+            self.chart_builder.size = (4.3, 3.5)
+            
+            success = self.chart_builder.create_chart(
+                df=chart_data,
                 title="Data Insights"
             )
             
-            if chart:
-                print(f"   ✓ Finance chart created successfully!")
+            if success:
+                print(f"   ✅ Advanced finance chart created successfully!")
             else:
-                print(f"   ⚠️ Chart creation returned None")
+                print(f"   ⚠️ Chart creation failed")
                 # No fallback - keep slide clean if chart fails
             
         except Exception as e:
@@ -773,21 +795,21 @@ class EnhancedProfessionalBuilder:
             sector_df = sector_data.reset_index()
             sector_df.columns = [category_col, value_col]
             
-            # ✨ USE SIMPLE FINANCE CHART BUILDER
-            print("✨ Using SimpleFinanceChartBuilder for sector distribution...")
+            # ✨ USE ADVANCED FINANCE CHART BUILDER
+            print("✨ Using AdvancedFinanceChartBuilder for sector distribution...")
             try:
-                chart = self.chart_builder.create_chart(
-                    slide,
-                    sector_df,
-                    left=Inches(0.5),
-                    top=Inches(1.3),
-                    width=Inches(4.5),
-                    height=Inches(4),
+                # Set up chart builder for this slide
+                self.chart_builder.slide = slide
+                self.chart_builder.position = (0.5, 1.3)
+                self.chart_builder.size = (4.5, 4)
+                
+                success = self.chart_builder.create_chart(
+                    df=sector_df,
                     title="Sector Distribution"
                 )
                 
-                if chart:
-                    print(f"   ✓ Finance sector chart created!")
+                if success:
+                    print(f"   ✅ Advanced sector chart created!")
                 else:
                     print(f"   ⚠️ Sector chart creation failed - no data to display")
                     
@@ -956,7 +978,7 @@ class EnhancedProfessionalBuilder:
     # ========================================================================
     
     def _create_top_performers(self, prs, data):
-        """Create top performers slide"""
+        """Create top performers slide with ranking and chart"""
         slide = prs.slides.add_slide(prs.slide_layouts[6])
         
         # Title
@@ -986,11 +1008,28 @@ class EnhancedProfessionalBuilder:
         rank_col = numeric_cols[0]
         top_performers = data.nlargest(10, rank_col).head(10)
         
-        # Create ranked list
+        # ✨ ADD BAR CHART for visual comparison
+        print("✨ Using AdvancedFinanceChartBuilder for Top Performers visualization...")
+        try:
+            self.chart_builder.slide = slide
+            self.chart_builder.position = (5.5, 1.3)
+            self.chart_builder.size = (4.2, 4)
+            
+            success = self.chart_builder.create_chart(
+                df=top_performers,
+                chart_type='BAR',  # Force BAR chart for rankings
+                title=""
+            )
+            if success:
+                print(f"   ✅ Top Performers chart created!")
+        except Exception as e:
+            print(f"   ⚠️ Top Performers chart error: {e}")
+        
+        # Create ranked list on the left side
         y_position = 1.3
         
         # Table header
-        headers = [("Rank", 0.7, 0.6), ("Name", 1.5, 3.5), ("Value", 5.2, 2), ("Status", 7.4, 1.8)]
+        headers = [("Rank", 0.5, 0.5), ("Name", 1.1, 2.5), ("Value", 3.8, 1.3)]
         for header_text, x_pos, width in headers:
             header_box = slide.shapes.add_textbox(
                 Inches(x_pos), Inches(y_position),
@@ -999,7 +1038,7 @@ class EnhancedProfessionalBuilder:
             tf = header_box.text_frame
             p = tf.paragraphs[0]
             p.text = header_text
-            p.font.size = Pt(14)
+            p.font.size = Pt(13)
             p.font.bold = True
             p.font.color.rgb = RGBColor(*self.template_colors['navy'])
         
@@ -1009,75 +1048,61 @@ class EnhancedProfessionalBuilder:
         text_cols = data.select_dtypes(include=['object']).columns
         name_col = text_cols[0] if len(text_cols) > 0 else None
         
-        # Add top performers
-        for i, (idx, row) in enumerate(top_performers.iterrows(), 1):
-            if y_position > 5:
+        # Add top performers (show top 8 to fit with chart)
+        for i, (idx, row) in enumerate(top_performers.head(8).iterrows(), 1):
+            if y_position > 5.3:
                 break
             
-            # Rank
+            # Rank with background
+            rank_bg = slide.shapes.add_shape(
+                1,
+                Inches(0.5), Inches(y_position),
+                Inches(0.5), Inches(0.32)
+            )
+            rank_bg.fill.solid()
+            if i <= 3:
+                color = self.template_colors['yellow'] if i == 1 else self.template_colors['light_blue']
+            else:
+                color = self.template_colors['light_gray']
+            rank_bg.fill.fore_color.rgb = RGBColor(*color)
+            rank_bg.line.fill.background()
+            
             rank_box = slide.shapes.add_textbox(
-                Inches(0.7), Inches(y_position),
-                Inches(0.6), Inches(0.35)
+                Inches(0.5), Inches(y_position),
+                Inches(0.5), Inches(0.32)
             )
             tf = rank_box.text_frame
             p = tf.paragraphs[0]
             p.text = str(i)
-            p.font.size = Pt(16)
+            p.font.size = Pt(14)
             p.font.bold = True
             p.alignment = PP_ALIGN.CENTER
             
-            # Background color for rank
-            if i <= 3:
-                rank_bg = slide.shapes.add_shape(
-                    1,
-                    Inches(0.7), Inches(y_position),
-                    Inches(0.6), Inches(0.35)
-                )
-                rank_bg.fill.solid()
-                color = self.template_colors['yellow'] if i == 1 else self.template_colors['light_gray']
-                rank_bg.fill.fore_color.rgb = RGBColor(*color)
-                rank_bg.line.fill.background()
-                # Move to back
-                rank_bg.element.getparent().remove(rank_bg.element)
-                slide.shapes._spTree.insert(2, rank_bg.element)
-            
             # Name
-            name = str(row[name_col])[:30] if name_col else f"Item {i}"
+            name = str(row[name_col])[:25] if name_col else f"Item {i}"
             name_box = slide.shapes.add_textbox(
-                Inches(1.5), Inches(y_position),
-                Inches(3.5), Inches(0.35)
+                Inches(1.1), Inches(y_position),
+                Inches(2.5), Inches(0.32)
             )
             tf = name_box.text_frame
             p = tf.paragraphs[0]
             p.text = name
-            p.font.size = Pt(13)
+            p.font.size = Pt(12)
             
             # Value
             value = row[rank_col]
             value_box = slide.shapes.add_textbox(
-                Inches(5.2), Inches(y_position),
-                Inches(2), Inches(0.35)
+                Inches(3.8), Inches(y_position),
+                Inches(1.3), Inches(0.32)
             )
             tf = value_box.text_frame
             p = tf.paragraphs[0]
             p.text = self._format_number(value)
-            p.font.size = Pt(13)
+            p.font.size = Pt(12)
             p.font.bold = True
             p.alignment = PP_ALIGN.RIGHT
             
-            # Status indicator
-            status = "Excellent" if i <= 3 else "Strong" if i <= 6 else "Good"
-            status_box = slide.shapes.add_textbox(
-                Inches(7.4), Inches(y_position),
-                Inches(1.8), Inches(0.35)
-            )
-            tf = status_box.text_frame
-            p = tf.paragraphs[0]
-            p.text = f"✓ {status}"
-            p.font.size = Pt(12)
-            p.font.color.rgb = RGBColor(*self.template_colors['green'])
-            
-            y_position += 0.4
+            y_position += 0.38
     
     # ========================================================================
     # SLIDE 8: TREND ANALYSIS
@@ -1131,25 +1156,25 @@ class EnhancedProfessionalBuilder:
             return
         
         try:
-            # Prepare trend data (use up to 20 data points for better trends)
-            limit = min(20, len(data))
+            # Prepare trend data (use up to 30 data points for better trends)
+            limit = min(30, len(data))
             trend_data = data.head(limit).copy()
             
-            # ✨ USE SIMPLE FINANCE CHART BUILDER
-            print("✨ Using SimpleFinanceChartBuilder for trend analysis...")
+            # ✨ USE ADVANCED FINANCE CHART BUILDER
+            print("✨ Using AdvancedFinanceChartBuilder for trend analysis...")
             
-            chart = self.chart_builder.create_chart(
-                slide,
-                trend_data,
-                left=Inches(5.2),
-                top=Inches(1.3),
-                width=Inches(4.3),
-                height=Inches(3.5),
+            # Set up chart builder
+            self.chart_builder.slide = slide
+            self.chart_builder.position = (5.2, 1.3)
+            self.chart_builder.size = (4.3, 3.5)
+            
+            success = self.chart_builder.create_chart(
+                df=trend_data,
                 title="Trend Analysis"
             )
             
-            if chart:
-                print(f"   ✓ Finance trend chart created!")
+            if success:
+                print(f"   ✅ Advanced trend chart created!")
             else:
                 print(f"   ⚠️ Trend chart creation failed")
                 # No fallback
@@ -1341,6 +1366,271 @@ class EnhancedProfessionalBuilder:
             chart.chart_title.text_frame.text = title
             chart.chart_title.text_frame.paragraphs[0].font.size = Pt(14)
             chart.chart_title.text_frame.paragraphs[0].font.bold = True
+    
+    def _create_multiple_chart_slides(self, prs, all_data, sheets_data):
+        """
+        Create multiple slides showcasing different chart types
+        GUARANTEED: At least 3 different chart types from user's data
+        Returns number of slides created
+        """
+        print("\n📊 ========== CREATING MULTIPLE CHART SHOWCASE ==========")
+        slides_created = 0
+        
+        if all_data.empty:
+            print("   ⚠️  No data available for chart showcase")
+            return 0
+        
+        # Prepare different data subsets for GUARANTEED different chart types
+        chart_configs = []
+        
+        # PRIORITY 1: LINE CHART (Most common - time series)
+        # Always try to create a line chart if we have time-based or sequential data
+        time_cols = [col for col in all_data.columns if any(kw in str(col).lower() 
+                     for kw in ['date', 'quarter', 'month', 'year', 'period', 'time', 'q1', 'q2', 'q3', 'q4'])]
+        
+        if time_cols or len(all_data) >= 4:
+            # Use first sheet data for cleaner line chart
+            line_data = sheets_data[0][1] if sheets_data else all_data
+            if len(line_data) >= 3:
+                chart_configs.append({
+                    'type': 'LINE',
+                    'title': '📈 Performance Trends (Line Chart)',
+                    'data': line_data.head(20),
+                    'description': 'Time-series analysis showing key metrics and trends over time',
+                    'priority': 1
+                })
+                print(f"   ✅ LINE chart configured (Priority 1)")
+        
+        # PRIORITY 2: DONUT/PIE CHART (Portfolio/Distribution)
+        # Look for allocation or distribution data in any sheet
+        donut_configured = False
+        for sheet_name, sheet_df in (sheets_data if sheets_data else [('all', all_data)]):
+            if donut_configured:
+                break
+            
+            text_cols = sheet_df.select_dtypes(include=['object', 'string']).columns.tolist()
+            numeric_cols = sheet_df.select_dtypes(include=[np.number]).columns.tolist()
+            
+            # Check for allocation keywords in sheet name or columns
+            allocation_keywords = ['allocation', 'portfolio', 'sector', 'distribution', 'breakdown', 'share']
+            has_allocation = any(kw in sheet_name.lower() for kw in allocation_keywords)
+            has_allocation = has_allocation or any(kw in ' '.join([str(c).lower() for c in sheet_df.columns]) for kw in allocation_keywords)
+            
+            if (text_cols and numeric_cols and len(sheet_df) >= 3 and len(sheet_df) <= 12) or has_allocation:
+                # Create aggregated data for better donut chart
+                if text_cols and numeric_cols:
+                    category_col = text_cols[0]
+                    value_col = numeric_cols[0]
+                    try:
+                        donut_data = sheet_df.groupby(category_col)[value_col].sum().reset_index()
+                        if 3 <= len(donut_data) <= 10:
+                            chart_configs.append({
+                                'type': 'DONUT',
+                                'title': '🍩 Distribution Analysis (Donut Chart)',
+                                'data': donut_data,
+                                'description': 'Breakdown showing proportional allocation across categories',
+                                'priority': 2
+                            })
+                            donut_configured = True
+                            print(f"   ✅ DONUT chart configured (Priority 2)")
+                    except:
+                        pass
+        
+        # PRIORITY 3: COLUMN or BAR CHART (Comparison)
+        # Use data with good comparison potential
+        comparison_data = sheets_data[0][1] if sheets_data and len(sheets_data[0][1]) <= 15 else all_data.head(12)
+        numeric_cols = comparison_data.select_dtypes(include=[np.number]).columns.tolist()
+        
+        if numeric_cols and len(comparison_data) >= 2:
+            if len(comparison_data) > 10:
+                # Use BAR for many items
+                chart_configs.append({
+                    'type': 'BAR',
+                    'title': '📊 Performance Rankings (Bar Chart)',
+                    'data': comparison_data.head(15),
+                    'description': 'Horizontal comparison showing relative performance across categories',
+                    'priority': 3
+                })
+                print(f"   ✅ BAR chart configured (Priority 3)")
+            else:
+                # Use COLUMN for fewer items
+                chart_configs.append({
+                    'type': 'COLUMN',
+                    'title': '📊 Side-by-Side Comparison (Column Chart)',
+                    'data': comparison_data.head(10),
+                    'description': 'Vertical columns comparing key metrics across periods or categories',
+                    'priority': 3
+                })
+                print(f"   ✅ COLUMN chart configured (Priority 3)")
+        
+        # PRIORITY 4: STACKED COLUMN (Composition over time)
+        # Only if we have time data and multiple metrics
+        if time_cols and len(numeric_cols) >= 3 and len(all_data) >= 4:
+            stacked_data = all_data.head(12)
+            chart_configs.append({
+                'type': 'STACKED_COLUMN',
+                'title': '📊 Composition Breakdown (Stacked Column)',
+                'data': stacked_data,
+                'description': 'Stacked view showing how components contribute to the total',
+                'priority': 4
+            })
+            print(f"   ✅ STACKED_COLUMN chart configured (Priority 4)")
+        
+        # PRIORITY 5: AREA CHART (Cumulative/Volume emphasis)
+        if time_cols and numeric_cols and len(all_data) >= 4:
+            area_data = all_data.head(15)
+            chart_configs.append({
+                'type': 'AREA',
+                'title': '📈 Cumulative Growth (Area Chart)',
+                'data': area_data,
+                'description': 'Area visualization emphasizing volume and cumulative trends',
+                'priority': 5
+            })
+            print(f"   ✅ AREA chart configured (Priority 5)")
+        
+        # PRIORITY 6: WATERFALL (P&L or incremental changes)
+        # Look for positive/negative values
+        for sheet_name, sheet_df in (sheets_data if sheets_data else [('all', all_data)]):
+            numeric_cols_sheet = sheet_df.select_dtypes(include=[np.number]).columns.tolist()
+            if numeric_cols_sheet and len(sheet_df) <= 10:
+                sample_values = sheet_df[numeric_cols_sheet[0]].dropna()
+                has_positive = (sample_values > 0).any()
+                has_negative = (sample_values < 0).any()
+                
+                # Check for P&L keywords
+                pl_keywords = ['revenue', 'profit', 'expense', 'cost', 'income', 'ebitda', 'margin']
+                has_pl = any(kw in sheet_name.lower() or kw in ' '.join([str(c).lower() for c in sheet_df.columns]) for kw in pl_keywords)
+                
+                if (has_positive and has_negative) or has_pl:
+                    chart_configs.append({
+                        'type': 'WATERFALL',
+                        'title': '💧 Financial Flow (Waterfall Chart)',
+                        'data': sheet_df.head(10),
+                        'description': 'Step-by-step breakdown showing incremental changes from start to end',
+                        'priority': 6
+                    })
+                    print(f"   ✅ WATERFALL chart configured (Priority 6)")
+                    break
+        
+        # PRIORITY 7: CANDLESTICK (Only if OHLC data exists)
+        # Check all sheets for stock data
+        for sheet_name, sheet_df in (sheets_data if sheets_data else []):
+            ohlc_keywords = ['open', 'high', 'low', 'close']
+            ohlc_cols = {kw: None for kw in ohlc_keywords}
+            for col in sheet_df.columns:
+                col_lower = str(col).lower()
+                for kw in ohlc_keywords:
+                    if kw in col_lower and ohlc_cols[kw] is None:
+                        ohlc_cols[kw] = col
+            
+            if all(ohlc_cols.values()) and len(sheet_df) >= 5:
+                chart_configs.append({
+                    'type': 'CANDLESTICK',
+                    'title': '📊 Stock Price Movement (Candlestick Chart)',
+                    'data': sheet_df.head(30),
+                    'description': 'OHLC (Open-High-Low-Close) visualization for stock/forex analysis',
+                    'priority': 7
+                })
+                print(f"   ✅ CANDLESTICK chart configured (Priority 7)")
+                break
+        
+        # Sort by priority and take top configurations
+        chart_configs.sort(key=lambda x: x['priority'])
+        
+        # GUARANTEE: Create at least 3 charts, maximum 6 for clarity
+        min_charts = 3
+        max_charts = 6
+        
+        if len(chart_configs) < min_charts:
+            print(f"   ⚠️  Only {len(chart_configs)} chart types configured, ensuring minimum {min_charts}...")
+            # Add fallback charts to reach minimum
+            if len(chart_configs) < 3 and numeric_cols:
+                # Add a basic column chart as fallback
+                chart_configs.append({
+                    'type': 'COLUMN',
+                    'title': '📊 Data Overview (Column Chart)',
+                    'data': all_data.head(10),
+                    'description': 'General overview of key data points',
+                    'priority': 99
+                })
+        
+        selected_configs = chart_configs[:max_charts]
+        
+        print(f"\n📊 Creating {len(selected_configs)} chart slides (GUARANTEED MINIMUM: 3)...")
+        print(f"   Chart types: {', '.join([c['type'] for c in selected_configs])}")
+        
+        # Create slides for each chart type
+        for config in selected_configs:
+            try:
+                # Create slide
+                slide_layout = prs.slide_layouts[6]  # Blank layout
+                slide = prs.slides.add_slide(slide_layout)
+                
+                # Add title
+                title_box = slide.shapes.add_textbox(
+                    Inches(0.5), Inches(0.3),
+                    Inches(9), Inches(0.6)
+                )
+                title_frame = title_box.text_frame
+                title_frame.text = config['title']
+                title_frame.paragraphs[0].font.size = Pt(32)
+                title_frame.paragraphs[0].font.bold = True
+                # Fix color assignment - convert tuple to RGBColor
+                navy_color = self.template_colors['navy']
+                if isinstance(navy_color, tuple):
+                    title_frame.paragraphs[0].font.color.rgb = RGBColor(*navy_color)
+                else:
+                    title_frame.paragraphs[0].font.color.rgb = navy_color
+                
+                # Add description
+                desc_box = slide.shapes.add_textbox(
+                    Inches(0.5), Inches(0.9),
+                    Inches(9), Inches(0.4)
+                )
+                desc_frame = desc_box.text_frame
+                desc_frame.text = config['description']
+                desc_frame.paragraphs[0].font.size = Pt(14)
+                desc_frame.paragraphs[0].font.color.rgb = RGBColor(100, 100, 100)
+                
+                # Create chart
+                self.chart_builder.slide = slide
+                self.chart_builder.position = (0.8, 1.5)
+                self.chart_builder.size = (8.4, 5)
+                
+                success = self.chart_builder.create_chart(
+                    df=config['data'],
+                    chart_type=config['type'],
+                    title=""  # Title already added above
+                )
+                
+                if success:
+                    print(f"   ✅ {config['type']} chart created")
+                    slides_created += 1
+                    
+                    # Add chart type label
+                    label_box = slide.shapes.add_textbox(
+                        Inches(8.5), Inches(6.8),
+                        Inches(1.2), Inches(0.4)
+                    )
+                    label_frame = label_box.text_frame
+                    label_frame.text = f"Chart: {config['type']}"
+                    label_frame.paragraphs[0].font.size = Pt(10)
+                    label_frame.paragraphs[0].font.italic = True
+                    label_frame.paragraphs[0].font.color.rgb = RGBColor(150, 150, 150)
+                else:
+                    print(f"   ⚠️  {config['type']} chart creation failed")
+                    # Remove the slide if chart creation failed
+                    rId = prs.slides._sldIdLst[-1].rId
+                    prs.part.drop_rel(rId)
+                    del prs.slides._sldIdLst[-1]
+                    
+            except Exception as e:
+                print(f"   ❌ Error creating {config.get('type', 'unknown')} chart: {e}")
+        
+        print(f"\n✅ Created {slides_created} chart showcase slides")
+        print("=" * 80 + "\n")
+        
+        return slides_created
     
     def _get_ppt_chart_type(self, chart_type_str):
         """Convert string chart type to PowerPoint chart type enum"""

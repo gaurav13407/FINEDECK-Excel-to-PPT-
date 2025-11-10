@@ -13,7 +13,13 @@
 
 - **📈 Excel Parsing**: Intelligent data extraction from `.xlsx` and `.xls` files
 - **🎨 PPT Generation**: Automated creation of professional presentations using python-pptx
-- **💳 Subscription Tiers**: Free, Basic, Pro, and AI (Enterprise) plans with credit system
+- **� Advanced Finance Charts**: 12+ chart types with intelligent detection
+  - **Performance & Growth**: Line, Area, Column, Bar charts
+  - **Portfolio & Assets**: Pie, Donut, Stacked Column charts
+  - **P&L & Cash Flow**: Waterfall, Stacked Bar charts
+  - **Market Analysis**: Candlestick, Scatter, Bubble charts
+  - **Smart Detection**: Auto-selects best chart type based on data structure
+- **�💳 Subscription Tiers**: Free, Basic, Pro, and AI (Enterprise) plans with credit system
 - **🔐 Authentication**: JWT tokens + OAuth (GitHub, Google, Twitter)
 - **☁️ Cloud Storage**: Multi-backend support (Azure Blob Storage, Backblaze B2)
 - **⚡ Async Processing**: FastAPI + Motor for high-performance async operations
