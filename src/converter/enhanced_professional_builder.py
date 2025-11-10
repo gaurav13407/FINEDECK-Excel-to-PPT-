@@ -26,9 +26,9 @@ from src.converter.advanced_chart_templates import AdvancedChartBuilder, CHART_T
 
 # Import enhancement modules
 from src.converter.visual_enhancements import VisualEnhancer
-from src.converter.enhanced_charts import EnhancedChartBuilder
+from src.converter.simple_finance_charts import SimpleFinanceChartBuilder
 
-print("🔥 EnhancedProfessionalBuilder: Imported EnhancedChartBuilder successfully")
+print("🔥 EnhancedProfessionalBuilder: Using SimpleFinanceChartBuilder (NO AI, NO SmartChartAnalyzer)")
 
 # ============================================================================
 # ENHANCED 8+ SLIDE STRUCTURE
@@ -135,7 +135,7 @@ class EnhancedProfessionalBuilder:
         
         # Initialize enhancement modules
         self.visual_enhancer = None  # Will be initialized after template colors are loaded
-        self.enhanced_chart_builder = None  # Will be initialized after template colors are loaded
+        self.chart_builder = None  # Will be initialized after template colors are loaded
     
     def _load_template_colors(self, template):
         """Convert template JSON colors to RGB tuples for use in presentation"""
@@ -182,14 +182,14 @@ class EnhancedProfessionalBuilder:
         
         # Initialize enhancement modules with template colors
         self.visual_enhancer = VisualEnhancer(self.template_colors)
-        self.enhanced_chart_builder = EnhancedChartBuilder(self.template_colors)
+        self.chart_builder = SimpleFinanceChartBuilder(self.template_colors)
         
         print(f"\n🎨 ========== TEMPLATE APPLICATION ==========")
         print(f"🎨 Template name: {template.get('name', 'Unknown') if template else 'None'}")
         print(f"🎨 Primary color (navy): {self.template_colors['navy']}")
         print(f"🎨 Accent color (light_blue): {self.template_colors['light_blue']}")
         print(f"🎨 Chart colors: {self.chart_colors}")
-        print(f"🎨 Enhancement modules initialized: VisualEnhancer, EnhancedChartBuilder ✅")
+        print(f"🎨 Chart system: SimpleFinanceChartBuilder ✅ (NO AI)")
         print(f"🎨 =========================================\n")
         
         results = {
@@ -700,14 +700,14 @@ class EnhancedProfessionalBuilder:
             return
         
         try:
-            # ✨ USE ENHANCED CHART BUILDER WITH AUTO-DETECTION
-            print("✨ Using EnhancedChartBuilder with auto-detection...")
+            # ✨ USE SIMPLE FINANCE CHART BUILDER
+            print("✨ Using SimpleFinanceChartBuilder (NO AI)...")
             
             # Prepare DataFrame for chart (limit to first 10 rows for clarity)
             chart_data = data.head(10).copy()
             
-            # Auto-create chart with intelligent type detection
-            chart = self.enhanced_chart_builder.auto_create_chart(
+            # Create chart with finance-optimized detection
+            chart = self.chart_builder.create_chart(
                 slide,
                 chart_data,
                 left=Inches(5.2),
@@ -718,71 +718,13 @@ class EnhancedProfessionalBuilder:
             )
             
             if chart:
-                print(f"   ✓ Enhanced chart created successfully!")
+                print(f"   ✓ Finance chart created successfully!")
             else:
-                print(f"   ⚠️ Enhanced chart returned None, falling back to default")
-                # Fallback to original logic if enhanced chart fails
-                self._add_insights_chart_fallback(slide, data)
+                print(f"   ⚠️ Chart creation returned None")
+                # No fallback - keep slide clean if chart fails
             
         except Exception as e:
-            print(f"⚠️  Could not add enhanced chart: {e}, using fallback")
-            import traceback
-            traceback.print_exc()
-            # Fallback to original chart logic
-            self._add_insights_chart_fallback(slide, data)
-    
-    def _add_insights_chart_fallback(self, slide, data):
-        """Fallback chart creation using original tier-based logic"""
-        numeric_cols = data.select_dtypes(include=[np.number]).columns
-        
-        try:
-            # TIER-BASED CHART SELECTION
-            if self.user_tier == 'basic':
-                # BASIC: Simple column chart only
-                print("📊 BASIC tier: Using simple column chart")
-                chart_config = self._create_default_chart(data, numeric_cols)
-                self._render_chart(slide, data, chart_config, 
-                                 Inches(5.2), Inches(1.3), Inches(4.3), Inches(3.5))
-            
-            elif self.user_tier == 'pro':
-                # PRO: SmartChartAnalyzer (no AI)
-                print("📊 PRO tier: Using SmartChartAnalyzer")
-                if self.chart_analyzer:
-                    chart_config = self.advanced_chart_builder.select_chart_type(data, context='dashboard')
-                    # Force SmartAnalyzer source by disabling AI temporarily
-                    old_ai = self.advanced_chart_builder.ai_service
-                    self.advanced_chart_builder.ai_service = None
-                    chart = self.advanced_chart_builder.create_chart(
-                        slide, data, chart_config,
-                        Inches(5.2), Inches(1.3), Inches(4.3), Inches(3.5),
-                        title="Data Insights"
-                    )
-                    self.advanced_chart_builder.ai_service = old_ai
-                else:
-                    chart_config = self._create_default_chart(data, numeric_cols)
-                    self._render_chart(slide, data, chart_config, 
-                                     Inches(5.2), Inches(1.3), Inches(4.3), Inches(3.5))
-            
-            elif self.user_tier == 'ai_pro':
-                # AI_PRO: Full AI + Advanced Chart Builder with better context
-                print("🤖 AI_PRO tier: Using AI + Advanced Chart Builder")
-                if self.advanced_chart_builder:
-                    # Use 'finance' context if finance charts enabled, otherwise 'comparison'
-                    chart_context = 'finance_comparison' if self.use_finance_charts else 'comparison'
-                    chart_config = self.advanced_chart_builder.select_chart_type(data, context=chart_context)
-                    chart = self.advanced_chart_builder.create_chart(
-                        slide, data, chart_config,
-                        Inches(5.2), Inches(1.3), Inches(4.3), Inches(3.5),
-                        title="Data Insights"
-                    )
-                    print(f"   ✓ Chart: {chart_config.get('type')} from {chart_config.get('source', 'unknown')}")
-                else:
-                    chart_config = self._create_default_chart(data, numeric_cols)
-                    self._render_chart(slide, data, chart_config, 
-                                     Inches(5.2), Inches(1.3), Inches(4.3), Inches(3.5))
-            
-        except Exception as e:
-            print(f"⚠️  Could not add insights chart: {e}")
+            print(f"⚠️  Could not add enhanced chart: {e}")
             import traceback
             traceback.print_exc()
     
@@ -831,10 +773,10 @@ class EnhancedProfessionalBuilder:
             sector_df = sector_data.reset_index()
             sector_df.columns = [category_col, value_col]
             
-            # ✨ USE ENHANCED CHART BUILDER (ALL TIERS)
-            print("✨ Using EnhancedChartBuilder for sector distribution...")
+            # ✨ USE SIMPLE FINANCE CHART BUILDER
+            print("✨ Using SimpleFinanceChartBuilder for sector distribution...")
             try:
-                chart = self.enhanced_chart_builder.auto_create_chart(
+                chart = self.chart_builder.create_chart(
                     slide,
                     sector_df,
                     left=Inches(0.5),
@@ -845,37 +787,14 @@ class EnhancedProfessionalBuilder:
                 )
                 
                 if chart:
-                    print(f"   ✓ Enhanced sector chart created!")
+                    print(f"   ✓ Finance sector chart created!")
                 else:
-                    # Fallback to simple doughnut chart
-                    print(f"   ⚠️ Falling back to simple doughnut chart")
-                    chart_data = CategoryChartData()
-                    chart_data.categories = sector_data.index.tolist()
-                    chart_data.add_series('Distribution', sector_data.values.tolist())
+                    print(f"   ⚠️ Sector chart creation failed - no data to display")
                     
-                    chart = slide.shapes.add_chart(
-                        XL_CHART_TYPE.DOUGHNUT,
-                        Inches(0.5), Inches(1.3), Inches(4.5), Inches(4),
-                        chart_data
-                    ).chart
-                    
-                    chart.has_legend = True
-                    chart.legend.position = XL_LEGEND_POSITION.RIGHT
             except Exception as e:
-                print(f"   ⚠️ Enhanced chart failed: {e}, using simple doughnut")
-                # Fallback to simple doughnut chart
-                chart_data = CategoryChartData()
-                chart_data.categories = sector_data.index.tolist()
-                chart_data.add_series('Distribution', sector_data.values.tolist())
-                
-                chart = slide.shapes.add_chart(
-                    XL_CHART_TYPE.DOUGHNUT,
-                    Inches(0.5), Inches(1.3), Inches(4.5), Inches(4),
-                    chart_data
-                ).chart
-                
-                chart.has_legend = True
-                chart.legend.position = XL_LEGEND_POSITION.RIGHT
+                print(f"   ⚠️ Sector chart error: {e}")
+                import traceback
+                traceback.print_exc()
             
             # Add summary table
             self._add_distribution_table(slide, sector_data)
@@ -1216,10 +1135,10 @@ class EnhancedProfessionalBuilder:
             limit = min(20, len(data))
             trend_data = data.head(limit).copy()
             
-            # ✨ USE ENHANCED CHART BUILDER WITH AUTO-DETECTION
-            print("✨ Using EnhancedChartBuilder for trend analysis...")
+            # ✨ USE SIMPLE FINANCE CHART BUILDER
+            print("✨ Using SimpleFinanceChartBuilder for trend analysis...")
             
-            chart = self.enhanced_chart_builder.auto_create_chart(
+            chart = self.chart_builder.create_chart(
                 slide,
                 trend_data,
                 left=Inches(5.2),
@@ -1230,61 +1149,15 @@ class EnhancedProfessionalBuilder:
             )
             
             if chart:
-                print(f"   ✓ Enhanced trend chart created!")
+                print(f"   ✓ Finance trend chart created!")
             else:
-                # Fallback to simple line chart
-                print(f"   ⚠️ Falling back to simple line chart")
-                self._add_trend_chart_fallback(slide, trend_data, limit)
+                print(f"   ⚠️ Trend chart creation failed")
+                # No fallback
             
         except Exception as e:
-            print(f"⚠️  Enhanced trend chart failed: {e}, using fallback")
+            print(f"⚠️  Trend chart failed: {e}")
             import traceback
             traceback.print_exc()
-            # Fallback to simple line chart
-            self._add_trend_chart_fallback(slide, data, limit)
-    
-    def _add_trend_chart_fallback(self, slide, trend_data, limit):
-        """Fallback method for creating simple trend charts"""
-        try:
-            numeric_cols = trend_data.select_dtypes(include=[np.number]).columns
-            
-            chart_data = CategoryChartData()
-            
-            # Get categories
-            has_date_col = any('date' in str(col).lower() or 'month' in str(col).lower() 
-                             or 'quarter' in str(col).lower() or 'year' in str(col).lower() 
-                             for col in trend_data.columns)
-            
-            if has_date_col:
-                date_cols = [col for col in trend_data.columns if 'date' in str(col).lower() 
-                           or 'month' in str(col).lower()]
-                categories = trend_data[date_cols[0]].astype(str).tolist() if date_cols else [f"Period {i+1}" for i in range(limit)]
-            else:
-                categories = [f"Period {i+1}" for i in range(limit)]
-            
-            chart_data.categories = categories
-            
-            # Add multiple series
-            series_count = min(3, len(numeric_cols))
-            for i in range(series_count):
-                col_name = numeric_cols[i]
-                values = trend_data[col_name].fillna(0).tolist()
-                chart_data.add_series(col_name, values)
-            
-            # Add chart
-            chart = slide.shapes.add_chart(
-                XL_CHART_TYPE.LINE_MARKERS if limit <= 10 else XL_CHART_TYPE.LINE,
-                Inches(5.2), Inches(1.3), Inches(4.3), Inches(3.5),
-                chart_data
-            ).chart
-            
-            chart.has_legend = series_count > 1
-            if chart.has_legend:
-                chart.legend.position = XL_LEGEND_POSITION.BOTTOM
-            
-            print(f"✅ Added fallback trend chart with {series_count} series")
-        except Exception as e:
-            print(f"⚠️  Could not add fallback trend chart: {e}")
     
     # ========================================================================
     # SLIDE 9: CLOSING

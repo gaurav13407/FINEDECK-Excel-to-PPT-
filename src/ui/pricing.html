@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Pricing - FinDeck</title>
+  <meta name="description" content="Choose the perfect FinDeck plan for your needs. Convert pricing to your local currency.">
+  <meta name="keywords" content="FinDeck pricing, Excel to PowerPoint, subscription plans">
+
+  <!-- Favicons -->
+  <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
+  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="assets/css/main.css" rel="stylesheet">
+
+  <style>
+    /* Currency Selector Styling */
+    .currency-selector-container {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .currency-selector {
+      display: inline-flex;
+      align-items: center;
+      gap: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 15px 30px;
+      border-radius: 50px;
+      border: 2px solid rgba(229, 157, 2, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .currency-selector label {
+      color: #e59d02;
+      font-weight: 600;
+      font-size: 16px;
+      margin: 0;
+    }
+
+    .currency-selector select {
+      background: rgba(0, 0, 0, 0.6);
+      color: #ffffff;
+      border: 2px solid rgba(229, 157, 2, 0.5);
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      outline: none;
+      min-width: 150px;
+    }
+
+    .currency-selector select:hover {
+      border-color: #e59d02;
+      box-shadow: 0 0 15px rgba(229, 157, 2, 0.3);
+    }
+
+    .currency-selector select:focus {
+      border-color: #e59d02;
+      box-shadow: 0 0 20px rgba(229, 157, 2, 0.5);
+    }
+
+    .currency-selector select option {
+      background: #000;
+      color: #fff;
+      padding: 10px;
+    }
+
+    /* Enhanced Pricing Cards */
+    .pricing-section {
+      min-height: 100vh;
+      padding-top: 100px;
+      background: linear-gradient(135deg, #000004 0%, #191919 100%);
+    }
+
+    .pricing-card {
+      background: linear-gradient(145deg, rgba(25, 25, 25, 0.95), rgba(0, 0, 4, 0.95));
+      border: 2px solid rgba(229, 157, 2, 0.2);
+      border-radius: 20px;
+      padding: 40px 30px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pricing-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #e59d02, #f4b841);
+      transform: scaleX(0);
+      transition: transform 0.4s ease;
+    }
+
+    .pricing-card:hover {
+      transform: translateY(-10px);
+      border-color: #e59d02;
+      box-shadow: 0 20px 60px rgba(229, 157, 2, 0.3);
+    }
+
+    .pricing-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .pricing-card.popular {
+      border-color: #e59d02;
+      box-shadow: 0 15px 50px rgba(229, 157, 2, 0.25);
+      transform: scale(1.05);
+    }
+
+    .popular-tag {
+      position: absolute;
+      top: 20px;
+      right: -35px;
+      background: linear-gradient(135deg, #e59d02, #f4b841);
+      color: #000;
+      padding: 5px 40px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      transform: rotate(45deg);
+      box-shadow: 0 4px 10px rgba(229, 157, 2, 0.4);
+    }
+
+    .plan-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .plan-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, rgba(229, 157, 2, 0.2), rgba(229, 157, 2, 0.05));
+      border: 2px solid rgba(229, 157, 2, 0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .pricing-card:hover .plan-icon {
+      background: linear-gradient(135deg, rgba(229, 157, 2, 0.4), rgba(229, 157, 2, 0.1));
+      border-color: #e59d02;
+      transform: scale(1.1) rotate(10deg);
+    }
+
+    .plan-icon i {
+      font-size: 36px;
+      color: #e59d02;
+    }
+
+    .plan-header h3 {
+      color: #ffffff;
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .plan-header p {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .plan-pricing {
+      text-align: center;
+      padding: 30px 0;
+      margin-bottom: 30px;
+      border-bottom: 2px solid rgba(229, 157, 2, 0.2);
+    }
+
+    .price {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .currency {
+      color: #e59d02;
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .amount {
+      color: #ffffff;
+      font-size: 48px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .period {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 16px;
+      font-weight: 400;
+    }
+
+    .plan-features {
+      margin-bottom: 30px;
+    }
+
+    .plan-features ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .plan-features ul li {
+      padding: 12px 0;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 15px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .plan-features ul li i {
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .plan-features ul li i.bi-check-circle-fill {
+      color: #e59d02;
+    }
+
+    .plan-features ul li.disabled {
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    .plan-features ul li.disabled i {
+      color: rgba(255, 255, 255, 0.2);
+    }
+
+    .plan-cta {
+      text-align: center;
+    }
+
+    .btn-plan {
+      display: inline-block;
+      padding: 14px 40px;
+      background: linear-gradient(135deg, #e59d02, #f4b841);
+      color: #000;
+      font-weight: 700;
+      font-size: 16px;
+      border-radius: 50px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-plan:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(229, 157, 2, 0.5);
+      color: #000;
+    }
+
+    /* Page Header */
+    .page-header {
+      padding: 140px 0 80px;
+      text-align: center;
+      background: linear-gradient(135deg, #000004 0%, #191919 100%);
+      position: relative;
+    }
+
+    .page-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(229, 157, 2, 0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .page-header h1 {
+      color: #ffffff;
+      font-size: 48px;
+      font-weight: 800;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .page-header p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 18px;
+      max-width: 600px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    /* Back to Home Button */
+    .back-to-home {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 9999;
+    }
+
+    .back-to-home a {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: rgba(229, 157, 2, 0.1);
+      border: 2px solid rgba(229, 157, 2, 0.3);
+      color: #e59d02;
+      font-weight: 600;
+      border-radius: 50px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .back-to-home a:hover {
+      background: rgba(229, 157, 2, 0.2);
+      border-color: #e59d02;
+      transform: translateX(-5px);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .pricing-card.popular {
+        transform: scale(1);
+      }
+
+      .page-header h1 {
+        font-size: 36px;
+      }
+
+      .currency-selector {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body class="pricing-page">
+
+  <!-- Back to Home -->
+  <div class="back-to-home">
+    <a href="index.html">
+      <i class="bi bi-arrow-left"></i>
+      <span>Back to Home</span>
+    </a>
+  </div>
+
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="container" data-aos="fade-up">
+      <h1>Choose Your Perfect Plan</h1>
+      <p>Select a plan that fits your workflow. Prices shown in your preferred currency. Upgrade or downgrade anytime.</p>
+    </div>
+  </div>
+
+  <!-- Pricing Section -->
+  <section class="pricing-section">
+    <div class="container">
+
+      <!-- Currency Selector -->
+      <div class="currency-selector-container" data-aos="fade-up">
+        <div class="currency-selector">
+          <label for="currency">
+            <i class="bi bi-currency-exchange"></i> Select Currency:
+          </label>
+          <select id="currency" onchange="convertPrices()">
+            <option value="INR" selected>🇮🇳 INR - Indian Rupee</option>
+            <option value="USD">🇺🇸 USD - US Dollar</option>
+            <option value="GBP">🇬🇧 GBP - British Pound</option>
+            <option value="CAD">🇨🇦 CAD - Canadian Dollar</option>
+            <option value="SGD">🇸🇬 SGD - Singapore Dollar</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Pricing Cards -->
+      <div class="row gy-4">
+        
+        <!-- Free Plan -->
+        <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="100">
+          <div class="pricing-card" data-plan="free">
+            <div class="plan-header">
+              <div class="plan-icon">
+                <i class="bi bi-star"></i>
+              </div>
+              <h3>Free</h3>
+              <p>Try FinDeck with one conversion</p>
+            </div>
+            <div class="plan-pricing">
+              <div class="price">
+                <span class="currency">₹</span>
+                <span class="amount">0</span>
+                <span class="period">/month</span>
+              </div>
+            </div>
+            <div class="plan-features">
+              <ul>
+                <li><i class="bi bi-check-circle-fill"></i> 1 PPT conversion / month</li>
+                <li class="disabled"><i class="bi bi-x-circle-fill"></i> Templates library</li>
+                <li class="disabled"><i class="bi bi-x-circle-fill"></i> Brand kit</li>
+                <li class="disabled"><i class="bi bi-x-circle-fill"></i> Priority support</li>
+              </ul>
+            </div>
+            <div class="plan-cta">
+              <a href="#" class="btn-plan" data-plan-id="free" data-plan-name="Free">Get Started Free</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Basic Plan -->
+        <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="200">
+          <div class="pricing-card" data-plan="basic" data-price-inr="1999">
+            <div class="plan-header">
+              <div class="plan-icon">
+                <i class="bi bi-box"></i>
+              </div>
+              <h3>Basic</h3>
+              <p>For individuals and light usage</p>
+            </div>
+            <div class="plan-pricing">
+              <div class="price">
+                <span class="currency">₹</span>
+                <span class="amount">1,999</span>
+                <span class="period">/month</span>
+              </div>
+            </div>
+            <div class="plan-features">
+              <ul>
+                <li><i class="bi bi-check-circle-fill"></i> 5 PPT conversions / month</li>
+                <li><i class="bi bi-check-circle-fill"></i> Standard templates</li>
+                <li><i class="bi bi-check-circle-fill"></i> Auto-formatting</li>
+                <li class="disabled"><i class="bi bi-x-circle-fill"></i> AI features</li>
+              </ul>
+            </div>
+            <div class="plan-cta">
+              <a href="#" class="btn-plan" data-plan-id="basic" data-plan-name="Basic">Choose Basic</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Professional Plan (Recommended) -->
+        <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="300">
+          <div class="pricing-card popular" data-plan="pro" data-price-inr="4999">
+            <div class="popular-tag">Recommended</div>
+            <div class="plan-header">
+              <div class="plan-icon">
+                <i class="bi bi-briefcase"></i>
+              </div>
+              <h3>Pro</h3>
+              <p>For professionals and small teams</p>
+            </div>
+            <div class="plan-pricing">
+              <div class="price">
+                <span class="currency">₹</span>
+                <span class="amount">4,999</span>
+                <span class="period">/month</span>
+              </div>
+            </div>
+            <div class="plan-features">
+              <ul>
+                <li><i class="bi bi-check-circle-fill"></i> 15 PPT conversions / month</li>
+                <li><i class="bi bi-check-circle-fill"></i> Premium template library</li>
+                <li><i class="bi bi-check-circle-fill"></i> Custom logo & brand colors</li>
+                <li><i class="bi bi-check-circle-fill"></i> Priority conversion speed</li>
+                <li class="disabled"><i class="bi bi-x-circle-fill"></i> AI slide suggestions</li>
+              </ul>
+            </div>
+            <div class="plan-cta">
+              <a href="#" class="btn-plan" data-plan-id="pro" data-plan-name="Pro">Choose Pro</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Pro Plan -->
+        <div class="col-lg-3 col-md-6" data-aos="zoom-in" data-aos-delay="400">
+          <div class="pricing-card" data-plan="ai-pro" data-price-inr="9999">
+            <div class="plan-header">
+              <div class="plan-icon">
+                <i class="bi bi-cpu"></i>
+              </div>
+              <h3>AI Pro</h3>
+              <p>For advanced users & businesses</p>
+            </div>
+            <div class="plan-pricing">
+              <div class="price">
+                <span class="currency">₹</span>
+                <span class="amount">9,999</span>
+                <span class="period">/month</span>
+              </div>
+            </div>
+            <div class="plan-features">
+              <ul>
+                <li><i class="bi bi-check-circle-fill"></i> Unlimited PPT conversions</li>
+                <li><i class="bi bi-check-circle-fill"></i> AI slide layout suggestions</li>
+                <li><i class="bi bi-check-circle-fill"></i> Auto summaries from Excel data</li>
+                <li><i class="bi bi-check-circle-fill"></i> Smart theme matching (brand kit)</li>
+                <li><i class="bi bi-check-circle-fill"></i> Priority support</li>
+              </ul>
+            </div>
+            <div class="plan-cta">
+              <a href="#" class="btn-plan" data-plan-id="ai-pro" data-plan-name="AI Pro">Choose AI Plan</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Additional Info -->
+      <div class="row mt-5">
+        <div class="col-12 text-center" data-aos="fade-up">
+          <p style="color: rgba(255,255,255,0.5); font-size: 14px;">
+            <i class="bi bi-info-circle"></i> All plans include secure payments via Razorpay. Cancel anytime. No hidden fees.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Vendor JS Files -->
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/aos/aos.js"></script>
+  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+
+  <!-- Main JS File -->
+  <script src="assets/js/main.js"></script>
+
+  <!-- Currency Conversion Script -->
+  <script>
+    // Initialize AOS
+    AOS.init({
+      duration: 800,
+      easing: 'ease-in-out',
+      once: true,
+      mirror: false
+    });
+
+    // Currency conversion rates (INR as base)
+    const conversionRates = {
+      'INR': 1,
+      'USD': 0.012048,  // 1 INR = 0.012 USD (approx ₹83 per $1)
+      'GBP': 0.009524,  // 1 INR = 0.0095 GBP (approx ₹105 per £1)
+      'CAD': 0.016393,  // 1 INR = 0.0164 CAD (approx ₹61 per CA$1)
+      'SGD': 0.016129   // 1 INR = 0.0161 SGD (approx ₹62 per S$1)
+    };
+
+    // Currency symbols
+    const currencySymbols = {
+      'INR': '₹',
+      'USD': '$',
+      'GBP': '£',
+      'CAD': 'CA$',
+      'SGD': 'S$'
+    };
+
+    // Format number with thousand separators
+    function formatNumber(num, currency) {
+      if (currency === 'INR') {
+        // Indian numbering system (lakhs and crores)
+        return num.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+      } else {
+        // International numbering system
+        return num.toLocaleString('en-US', { maximumFractionDigits: 0 });
+      }
+    }
+
+    // Convert prices based on selected currency
+    function convertPrices() {
+      const selectedCurrency = document.getElementById('currency').value;
+      const rate = conversionRates[selectedCurrency];
+      const symbol = currencySymbols[selectedCurrency];
+
+      // Get all pricing cards (except Free plan)
+      const pricingCards = document.querySelectorAll('[data-price-inr]');
+
+      pricingCards.forEach(card => {
+        const priceINR = parseInt(card.getAttribute('data-price-inr'));
+        const convertedPrice = Math.round(priceINR * rate);
+        
+        // Update currency symbol
+        const currencySpan = card.querySelector('.currency');
+        currencySpan.textContent = symbol;
+
+        // Update amount
+        const amountSpan = card.querySelector('.amount');
+        amountSpan.textContent = formatNumber(convertedPrice, selectedCurrency);
+
+        // Update button data attribute for payment processing
+        const button = card.querySelector('.btn-plan');
+        button.setAttribute('data-price', convertedPrice);
+        button.setAttribute('data-currency', selectedCurrency);
+      });
+    }
+
+    // Initialize prices in INR on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      convertPrices();
+
+      // Add click event listeners to plan buttons (for future Razorpay integration)
+      document.querySelectorAll('.btn-plan').forEach(button => {
+        button.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          const planId = this.getAttribute('data-plan-id');
+          const planName = this.getAttribute('data-plan-name');
+          const price = this.getAttribute('data-price') || '0';
+          const currency = this.getAttribute('data-currency') || 'INR';
+
+          console.log('Plan selected:', {
+            planId: planId,
+            planName: planName,
+            price: price,
+            currency: currency
+          });
+
+          // TODO: Integrate Razorpay payment gateway here
+          alert(`Selected: ${planName} Plan\nPrice: ${currencySymbols[currency]}${price}/${currency === 'INR' ? 'month' : 'mo'}\n\nRazorpay integration coming soon!`);
+        });
+      });
+    });
+  </script>
+
+</body>
+
+</html>
