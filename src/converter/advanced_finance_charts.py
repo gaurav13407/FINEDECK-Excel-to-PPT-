@@ -1,6 +1,7 @@
 """
 Advanced Finance Chart Builder for FinDeck
 Supports all major financial chart types with intelligent detection
+Integrates with Finance Chart Formatter for professional visual standards
 """
 
 from pptx.util import Inches, Pt
@@ -10,6 +11,23 @@ from pptx.dml.color import RGBColor
 import pandas as pd
 import numpy as np
 from typing import Optional, Tuple, List
+
+# Import finance formatter for professional standards
+from src.converter.finance_chart_formatter import (
+    apply_finance_theme,
+    set_chart_theme,  # Backward compatibility
+    normalize_axes,
+    normalize_chart_layout,
+    enforce_topn,
+    remove_duplicates_and_empty,
+    apply_title_subtitle,
+    annotate_chart_insights,
+    add_time_series_annotations,
+    format_number,
+    format_number_for_axis,  # Backward compatibility
+    FINANCE_COLORS,
+    FINANCE_FONTS
+)
 
 class AdvancedFinanceChartBuilder:
     """
@@ -191,7 +209,12 @@ class AdvancedFinanceChartBuilder:
     # ========================================================================
     
     def _create_line_chart(self, df: pd.DataFrame, title: str, **kwargs) -> bool:
-        """Line Chart: Stock prices, sales growth, profit margins over time"""
+        """
+        Line Chart: Stock prices, sales growth, profit margins over time
+        - Smooth lines with reduced marker size
+        - End-of-line labels (last value)
+        - Legend bottom, 9pt font
+        """
         try:
             # Find time column and metric columns
             time_col, metric_cols = self._identify_columns(df, prefer_time=True)
@@ -206,15 +229,46 @@ class AdvancedFinanceChartBuilder:
             for metric in metric_cols[:5]:  # Limit to 5 series for clarity
                 chart_data.add_series(metric, df[metric].values)
             
-            # Create chart
+            # Create chart with smooth lines
             x, y, cx, cy = self._get_chart_dimensions()
             chart = self.slide.shapes.add_chart(
                 XL_CHART_TYPE.LINE, x, y, cx, cy, chart_data
             ).chart
             
-            # Style the chart
-            self._style_chart(chart, title or "Performance Trend")
-            self._add_trendline_if_applicable(chart)
+            # Make lines smooth and reduce marker size
+            try:
+                for series in chart.series:
+                    # Smooth lines
+                    series.smooth = True
+                    
+                    # Reduce marker size
+                    if hasattr(series, 'marker'):
+                        series.marker.size = 5  # Small markers
+                    
+                    # Add data labels only to last point
+                    try:
+                        series.has_data_labels = False  # Disable all first
+                        # Last point label would need individual point access
+                        # which python-pptx doesn't fully support
+                    except:
+                        pass
+            except Exception as e:
+                print(f"   ⚠️  Could not smooth lines: {e}")
+            
+            # Style the chart with finance formatter
+            self._style_chart(chart, title or "Performance Trend", 'LINE', df)
+            
+            # Add time series annotations (Peak, Last value)
+            if self.slide:
+                try:
+                    from src.converter.finance_chart_formatter import annotate_chart_insights
+                    annotate_chart_insights(
+                        self.slide, chart, df, 
+                        self.position, self.size,
+                        'LINE'
+                    )
+                except Exception as e:
+                    print(f"   ⚠️  Annotation error: {e}")
             
             print("   ✅ Line chart created successfully")
             return True
@@ -252,26 +306,31 @@ class AdvancedFinanceChartBuilder:
             return False
     
     def _create_column_chart(self, df: pd.DataFrame, title: str, **kwargs) -> bool:
-        """Column Chart: Monthly revenue, YoY comparisons"""
+        """Column Chart: Monthly revenue, YoY comparisons - Auto Top-5 if >8 categories"""
         try:
             category_col, value_cols = self._identify_columns(df, prefer_time=False)
             
+            # Apply Top-N filtering if too many categories
+            df_chart = enforce_topn(df, n=5, value_col=value_cols[0] if value_cols else None)
+            
             print(f"   📊 Category column: {category_col}")
-            print(f"   📈 Value columns: {value_cols[:5]}")
+            print(f"   📈 Value columns: {value_cols[:4]}")  # Max 4 series
             
             chart_data = CategoryChartData()
-            chart_data.categories = [str(cat) for cat in df[category_col]]
+            chart_data.categories = [str(cat) for cat in df_chart[category_col]]
             
-            for value_col in value_cols[:5]:
-                chart_data.add_series(value_col, df[value_col].values)
+            # Limit to 4 series for readability
+            for value_col in value_cols[:4]:
+                chart_data.add_series(value_col, df_chart[value_col].values)
             
             x, y, cx, cy = self._get_chart_dimensions()
             chart = self.slide.shapes.add_chart(
                 XL_CHART_TYPE.COLUMN_CLUSTERED, x, y, cx, cy, chart_data
             ).chart
             
-            self._style_chart(chart, title or "Performance Comparison")
-            self._add_data_labels_if_small(chart, df.shape[0])
+            # Apply finance styling
+            self._style_chart(chart, title or "Performance Comparison", 'COLUMN', df_chart)
+            self._add_data_labels_if_small(chart, len(df_chart))
             
             print("   ✅ Column chart created successfully")
             return True
@@ -281,9 +340,41 @@ class AdvancedFinanceChartBuilder:
             return False
     
     def _create_bar_chart(self, df: pd.DataFrame, title: str, **kwargs) -> bool:
-        """Bar Chart: Better for many categories or long labels"""
+        """Bar Chart: Better for many categories or long labels - Auto Top-5 if >8"""
         try:
             category_col, value_cols = self._identify_columns(df, prefer_time=False)
+            
+            # Apply Top-N filtering and sort descending
+            df_chart = enforce_topn(df, n=5, value_col=value_cols[0] if value_cols else None)
+            
+            # Sort bars descending by value
+            if value_cols:
+                df_chart = df_chart.sort_values(by=value_cols[0], ascending=True)  # True for horizontal bars
+            
+            print(f"   📊 Category column: {category_col}")
+            print(f"   📈 Value columns: {value_cols[:4]}")
+            
+            chart_data = CategoryChartData()
+            chart_data.categories = [str(cat) for cat in df_chart[category_col]]
+            
+            for value_col in value_cols[:4]:
+                chart_data.add_series(value_col, df_chart[value_col].values)
+            
+            x, y, cx, cy = self._get_chart_dimensions()
+            chart = self.slide.shapes.add_chart(
+                XL_CHART_TYPE.BAR_CLUSTERED, x, y, cx, cy, chart_data
+            ).chart
+            
+            # Apply finance styling
+            self._style_chart(chart, title or "Rankings", 'BAR', df_chart)
+            self._add_data_labels_if_small(chart, len(df_chart))
+            
+            print("   ✅ Bar chart created successfully")
+            return True
+            
+        except Exception as e:
+            print(f"   ❌ Error creating bar chart: {e}")
+            return False
             
             chart_data = CategoryChartData()
             chart_data.categories = [str(cat) for cat in df[category_col]]
@@ -643,20 +734,21 @@ class AdvancedFinanceChartBuilder:
         height = Inches(self.size[1])
         return left, top, width, height
     
-    def _style_chart(self, chart, title: str):
-        """Apply professional styling to chart"""
-        # Set title
-        if title:
-            chart.has_title = True
-            chart.chart_title.text_frame.text = title
-            chart.chart_title.text_frame.paragraphs[0].font.size = Pt(18)
-            chart.chart_title.text_frame.paragraphs[0].font.bold = True
-            chart.chart_title.text_frame.paragraphs[0].font.color.rgb = RGBColor(0, 0, 0)
+    def _style_chart(self, chart, title: str, chart_type: str = 'COLUMN', df: pd.DataFrame = None):
+        """
+        Apply professional finance styling to chart
+        Uses enhanced finance_chart_formatter for consulting/investor deck quality
+        """
+        # Apply global finance theme with chart-type-specific styling
+        apply_finance_theme(chart, chart_type=chart_type)
         
-        # Legend position
-        chart.has_legend = True
-        chart.legend.position = XL_LEGEND_POSITION.BOTTOM
-        chart.legend.font.size = Pt(10)
+        # Apply title with professional formatting
+        if title:
+            apply_title_subtitle(chart, title)
+        
+        # Normalize axes based on chart type and data
+        if df is not None and not df.empty:
+            normalize_axes(chart, chart_type, df)
     
     def _add_trendline_if_applicable(self, chart):
         """Add trendline to chart if applicable"""
@@ -664,12 +756,15 @@ class AdvancedFinanceChartBuilder:
         pass
     
     def _add_data_labels_if_small(self, chart, num_categories: int):
-        """Add data labels if dataset is small"""
-        if num_categories <= 10:
+        """Add data labels if dataset is small (Top-N bars, last point in line)"""
+        if num_categories <= 8:
             try:
                 for series in chart.series:
                     series.has_data_labels = True
-                    series.data_labels.font.size = Pt(9)
+                    data_labels = series.data_labels
+                    data_labels.font.size = Pt(FINANCE_FONTS['data_label_size'])
+                    data_labels.font.name = FINANCE_FONTS['primary']
+                    data_labels.number_format = '#,##0'  # No scientific notation
             except:
                 pass
     
@@ -681,8 +776,10 @@ class AdvancedFinanceChartBuilder:
                 data_labels = series.data_labels
                 data_labels.show_percentage = True
                 data_labels.show_value = False
-                data_labels.font.size = Pt(10)
+                data_labels.font.size = Pt(FINANCE_FONTS['data_label_size'])
+                data_labels.font.name = FINANCE_FONTS['primary']
                 data_labels.font.bold = True
+                data_labels.number_format = '0.0%'  # 1 decimal percentage
         except:
             pass
     
@@ -694,9 +791,9 @@ class AdvancedFinanceChartBuilder:
                     if point_idx < len(values):
                         if values[point_idx] >= 0:
                             point.format.fill.solid()
-                            point.format.fill.fore_color.rgb = self.COLORS['profit']
+                            point.format.fill.fore_color.rgb = RGBColor(*FINANCE_COLORS['secondary'])  # Teal for positive
                         else:
                             point.format.fill.solid()
-                            point.format.fill.fore_color.rgb = self.COLORS['loss']
+                            point.format.fill.fore_color.rgb = RGBColor(*FINANCE_COLORS['accent'])  # Red for negative
         except:
             pass
