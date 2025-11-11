@@ -17,6 +17,12 @@ venv/
 # Environment variables
 .env
 .env.local
+.env.production
+.env.render
+.env.*.local
+
+# Deployment guides with sensitive data
+RENDER_ENV_GUIDE.md
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
