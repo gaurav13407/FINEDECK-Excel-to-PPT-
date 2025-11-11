@@ -395,20 +395,38 @@ async def main():
     """Main entry point"""
     
     print("\n" + "="*80)
-    print("🎯 FINDECK UPGRADE CODE SENDER")
+    print("🎯 FINDECK MANUAL SUBSCRIPTION UPGRADE")
+    print("="*80)
+    print()
+    print("Available Plans:")
+    print("  1. BASIC   - $25/mo  (15 presentations)")
+    print("  2. PRO     - $49/mo  (50 presentations)")
+    print("  3. AI_PRO  - $99/mo  (200 presentations)")
     print("="*80)
     print()
     
-    # Configuration for your email
-    customer_email = "gaurav13407@outlook.com"
-    plan = "AI_PRO"
+    # Get email from user
+    customer_email = input("📧 Enter customer email: ").strip()
+    if not customer_email or '@' not in customer_email:
+        print("\n❌ Invalid email address")
+        return
     
+    # Get plan from user
+    print("\nAvailable plans: BASIC, PRO, AI_PRO")
+    plan = input("📦 Enter plan name: ").strip().upper()
+    
+    valid_plans = ["BASIC", "PRO", "AI_PRO"]
+    if plan not in valid_plans:
+        print(f"\n❌ Invalid plan. Choose from: {', '.join(valid_plans)}")
+        return
+    
+    print()
     print(f"Target Configuration:")
     print(f"  Email: {customer_email}")
     print(f"  Plan:  {plan}")
     print()
     
-    confirm = input("⚠️  This will update the database. Continue? (yes/no): ")
+    confirm = input("⚠️  This will update the database and send email. Continue? (yes/no): ")
     
     if confirm.lower() not in ['yes', 'y']:
         print("\n❌ Cancelled by user")
@@ -418,9 +436,9 @@ async def main():
     await send_upgrade_code(customer_email, plan)
     
     print("\n💡 Next Steps:")
-    print("   1. Check your email for the upgrade notification")
-    print("   2. Log into your account to see the new plan")
-    print("   3. Start using AI Pro features!")
+    print("   1. Customer will receive upgrade email with code")
+    print("   2. Their account is now upgraded to", plan)
+    print("   3. They can start using the new features immediately!")
     print()
 
 

@@ -152,8 +152,18 @@ async def tiered_convert_excel_to_ppt(
                 user_ppt_count=ppt_count,
                 use_professional_structure=True
             )
+        elif tier == "basic":
+            # BASIC tier: Better than FREE - includes titles, clean charts, and proper formatting
+            result = converter.convert_professional(
+                excel_path=excel_path,
+                output_path=output_path,
+                template_name=template_name,
+                presentation_title=presentation_title or default_title,
+                user_ppt_count=ppt_count,
+                use_professional_structure=False  # Standard structure (not full professional)
+            )
         else:
-            # Use basic convert for FREE and BASIC tiers
+            # Use basic convert for FREE tier only
             result = converter.convert(
                 excel_path=excel_path,
                 output_path=output_path,
