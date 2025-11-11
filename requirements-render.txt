@@ -27,7 +27,7 @@ apscheduler==3.10.4
 
 # Cloud Storage
 azure-storage-blob==12.20.0
-b2sdk==1.17.4
+b2sdk==2.5.1
 
 # Excel & PowerPoint Processing
 pandas==2.2.2
