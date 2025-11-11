@@ -49,70 +49,80 @@ class TemplateLoader {
                 name: 'Minimal White',
                 description: 'Clean minimalist design with black and blue accents, perfect for simple presentations',
                 category: 'basic',
-                source: 'built-in'
+                source: 'built-in',
+                image: 'assets/templates/Screenshot 2025-11-11 120233.png'
             },
             {
                 id: 'corporate_blue',
                 name: 'Corporate Blue',
                 description: 'Classic corporate design with professional blue tones for business presentations',
                 category: 'professional',
-                source: 'built-in'
+                source: 'built-in',
+                image: 'assets/templates/Screenshot 2025-11-11 120323.png'
             },
             {
                 id: 'modern_tech',
                 name: 'Modern Tech',
                 description: 'Sleek tech-focused design with vibrant colors for innovative presentations',
                 category: 'professional',
-                source: 'built-in'
+                source: 'built-in',
+                image: 'assets/templates/Screenshot 2025-11-11 120413.png'
             },
             {
                 id: 'elegant_gray',
                 name: 'Elegant Gray',
                 description: 'Sophisticated gray palette with subtle red accents for professional settings',
                 category: 'professional',
-                source: 'built-in'
+                source: 'built-in',
+                image: 'assets/templates/Screenshot 2025-11-11 120505.png'
             },
             {
                 id: 'ocean_blue',
                 name: 'Ocean Blue',
                 description: 'Calm ocean-inspired blues perfect for corporate and tech presentations',
                 category: 'professional',
-                source: 'built-in'
+                source: 'built-in',
+                image: 'assets/templates/Screenshot 2025-11-11 120542.png'
             },
             {
                 id: 'dark_finance',
                 name: 'Dark Finance',
                 description: 'Professional dark theme with navy blue and gold accents, perfect for financial presentations',
                 category: 'premium',
-                source: 'built-in'
+                source: 'built-in',
+                image: 'assets/templates/Screenshot 2025-11-11 120603.png'
             },
             {
                 id: 'vibrant_gradient',
                 name: 'Vibrant Gradient',
                 description: 'Bold design with purple and orange gradients for dynamic presentations',
                 category: 'premium',
-                source: 'built-in'
+                source: 'built-in',
+                image: 'assets/templates/Screenshot 2025-11-11 120615.png'
             },
             {
                 id: 'sunset_orange',
                 name: 'Sunset Orange',
                 description: 'Warm orange and gold tones perfect for creative and dynamic presentations',
                 category: 'premium',
-                source: 'built-in'
+                source: 'built-in',
+                image: 'assets/templates/Screenshot 2025-11-11 120626.png'
             },
             {
                 id: 'forest_green',
                 name: 'Forest Green',
                 description: 'Natural green tones ideal for sustainability and eco-friendly presentations',
                 category: 'premium',
-                source: 'built-in'
+                source: 'built-in',
+                image: 'assets/templates/Screenshot 2025-11-11 120639.png'
             },
             {
                 id: 'royal_purple',
                 name: 'Royal Purple',
                 description: 'Luxurious deep purple theme perfect for creative and premium presentations',
                 category: 'premium',
-                source: 'built-in'
+                source: 'built-in',
+                image: 'assets/templates/Screenshot 2025-11-11 120648.png'
             }
         ];
     }
