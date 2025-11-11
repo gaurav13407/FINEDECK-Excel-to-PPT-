@@ -155,7 +155,7 @@
                 <h2>FinDeck</h2>
             </div>
             <nav class="nav-menu">
-                <a href="index.html" class="nav-link">Home</a>
+                <a href="index.html" class="nav-link" onclick="navigateHome(event)">Home</a>
                 <a href="dashboard.html" class="nav-link">Dashboard</a>
                 <a href="templates.html" class="nav-link">Templates</a>
                 <a href="help.html" class="nav-link">Help</a>
@@ -749,43 +749,15 @@
     <!-- Main Page JS -->
     <script src="assets/js/mainpage.js"></script>
     
-    <!-- Minimal SPA navigation for Home link -->
+    <!-- Force full page reload for proper CSS loading -->
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var homeLink = document.querySelector('a.nav-link[href="index.html"]');
-        if (homeLink) {
-            homeLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                fetch('index.html')
-                    .then(function(response) { return response.text(); })
-                    .then(function(html) {
-                        var parser = new DOMParser();
-                        var doc = parser.parseFromString(html, 'text/html');
-                        var newBody = doc.body;
-                        document.body.replaceWith(newBody);
-                        window.history.pushState({}, '', 'index.html');
-                        // Optionally, re-execute scripts if needed
-                    })
-                    .catch(function() {
-                        window.location.href = 'index.html'; // fallback
-                    });
-            });
-        }
-        // Handle browser back/forward navigation
-        window.addEventListener('popstate', function() {
-            if (window.location.pathname.endsWith('index.html')) {
-                fetch('index.html')
-                    .then(function(response) { return response.text(); })
-                    .then(function(html) {
-                        var parser = new DOMParser();
-                        var doc = parser.parseFromString(html, 'text/html');
-                        var newBody = doc.body;
-                        document.body.replaceWith(newBody);
-                    });
-            }
-        });
-    });
+    function navigateHome(e) {
+        e.preventDefault();
+        // Force a full page reload with cache busting
+        window.location.href = 'index.html?t=' + new Date().getTime();
+    }
     </script>
+    
     <script>
         // Function to handle logout
         function handleLogout(event) {

@@ -24,7 +24,7 @@
                 <h2>FinDeck</h2>
             </div>
             <nav class="nav-menu">
-                <a href="index.html" class="nav-link">Home</a>
+                <a href="#" onclick="navigateHome(event)" class="nav-link">Home</a>
                 <a href="dashboard.html" class="nav-link">Dashboard</a>
                 <a href="templates.html" class="nav-link active">Templates</a>
                 <a href="help.html" class="nav-link">Help</a>
@@ -966,6 +966,12 @@
                 }
             }
         });
+        
+        // Navigate to home with cache busting
+        function navigateHome(e) {
+            e.preventDefault();
+            window.location.href = 'index.html?t=' + new Date().getTime();
+        }
     </script>
 </body>
 </html>
