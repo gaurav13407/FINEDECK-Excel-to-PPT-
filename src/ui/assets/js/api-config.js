@@ -5,8 +5,8 @@
 
 class APIConfig {
     constructor() {
-        // Backend server configuration
-        this.BASE_URL = 'http://localhost:8000';
+        // Backend server configuration - PRODUCTION
+        this.BASE_URL = 'https://finedeck-excel-to-ppt-backend.onrender.com';
         this.API_VERSION = 'v1';
         this.API_BASE = `${this.BASE_URL}/api/${this.API_VERSION}`;
         

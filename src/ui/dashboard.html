@@ -335,7 +335,7 @@
         // Dashboard Data Manager
         class DashboardManager {
             constructor() {
-                this.apiBase = 'http://localhost:8000/api/v1';
+                this.apiBase = 'https://finedeck-excel-to-ppt-backend.onrender.com/api/v1';
             }
 
             async loadDashboardData() {
@@ -906,7 +906,7 @@
                 }
                 
                 // Fetch download URL from backend
-                const response = await fetch(`http://localhost:8000/api/v1/files/${fileId}/download`, {
+                const response = await fetch(`https://finedeck-excel-to-ppt-backend.onrender.com/api/v1/files/${fileId}/download`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 

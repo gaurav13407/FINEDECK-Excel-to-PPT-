@@ -5,7 +5,7 @@
 
 class TemplateLoader {
     constructor() {
-        this.apiBase = 'http://localhost:8000/api/v1';
+        this.apiBase = 'https://finedeck-excel-to-ppt-backend.onrender.com/api/v1';
         this.templates = [];
         this.selectedTemplate = localStorage.getItem('selectedTemplate') || null;
     }
