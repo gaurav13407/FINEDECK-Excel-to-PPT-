@@ -1,0 +1,50 @@
+# ============================================
+# PRODUCTION REQUIREMENTS - Render.com
+# Optimized for deployment (no GUI, no heavy ML)
+# ============================================
+
+# Core Framework
+fastapi==0.115.0
+uvicorn[standard]==0.30.1
+slowapi==0.1.9
+gunicorn==22.0.0
+
+# Database
+motor==3.4.0
+pymongo==4.8.0
+
+# Authentication & Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.9
+pydantic-settings==2.4.0
+python-dotenv==1.0.1
+
+# Background Jobs & Cache
+redis==5.0.8
+upstash-redis==0.15.0
+apscheduler==3.10.4
+
+# Cloud Storage
+azure-storage-blob==12.20.0
+b2sdk==1.17.4
+
+# Excel & PowerPoint Processing
+pandas==2.2.2
+numpy==1.26.4
+openpyxl==3.1.5
+python-pptx==1.0.2
+
+# Data Visualization (lightweight)
+matplotlib==3.9.2
+plotly==5.24.1
+
+# AI Features (lightweight)
+groq==0.11.0
+
+# Email
+aiosmtplib==3.0.2
+
+# Utils
+requests==2.32.3
+python-dateutil==2.9.0

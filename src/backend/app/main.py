@@ -100,9 +100,17 @@ async def health_check():
 
 if __name__ == "__main__":
     import uvicorn
+    import os
+    
+    # Get port from environment (Render sets $PORT)
+    port = int(os.getenv("PORT", 8000))
+    
+    # Disable reload in production
+    reload = os.getenv("ENVIRONMENT", "development") == "development"
+    
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=8000,
-        reload=True
+        port=port,
+        reload=reload
     )

@@ -84,6 +84,11 @@ class Settings(BaseSettings):
     file_retention_hours: int = 24
     cleanup_interval_hours: int = 6
 
+    # Redis / Upstash Configuration
+    upstash_redis_rest_url: Optional[str] = None
+    upstash_redis_rest_token: Optional[str] = None
+    redis_url: Optional[str] = None  # Fallback for standard Redis URL
+
     # Transactional email providers
     brevo_api_key: Optional[str] = None
     sendgrid_api_key: Optional[str] = None

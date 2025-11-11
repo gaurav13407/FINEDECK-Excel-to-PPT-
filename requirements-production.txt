@@ -1,0 +1,53 @@
+# ============================================
+# PRODUCTION BACKEND REQUIREMENTS
+# Optimized for Render.com deployment
+# ============================================
+
+# Core Framework
+fastapi==0.115.0
+uvicorn[standard]==0.30.1
+slowapi==0.1.9
+
+# Database
+motor==3.4.0          # Async MongoDB
+pymongo==4.8.0        # Sync MongoDB (for migrations)
+
+# Authentication & Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.9
+
+# Background Jobs & Cache
+redis==5.0.8
+rq==1.15.1
+apscheduler==3.10.4
+
+# Cloud Storage
+azure-storage-blob==12.20.0
+b2sdk==1.17.4
+
+# Email
+python-dotenv==1.0.1
+pydantic-settings==2.4.0
+
+# Excel & PowerPoint Processing
+pandas==2.2.2
+numpy==1.26.4
+openpyxl==3.1.5
+python-pptx==1.0.2
+
+# Data Visualization
+matplotlib==3.9.2
+plotly==5.24.1
+
+# AI Features
+groq==0.11.0
+openai==1.51.0
+
+# Utils
+requests==2.32.3
+scipy==1.14.1
+python-dateutil==2.9.0
+
+# Production server
+gunicorn==22.0.0
