@@ -728,7 +728,9 @@ section,
   display: flex;
   align-items: center;
   position: relative;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--accent-color), transparent 96%) 0%, var(--background-color) 40%, color-mix(in srgb, var(--accent-color), transparent 98%) 100%);
+  background-color: var(--background-color);
+  /* Subtle gradient overlay for visual interest without color mismatch */
+  background: linear-gradient(135deg, #000004 0%, #000008 50%, #000004 100%);
   padding-bottom: 60px;
 }
 
