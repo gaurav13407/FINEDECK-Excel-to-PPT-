@@ -153,6 +153,7 @@ h6 {
 
 .header .logo {
   line-height: 1;
+  text-decoration: none; /* Remove blue underline from logo link */
 }
 
 .header .logo img {
@@ -165,6 +166,7 @@ h6 {
   margin: 0;
   font-weight: 700;
   color: var(--heading-color);
+  text-decoration: none; /* Ensure no underline on heading */
 }
 
 .header .btn-getstarted,
