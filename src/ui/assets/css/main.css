@@ -19,7 +19,7 @@
 
 /* Global Colors - The following color variables are used throughout the website. Updating them here will change the color scheme of the entire website */
 :root { 
-  --background-color: #000004; /* Background color for the entire website, including individual sections */
+  --background-color: #000000; /* Pure black background for the entire website */
   --default-color: #f8f8f8; /* Default color used for the majority of the text content across the entire website */
   --heading-color: #ffffff; /* Color for headings, subheadings and title throughout the website */
   --accent-color: #e59d02; /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
@@ -729,37 +729,10 @@ section,
   align-items: center;
   position: relative;
   background-color: var(--background-color);
-  /* Subtle gradient overlay for visual interest without color mismatch */
-  background: linear-gradient(135deg, #000004 0%, #000008 50%, #000004 100%);
   padding-bottom: 60px;
 }
 
-.hero::before {
-  content: "";
-  position: absolute;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, color-mix(in srgb, var(--accent-color), transparent 85%) 0%, transparent 70%);
-  border-radius: 50%;
-  top: -20%;
-  right: -10%;
-  animation: float 6s ease-in-out infinite;
-  z-index: 1;
-}
-
-.hero::after {
-  content: "";
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  background: color-mix(in srgb, var(--accent-color), transparent 88%);
-  border-radius: 50%;
-  bottom: 10%;
-  left: 5%;
-  filter: blur(40px);
-  animation: float 4s ease-in-out infinite reverse;
-  z-index: 1;
-}
+/* Removed decorative gradient circles for clean black background */
 
 .hero .hero-wrapper {
   width: 100%;
