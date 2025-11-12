@@ -13,6 +13,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
 
 from core.security import create_access_token, verify_password
+from core.config import settings
 from services.user_service import create_user, get_user_by_email,authenticate_user
 from models.user import UserCreate, UserResponse,UserLogin,Token
 from api.deps import get_current_active_user,get_db
@@ -67,7 +68,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
             detail="Inactive user"
         )
     
-    access_token_expires=timedelta(minutes=30)
+    # Use configured JWT expiration time (7 days by default)
+    access_token_expires=timedelta(minutes=settings.jwt_expiration_minutes)
     access_token=create_access_token(
         data={"sub": user.email, "user_id": str(user.id)},
         expires_delta=access_token_expires
@@ -82,7 +84,8 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 @router.post("/refresh",response_model=Token)
 async def refresh_token(current_user=Depends(get_current_active_user)):
     """Refresh JWT token for authenticated user"""
-    access_token_expires=timedelta(minutes=30)
+    # Use configured JWT expiration time (7 days by default)
+    access_token_expires=timedelta(minutes=settings.jwt_expiration_minutes)
     access_token=create_access_token(
         data={"sub": current_user.email, "user_id": str(current_user.id)},
         expires_delta=access_token_expires

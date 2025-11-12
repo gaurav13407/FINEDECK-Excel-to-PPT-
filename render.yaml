@@ -18,13 +18,13 @@ services:
         sync: false
       - key: DATABASE_NAME
         value: findeck_db
-      # JWT
+      # JWT - 7 days token expiration
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_ALGORITHM
         value: HS256
       - key: JWT_EXPIRATION_MINUTES
-        value: 1440
+        value: "10080"
       # Redis/Upstash
       - key: UPSTASH_REDIS_REST_URL
         sync: false

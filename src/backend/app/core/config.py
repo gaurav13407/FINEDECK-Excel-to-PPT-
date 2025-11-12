@@ -26,7 +26,7 @@ class Settings(BaseSettings):
     # JWT Secret- required for production, has development default
     jwt_secret: str = "dev-secret-change-in-production"
     jwt_algorithm: str = "HS256"
-    jwt_expiration_minutes: int = 1440
+    jwt_expiration_minutes: int = 10080  # 7 days (7 * 24 * 60)
     # Debug mode-Optional.defaults to false
     debug: bool = False
     # Azure Storage Settings - optional
