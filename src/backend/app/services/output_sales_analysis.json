@@ -1,0 +1,245 @@
+{
+  "executive_summary": {
+    "total_records": 100,
+    "total_columns": 9,
+    "numeric_columns": 1,
+    "categorical_columns": 3,
+    "date_columns": 1,
+    "identifier_columns": 4,
+    "boolean_columns": 0,
+    "text_columns": 0
+  },
+  "key_metrics": [
+    {
+      "metric_name": "Quantity",
+      "total": 550.0,
+      "average": 5.5,
+      "min": 1.0,
+      "max": 10.0
+    }
+  ],
+  "top_categories": [
+    {
+      "category_type": "Product",
+      "unique_count": 3,
+      "top_values": [
+        {
+          "category": "Product A",
+          "count": 34,
+          "percentage": 34.0
+        },
+        {
+          "category": "Product B",
+          "count": 33,
+          "percentage": 33.0
+        },
+        {
+          "category": "Product C",
+          "count": 33,
+          "percentage": 33.0
+        }
+      ]
+    },
+    {
+      "category_type": "Category",
+      "unique_count": 3,
+      "top_values": [
+        {
+          "category": "Electronics",
+          "count": 34,
+          "percentage": 34.0
+        },
+        {
+          "category": "Furniture",
+          "count": 33,
+          "percentage": 33.0
+        },
+        {
+          "category": "Office Supplies",
+          "count": 33,
+          "percentage": 33.0
+        }
+      ]
+    },
+    {
+      "category_type": "State",
+      "unique_count": 3,
+      "top_values": [
+        {
+          "category": "California",
+          "count": 34,
+          "percentage": 34.0
+        },
+        {
+          "category": "Texas",
+          "count": 33,
+          "percentage": 33.0
+        },
+        {
+          "category": "New York",
+          "count": 33,
+          "percentage": 33.0
+        }
+      ]
+    }
+  ],
+  "top_numeric_metrics": [
+    {
+      "sum": 550.0,
+      "mean": 5.5,
+      "median": 5.5,
+      "min": 1.0,
+      "max": 10.0,
+      "std": 2.886751345948129,
+      "count": 100,
+      "top_10_values": [
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10,
+        10
+      ]
+    }
+  ],
+  "distribution_insights": [
+    {
+      "column": "Product",
+      "distribution": [
+        {
+          "category": "Product A",
+          "count": 34,
+          "percentage": 34.0
+        },
+        {
+          "category": "Product B",
+          "count": 33,
+          "percentage": 33.0
+        },
+        {
+          "category": "Product C",
+          "count": 33,
+          "percentage": 33.0
+        }
+      ]
+    },
+    {
+      "column": "Category",
+      "distribution": [
+        {
+          "category": "Electronics",
+          "count": 34,
+          "percentage": 34.0
+        },
+        {
+          "category": "Furniture",
+          "count": 33,
+          "percentage": 33.0
+        },
+        {
+          "category": "Office Supplies",
+          "count": 33,
+          "percentage": 33.0
+        }
+      ]
+    },
+    {
+      "column": "State",
+      "distribution": [
+        {
+          "category": "California",
+          "count": 34,
+          "percentage": 34.0
+        },
+        {
+          "category": "Texas",
+          "count": 33,
+          "percentage": 33.0
+        },
+        {
+          "category": "New York",
+          "count": 33,
+          "percentage": 33.0
+        }
+      ]
+    }
+  ],
+  "trend_analysis": {
+    "Order Date": {
+      "date_range": "2024-01-01 to 2024-04-09",
+      "trend": "decreasing",
+      "monthly_data": [
+        {
+          "month": "2024-01",
+          "count": 31
+        },
+        {
+          "month": "2024-02",
+          "count": 29
+        },
+        {
+          "month": "2024-03",
+          "count": 31
+        },
+        {
+          "month": "2024-04",
+          "count": 9
+        }
+      ]
+    }
+  },
+  "hierarchy_analysis": {
+    "geography": {
+      "State": {
+        "column_name": "State",
+        "unique_locations": 3,
+        "top_locations_by_count": [
+          {
+            "location": "California",
+            "count": 34
+          },
+          {
+            "location": "Texas",
+            "count": 33
+          },
+          {
+            "location": "New York",
+            "count": 33
+          }
+        ],
+        "top_locations_by_sales": [
+          {
+            "location": "California",
+            "sales": 20230.0
+          },
+          {
+            "location": "New York",
+            "sales": 19800.0
+          },
+          {
+            "location": "Texas",
+            "sales": 19470.0
+          }
+        ]
+      }
+    }
+  },
+  "recommendations": [
+    "Declining Order Date trend - needs attention"
+  ],
+  "column_classification": {
+    "Order ID": "identifier",
+    "Customer ID": "identifier",
+    "Product": "categorical",
+    "Category": "categorical",
+    "Sales": "identifier",
+    "Profit": "identifier",
+    "Quantity": "numeric",
+    "State": "categorical",
+    "Order Date": "date"
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "executive_summary": {
+    "total_records": 30,
+    "total_columns": 7,
+    "numeric_columns": 1,
+    "categorical_columns": 1,
+    "date_columns": 1,
+    "identifier_columns": 3,
+    "boolean_columns": 0,
+    "text_columns": 1
+  },
+  "key_metrics": [
+    {
+      "metric_name": "Status",
+      "total": 15.0,
+      "average": 0.5,
+      "min": 0.0,
+      "max": 1.0
+    }
+  ],
+  "top_categories": [
+    {
+      "category_type": "Type",
+      "unique_count": 3,
+      "top_values": [
+        {
+          "category": "A",
+          "count": 10,
+          "percentage": 33.33
+        },
+        {
+          "category": "B",
+          "count": 10,
+          "percentage": 33.33
+        },
+        {
+          "category": "C",
+          "count": 10,
+          "percentage": 33.33
+        }
+      ]
+    }
+  ],
+  "top_numeric_metrics": [
+    {
+      "sum": 15.0,
+      "mean": 0.5,
+      "median": 0.5,
+      "min": 0.0,
+      "max": 1.0,
+      "std": 0.5085476277156078,
+      "count": 30,
+      "top_10_values": [
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true
+      ]
+    }
+  ],
+  "distribution_insights": [
+    {
+      "column": "Type",
+      "distribution": [
+        {
+          "category": "A",
+          "count": 10,
+          "percentage": 33.33
+        },
+        {
+          "category": "B",
+          "count": 10,
+          "percentage": 33.33
+        },
+        {
+          "category": "C",
+          "count": 10,
+          "percentage": 33.33
+        }
+      ]
+    }
+  ],
+  "trend_analysis": {
+    "Timestamp": {
+      "date_range": "2024-01-01 to 2024-01-30",
+      "trend": "insufficient_data",
+      "monthly_data": [
+        {
+          "month": "2024-01",
+          "count": 30
+        }
+      ]
+    }
+  },
+  "hierarchy_analysis": {},
+  "recommendations": [
+    "Dataset analyzed successfully"
+  ],
+  "column_classification": {
+    "ID": "identifier",
+    "Name": "text",
+    "Type": "categorical",
+    "Value1": "identifier",
+    "Value2": "identifier",
+    "Status": "numeric",
+    "Timestamp": "date"
+  }
+}

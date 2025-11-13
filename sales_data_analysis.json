@@ -1,0 +1,1172 @@
+{
+  "executive_summary": {
+    "total_records": 9994,
+    "total_columns": 21,
+    "numeric_columns": 4,
+    "categorical_columns": 10,
+    "date_columns": 2,
+    "identifier_columns": 5,
+    "boolean_columns": 0,
+    "text_columns": 0
+  },
+  "key_metrics": [
+    {
+      "metric_name": "Sales",
+      "total": 2297200.8603,
+      "average": 229.85800083049827,
+      "min": 0.444,
+      "max": 22638.48
+    },
+    {
+      "metric_name": "Quantity",
+      "total": 37873.0,
+      "average": 3.789573744246548,
+      "min": 1.0,
+      "max": 14.0
+    },
+    {
+      "metric_name": "Discount",
+      "total": 1561.09,
+      "average": 0.15620272163297977,
+      "min": 0.0,
+      "max": 0.8
+    },
+    {
+      "metric_name": "Profit",
+      "total": 286397.0217,
+      "average": 28.65689630778467,
+      "min": -6599.978,
+      "max": 8399.976
+    }
+  ],
+  "top_categories": [
+    {
+      "category_type": "Ship Mode",
+      "unique_count": 4,
+      "top_values": [
+        {
+          "category": "Standard Class",
+          "count": 5968,
+          "percentage": 59.72
+        },
+        {
+          "category": "Second Class",
+          "count": 1945,
+          "percentage": 19.46
+        },
+        {
+          "category": "First Class",
+          "count": 1538,
+          "percentage": 15.39
+        },
+        {
+          "category": "Same Day",
+          "count": 543,
+          "percentage": 5.43
+        }
+      ]
+    },
+    {
+      "category_type": "Customer Name",
+      "unique_count": 793,
+      "top_values": [
+        {
+          "category": "William Brown",
+          "count": 37,
+          "percentage": 0.37
+        },
+        {
+          "category": "John Lee",
+          "count": 34,
+          "percentage": 0.34
+        },
+        {
+          "category": "Paul Prost",
+          "count": 34,
+          "percentage": 0.34
+        },
+        {
+          "category": "Matt Abelman",
+          "count": 34,
+          "percentage": 0.34
+        },
+        {
+          "category": "Jonathan Doherty",
+          "count": 32,
+          "percentage": 0.32
+        }
+      ]
+    },
+    {
+      "category_type": "Segment",
+      "unique_count": 3,
+      "top_values": [
+        {
+          "category": "Consumer",
+          "count": 5191,
+          "percentage": 51.94
+        },
+        {
+          "category": "Corporate",
+          "count": 3020,
+          "percentage": 30.22
+        },
+        {
+          "category": "Home Office",
+          "count": 1783,
+          "percentage": 17.84
+        }
+      ]
+    }
+  ],
+  "top_numeric_metrics": [
+    {
+      "sum": 2297200.8603,
+      "mean": 229.85800083049827,
+      "median": 54.489999999999995,
+      "min": 0.444,
+      "max": 22638.48,
+      "std": 623.2451005086808,
+      "count": 9994,
+      "top_10_values": [
+        22638.48,
+        17499.95,
+        13999.96,
+        11199.968,
+        10499.97,
+        9892.74,
+        9449.95,
+        9099.93,
+        8749.95,
+        8399.976
+      ]
+    },
+    {
+      "sum": 37873.0,
+      "mean": 3.789573744246548,
+      "median": 3.0,
+      "min": 1.0,
+      "max": 14.0,
+      "std": 2.2251096911414,
+      "count": 9994,
+      "top_10_values": [
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14,
+        14
+      ]
+    },
+    {
+      "sum": 1561.09,
+      "mean": 0.15620272163297977,
+      "median": 0.2,
+      "min": 0.0,
+      "max": 0.8,
+      "std": 0.20645196782571615,
+      "count": 9994,
+      "top_10_values": [
+        0.8,
+        0.8,
+        0.8,
+        0.8,
+        0.8,
+        0.8,
+        0.8,
+        0.8,
+        0.8,
+        0.8
+      ]
+    },
+    {
+      "sum": 286397.0217,
+      "mean": 28.65689630778467,
+      "median": 8.666499999999996,
+      "min": -6599.978,
+      "max": 8399.976,
+      "std": 234.2601076909573,
+      "count": 9994,
+      "top_10_values": [
+        8399.976,
+        6719.9808,
+        5039.9856,
+        4946.37,
+        4630.4755,
+        3919.9888,
+        3177.475,
+        2799.984,
+        2591.9568,
+        2504.2216
+      ]
+    }
+  ],
+  "distribution_insights": [
+    {
+      "column": "Ship Mode",
+      "distribution": [
+        {
+          "category": "Standard Class",
+          "count": 5968,
+          "percentage": 59.72
+        },
+        {
+          "category": "Second Class",
+          "count": 1945,
+          "percentage": 19.46
+        },
+        {
+          "category": "First Class",
+          "count": 1538,
+          "percentage": 15.39
+        },
+        {
+          "category": "Same Day",
+          "count": 543,
+          "percentage": 5.43
+        }
+      ]
+    },
+    {
+      "column": "Customer Name",
+      "distribution": [
+        {
+          "category": "William Brown",
+          "count": 37,
+          "percentage": 0.37
+        },
+        {
+          "category": "John Lee",
+          "count": 34,
+          "percentage": 0.34
+        },
+        {
+          "category": "Paul Prost",
+          "count": 34,
+          "percentage": 0.34
+        },
+        {
+          "category": "Matt Abelman",
+          "count": 34,
+          "percentage": 0.34
+        },
+        {
+          "category": "Jonathan Doherty",
+          "count": 32,
+          "percentage": 0.32
+        },
+        {
+          "category": "Chloris Kastensmidt",
+          "count": 32,
+          "percentage": 0.32
+        },
+        {
+          "category": "Edward Hooks",
+          "count": 32,
+          "percentage": 0.32
+        },
+        {
+          "category": "Seth Vernon",
+          "count": 32,
+          "percentage": 0.32
+        },
+        {
+          "category": "Zuschuss Carroll",
+          "count": 31,
+          "percentage": 0.31
+        },
+        {
+          "category": "Arthur Prichep",
+          "count": 31,
+          "percentage": 0.31
+        }
+      ]
+    },
+    {
+      "column": "Segment",
+      "distribution": [
+        {
+          "category": "Consumer",
+          "count": 5191,
+          "percentage": 51.94
+        },
+        {
+          "category": "Corporate",
+          "count": 3020,
+          "percentage": 30.22
+        },
+        {
+          "category": "Home Office",
+          "count": 1783,
+          "percentage": 17.84
+        }
+      ]
+    },
+    {
+      "column": "Country",
+      "distribution": [
+        {
+          "category": "United States",
+          "count": 9994,
+          "percentage": 100.0
+        }
+      ]
+    },
+    {
+      "column": "City",
+      "distribution": [
+        {
+          "category": "New York City",
+          "count": 915,
+          "percentage": 9.16
+        },
+        {
+          "category": "Los Angeles",
+          "count": 747,
+          "percentage": 7.47
+        },
+        {
+          "category": "Philadelphia",
+          "count": 537,
+          "percentage": 5.37
+        },
+        {
+          "category": "San Francisco",
+          "count": 510,
+          "percentage": 5.1
+        },
+        {
+          "category": "Seattle",
+          "count": 428,
+          "percentage": 4.28
+        },
+        {
+          "category": "Houston",
+          "count": 377,
+          "percentage": 3.77
+        },
+        {
+          "category": "Chicago",
+          "count": 314,
+          "percentage": 3.14
+        },
+        {
+          "category": "Columbus",
+          "count": 222,
+          "percentage": 2.22
+        },
+        {
+          "category": "San Diego",
+          "count": 170,
+          "percentage": 1.7
+        },
+        {
+          "category": "Springfield",
+          "count": 163,
+          "percentage": 1.63
+        }
+      ]
+    },
+    {
+      "column": "State",
+      "distribution": [
+        {
+          "category": "California",
+          "count": 2001,
+          "percentage": 20.02
+        },
+        {
+          "category": "New York",
+          "count": 1128,
+          "percentage": 11.29
+        },
+        {
+          "category": "Texas",
+          "count": 985,
+          "percentage": 9.86
+        },
+        {
+          "category": "Pennsylvania",
+          "count": 587,
+          "percentage": 5.87
+        },
+        {
+          "category": "Washington",
+          "count": 506,
+          "percentage": 5.06
+        },
+        {
+          "category": "Illinois",
+          "count": 492,
+          "percentage": 4.92
+        },
+        {
+          "category": "Ohio",
+          "count": 469,
+          "percentage": 4.69
+        },
+        {
+          "category": "Florida",
+          "count": 383,
+          "percentage": 3.83
+        },
+        {
+          "category": "Michigan",
+          "count": 255,
+          "percentage": 2.55
+        },
+        {
+          "category": "North Carolina",
+          "count": 249,
+          "percentage": 2.49
+        }
+      ]
+    },
+    {
+      "column": "Region",
+      "distribution": [
+        {
+          "category": "West",
+          "count": 3203,
+          "percentage": 32.05
+        },
+        {
+          "category": "East",
+          "count": 2848,
+          "percentage": 28.5
+        },
+        {
+          "category": "Central",
+          "count": 2323,
+          "percentage": 23.24
+        },
+        {
+          "category": "South",
+          "count": 1620,
+          "percentage": 16.21
+        }
+      ]
+    },
+    {
+      "column": "Category",
+      "distribution": [
+        {
+          "category": "Office Supplies",
+          "count": 6026,
+          "percentage": 60.3
+        },
+        {
+          "category": "Furniture",
+          "count": 2121,
+          "percentage": 21.22
+        },
+        {
+          "category": "Technology",
+          "count": 1847,
+          "percentage": 18.48
+        }
+      ]
+    },
+    {
+      "column": "Sub-Category",
+      "distribution": [
+        {
+          "category": "Binders",
+          "count": 1523,
+          "percentage": 15.24
+        },
+        {
+          "category": "Paper",
+          "count": 1370,
+          "percentage": 13.71
+        },
+        {
+          "category": "Furnishings",
+          "count": 957,
+          "percentage": 9.58
+        },
+        {
+          "category": "Phones",
+          "count": 889,
+          "percentage": 8.9
+        },
+        {
+          "category": "Storage",
+          "count": 846,
+          "percentage": 8.47
+        },
+        {
+          "category": "Art",
+          "count": 796,
+          "percentage": 7.96
+        },
+        {
+          "category": "Accessories",
+          "count": 775,
+          "percentage": 7.75
+        },
+        {
+          "category": "Chairs",
+          "count": 617,
+          "percentage": 6.17
+        },
+        {
+          "category": "Appliances",
+          "count": 466,
+          "percentage": 4.66
+        },
+        {
+          "category": "Labels",
+          "count": 364,
+          "percentage": 3.64
+        }
+      ]
+    },
+    {
+      "column": "Product Name",
+      "distribution": [
+        {
+          "category": "Staple envelope",
+          "count": 48,
+          "percentage": 0.48
+        },
+        {
+          "category": "Staples",
+          "count": 46,
+          "percentage": 0.46
+        },
+        {
+          "category": "Easy-staple paper",
+          "count": 46,
+          "percentage": 0.46
+        },
+        {
+          "category": "Avery Non-Stick Binders",
+          "count": 20,
+          "percentage": 0.2
+        },
+        {
+          "category": "Staples in misc. colors",
+          "count": 19,
+          "percentage": 0.19
+        },
+        {
+          "category": "Staple remover",
+          "count": 18,
+          "percentage": 0.18
+        },
+        {
+          "category": "KI Adjustable-Height Table",
+          "count": 18,
+          "percentage": 0.18
+        },
+        {
+          "category": "Storex Dura Pro Binders",
+          "count": 17,
+          "percentage": 0.17
+        },
+        {
+          "category": "Staple-based wall hangings",
+          "count": 16,
+          "percentage": 0.16
+        },
+        {
+          "category": "Logitech 910-002974 M325 Wireless Mouse for Web Scrolling",
+          "count": 15,
+          "percentage": 0.15
+        }
+      ]
+    }
+  ],
+  "trend_analysis": {
+    "Order Date": {
+      "date_range": "2014-01-03 to 2017-12-30",
+      "trend": "increasing",
+      "monthly_data": [
+        {
+          "month": "2014-01",
+          "count": 79
+        },
+        {
+          "month": "2014-02",
+          "count": 46
+        },
+        {
+          "month": "2014-03",
+          "count": 157
+        },
+        {
+          "month": "2014-04",
+          "count": 135
+        },
+        {
+          "month": "2014-05",
+          "count": 122
+        },
+        {
+          "month": "2014-06",
+          "count": 135
+        },
+        {
+          "month": "2014-07",
+          "count": 143
+        },
+        {
+          "month": "2014-08",
+          "count": 153
+        },
+        {
+          "month": "2014-09",
+          "count": 268
+        },
+        {
+          "month": "2014-10",
+          "count": 159
+        },
+        {
+          "month": "2014-11",
+          "count": 318
+        },
+        {
+          "month": "2014-12",
+          "count": 278
+        }
+      ]
+    },
+    "Ship Date": {
+      "date_range": "2014-01-07 to 2018-01-05",
+      "trend": "decreasing",
+      "monthly_data": [
+        {
+          "month": "2014-01",
+          "count": 72
+        },
+        {
+          "month": "2014-02",
+          "count": 50
+        },
+        {
+          "month": "2014-03",
+          "count": 141
+        },
+        {
+          "month": "2014-04",
+          "count": 135
+        },
+        {
+          "month": "2014-05",
+          "count": 126
+        },
+        {
+          "month": "2014-06",
+          "count": 132
+        },
+        {
+          "month": "2014-07",
+          "count": 151
+        },
+        {
+          "month": "2014-08",
+          "count": 149
+        },
+        {
+          "month": "2014-09",
+          "count": 248
+        },
+        {
+          "month": "2014-10",
+          "count": 169
+        },
+        {
+          "month": "2014-11",
+          "count": 313
+        },
+        {
+          "month": "2014-12",
+          "count": 254
+        }
+      ]
+    }
+  },
+  "hierarchy_analysis": {
+    "sales": {
+      "column_name": "Sales",
+      "total_sales": 2297200.8603,
+      "average_sale": 229.85800083049827,
+      "min_sale": 0.444,
+      "max_sale": 22638.48,
+      "sales_by_category": {
+        "category_column": "Ship Mode",
+        "breakdown": [
+          {
+            "category": "Standard Class",
+            "sales": 1358215.743
+          },
+          {
+            "category": "Second Class",
+            "sales": 459193.5694
+          },
+          {
+            "category": "First Class",
+            "sales": 351428.4229
+          },
+          {
+            "category": "Same Day",
+            "sales": 128363.125
+          }
+        ]
+      },
+      "monthly_trend": [
+        {
+          "month": "2014-01",
+          "sales": 14236.895
+        },
+        {
+          "month": "2014-02",
+          "sales": 4519.892
+        },
+        {
+          "month": "2014-03",
+          "sales": 55691.009
+        },
+        {
+          "month": "2014-04",
+          "sales": 28295.345
+        },
+        {
+          "month": "2014-05",
+          "sales": 23648.287
+        },
+        {
+          "month": "2014-06",
+          "sales": 34595.1276
+        },
+        {
+          "month": "2014-07",
+          "sales": 33946.393
+        },
+        {
+          "month": "2014-08",
+          "sales": 27909.4685
+        },
+        {
+          "month": "2014-09",
+          "sales": 81777.3508
+        },
+        {
+          "month": "2014-10",
+          "sales": 31453.393
+        },
+        {
+          "month": "2014-11",
+          "sales": 78628.7167
+        },
+        {
+          "month": "2014-12",
+          "sales": 69545.6205
+        },
+        {
+          "month": "2015-01",
+          "sales": 18174.0756
+        },
+        {
+          "month": "2015-02",
+          "sales": 11951.411
+        },
+        {
+          "month": "2015-03",
+          "sales": 38726.252
+        },
+        {
+          "month": "2015-04",
+          "sales": 34195.2085
+        },
+        {
+          "month": "2015-05",
+          "sales": 30131.6865
+        },
+        {
+          "month": "2015-06",
+          "sales": 24797.292
+        },
+        {
+          "month": "2015-07",
+          "sales": 28765.325
+        },
+        {
+          "month": "2015-08",
+          "sales": 36898.3322
+        },
+        {
+          "month": "2015-09",
+          "sales": 64595.918
+        },
+        {
+          "month": "2015-10",
+          "sales": 31404.9235
+        },
+        {
+          "month": "2015-11",
+          "sales": 75972.5635
+        },
+        {
+          "month": "2015-12",
+          "sales": 74919.5212
+        },
+        {
+          "month": "2016-01",
+          "sales": 18542.491
+        },
+        {
+          "month": "2016-02",
+          "sales": 22978.815000000002
+        },
+        {
+          "month": "2016-03",
+          "sales": 51715.875
+        },
+        {
+          "month": "2016-04",
+          "sales": 38750.039000000004
+        },
+        {
+          "month": "2016-05",
+          "sales": 56987.728
+        },
+        {
+          "month": "2016-06",
+          "sales": 40344.534
+        },
+        {
+          "month": "2016-07",
+          "sales": 39261.963
+        },
+        {
+          "month": "2016-08",
+          "sales": 31115.3743
+        },
+        {
+          "month": "2016-09",
+          "sales": 73410.0249
+        },
+        {
+          "month": "2016-10",
+          "sales": 59687.745
+        },
+        {
+          "month": "2016-11",
+          "sales": 79411.9658
+        },
+        {
+          "month": "2016-12",
+          "sales": 96999.043
+        },
+        {
+          "month": "2017-01",
+          "sales": 43971.373999999996
+        },
+        {
+          "month": "2017-02",
+          "sales": 20301.1334
+        },
+        {
+          "month": "2017-03",
+          "sales": 58872.3528
+        },
+        {
+          "month": "2017-04",
+          "sales": 36521.5361
+        },
+        {
+          "month": "2017-05",
+          "sales": 44261.1102
+        },
+        {
+          "month": "2017-06",
+          "sales": 52981.7257
+        },
+        {
+          "month": "2017-07",
+          "sales": 45264.416
+        },
+        {
+          "month": "2017-08",
+          "sales": 63120.888
+        },
+        {
+          "month": "2017-09",
+          "sales": 87866.652
+        },
+        {
+          "month": "2017-10",
+          "sales": 77776.9232
+        },
+        {
+          "month": "2017-11",
+          "sales": 118447.825
+        },
+        {
+          "month": "2017-12",
+          "sales": 83829.3188
+        }
+      ]
+    },
+    "profit": {
+      "column_name": "Profit",
+      "total_profit": 286397.0217,
+      "average_profit": 28.65689630778467,
+      "min_profit": -6599.978,
+      "max_profit": 8399.976,
+      "profit_margin_percentage": 12.47,
+      "profit_by_category": [
+        {
+          "category": "Standard Class",
+          "profit": 164088.7875
+        },
+        {
+          "category": "Second Class",
+          "profit": 57446.6354
+        },
+        {
+          "category": "First Class",
+          "profit": 48969.8399
+        },
+        {
+          "category": "Same Day",
+          "profit": 15891.758899999999
+        }
+      ]
+    },
+    "geography": {
+      "Country": {
+        "column_name": "Country",
+        "unique_locations": 1,
+        "top_locations_by_count": [
+          {
+            "location": "United States",
+            "count": 9994
+          }
+        ],
+        "top_locations_by_sales": [
+          {
+            "location": "United States",
+            "sales": 2297200.8603
+          }
+        ]
+      },
+      "City": {
+        "column_name": "City",
+        "unique_locations": 531,
+        "top_locations_by_count": [
+          {
+            "location": "New York City",
+            "count": 915
+          },
+          {
+            "location": "Los Angeles",
+            "count": 747
+          },
+          {
+            "location": "Philadelphia",
+            "count": 537
+          },
+          {
+            "location": "San Francisco",
+            "count": 510
+          },
+          {
+            "location": "Seattle",
+            "count": 428
+          },
+          {
+            "location": "Houston",
+            "count": 377
+          },
+          {
+            "location": "Chicago",
+            "count": 314
+          },
+          {
+            "location": "Columbus",
+            "count": 222
+          },
+          {
+            "location": "San Diego",
+            "count": 170
+          },
+          {
+            "location": "Springfield",
+            "count": 163
+          }
+        ],
+        "top_locations_by_sales": [
+          {
+            "location": "New York City",
+            "sales": 256368.161
+          },
+          {
+            "location": "Los Angeles",
+            "sales": 175851.341
+          },
+          {
+            "location": "Seattle",
+            "sales": 119540.742
+          },
+          {
+            "location": "San Francisco",
+            "sales": 112669.092
+          },
+          {
+            "location": "Philadelphia",
+            "sales": 109077.013
+          },
+          {
+            "location": "Houston",
+            "sales": 64504.7604
+          },
+          {
+            "location": "Chicago",
+            "sales": 48539.541
+          },
+          {
+            "location": "San Diego",
+            "sales": 47521.029
+          },
+          {
+            "location": "Jacksonville",
+            "sales": 44713.183
+          },
+          {
+            "location": "Springfield",
+            "sales": 43054.342
+          }
+        ]
+      },
+      "State": {
+        "column_name": "State",
+        "unique_locations": 49,
+        "top_locations_by_count": [
+          {
+            "location": "California",
+            "count": 2001
+          },
+          {
+            "location": "New York",
+            "count": 1128
+          },
+          {
+            "location": "Texas",
+            "count": 985
+          },
+          {
+            "location": "Pennsylvania",
+            "count": 587
+          },
+          {
+            "location": "Washington",
+            "count": 506
+          },
+          {
+            "location": "Illinois",
+            "count": 492
+          },
+          {
+            "location": "Ohio",
+            "count": 469
+          },
+          {
+            "location": "Florida",
+            "count": 383
+          },
+          {
+            "location": "Michigan",
+            "count": 255
+          },
+          {
+            "location": "North Carolina",
+            "count": 249
+          }
+        ],
+        "top_locations_by_sales": [
+          {
+            "location": "California",
+            "sales": 457687.6315
+          },
+          {
+            "location": "New York",
+            "sales": 310876.271
+          },
+          {
+            "location": "Texas",
+            "sales": 170188.0458
+          },
+          {
+            "location": "Washington",
+            "sales": 138641.27
+          },
+          {
+            "location": "Pennsylvania",
+            "sales": 116511.914
+          },
+          {
+            "location": "Florida",
+            "sales": 89473.708
+          },
+          {
+            "location": "Illinois",
+            "sales": 80166.101
+          },
+          {
+            "location": "Ohio",
+            "sales": 78258.136
+          },
+          {
+            "location": "Michigan",
+            "sales": 76269.614
+          },
+          {
+            "location": "Virginia",
+            "sales": 70636.72
+          }
+        ]
+      }
+    }
+  },
+  "recommendations": [
+    "Total sales of 2,297,200.86 with average transaction of 229.86",
+    "Profit margin is 12.47%",
+    "Positive Order Date trend detected",
+    "Declining Ship Date trend - needs attention",
+    "High concentration in Ship Mode: Standard Class represents 59.72% of data",
+    "High concentration in Segment: Consumer represents 51.94% of data",
+    "High concentration in Country: United States represents 100.0% of data",
+    "High concentration in Category: Office Supplies represents 60.3% of data"
+  ],
+  "column_classification": {
+    "Row ID": "identifier",
+    "Order ID": "identifier",
+    "Order Date": "date",
+    "Ship Date": "date",
+    "Ship Mode": "categorical",
+    "Customer ID": "identifier",
+    "Customer Name": "categorical",
+    "Segment": "categorical",
+    "Country": "categorical",
+    "City": "categorical",
+    "State": "categorical",
+    "Postal Code": "identifier",
+    "Region": "categorical",
+    "Product ID": "identifier",
+    "Category": "categorical",
+    "Sub-Category": "categorical",
+    "Product Name": "categorical",
+    "Sales": "numeric",
+    "Quantity": "numeric",
+    "Discount": "numeric",
+    "Profit": "numeric"
+  }
+}

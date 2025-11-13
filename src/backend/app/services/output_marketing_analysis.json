@@ -1,0 +1,171 @@
+{
+  "executive_summary": {
+    "total_records": 50,
+    "total_columns": 9,
+    "numeric_columns": 0,
+    "categorical_columns": 2,
+    "date_columns": 1,
+    "identifier_columns": 6,
+    "boolean_columns": 0,
+    "text_columns": 0
+  },
+  "key_metrics": [],
+  "top_categories": [
+    {
+      "category_type": "Campaign Name",
+      "unique_count": 3,
+      "top_values": [
+        {
+          "category": "Email Campaign",
+          "count": 17,
+          "percentage": 34.0
+        },
+        {
+          "category": "Social Media",
+          "count": 17,
+          "percentage": 34.0
+        },
+        {
+          "category": "PPC",
+          "count": 16,
+          "percentage": 32.0
+        }
+      ]
+    },
+    {
+      "category_type": "Channel",
+      "unique_count": 3,
+      "top_values": [
+        {
+          "category": "Email",
+          "count": 17,
+          "percentage": 34.0
+        },
+        {
+          "category": "Facebook",
+          "count": 17,
+          "percentage": 34.0
+        },
+        {
+          "category": "Google Ads",
+          "count": 16,
+          "percentage": 32.0
+        }
+      ]
+    }
+  ],
+  "top_numeric_metrics": [],
+  "distribution_insights": [
+    {
+      "column": "Campaign Name",
+      "distribution": [
+        {
+          "category": "Email Campaign",
+          "count": 17,
+          "percentage": 34.0
+        },
+        {
+          "category": "Social Media",
+          "count": 17,
+          "percentage": 34.0
+        },
+        {
+          "category": "PPC",
+          "count": 16,
+          "percentage": 32.0
+        }
+      ]
+    },
+    {
+      "column": "Channel",
+      "distribution": [
+        {
+          "category": "Email",
+          "count": 17,
+          "percentage": 34.0
+        },
+        {
+          "category": "Facebook",
+          "count": 17,
+          "percentage": 34.0
+        },
+        {
+          "category": "Google Ads",
+          "count": 16,
+          "percentage": 32.0
+        }
+      ]
+    }
+  ],
+  "trend_analysis": {
+    "Date": {
+      "date_range": "2024-01-07 to 2024-12-15",
+      "trend": "decreasing",
+      "monthly_data": [
+        {
+          "month": "2024-01",
+          "count": 4
+        },
+        {
+          "month": "2024-02",
+          "count": 4
+        },
+        {
+          "month": "2024-03",
+          "count": 5
+        },
+        {
+          "month": "2024-04",
+          "count": 4
+        },
+        {
+          "month": "2024-05",
+          "count": 4
+        },
+        {
+          "month": "2024-06",
+          "count": 5
+        },
+        {
+          "month": "2024-07",
+          "count": 4
+        },
+        {
+          "month": "2024-08",
+          "count": 4
+        },
+        {
+          "month": "2024-09",
+          "count": 5
+        },
+        {
+          "month": "2024-10",
+          "count": 4
+        },
+        {
+          "month": "2024-11",
+          "count": 4
+        },
+        {
+          "month": "2024-12",
+          "count": 3
+        }
+      ]
+    }
+  },
+  "hierarchy_analysis": {},
+  "recommendations": [
+    "Declining Date trend - needs attention"
+  ],
+  "column_classification": {
+    "Campaign ID": "identifier",
+    "Campaign Name": "categorical",
+    "Channel": "categorical",
+    "Impressions": "identifier",
+    "Clicks": "identifier",
+    "Conversions": "identifier",
+    "Spend": "identifier",
+    "Revenue": "identifier",
+    "Date": "date"
+  }
+}
