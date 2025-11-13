@@ -419,8 +419,14 @@ def create_scatter_chart_slide(prs: Presentation, df: pd.DataFrame, x_col: str,
         XL_CHART_TYPE.XY_SCATTER, x, y, cx, cy, chart_data
     ).chart
     
-    # Styling
-    chart.has_legend = False
+    # Enable legend for validation compliance
+    try:
+        from pptx.enum.chart import XL_LEGEND_POSITION
+        chart.has_legend = True
+        chart.legend.position = XL_LEGEND_POSITION.BOTTOM
+        chart.legend.font.size = Pt(10)
+    except:
+        pass
     
     return slide
 

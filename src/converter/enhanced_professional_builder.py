@@ -1389,10 +1389,14 @@ class EnhancedProfessionalBuilder:
             ppt_chart_type, x, y, width, height, chart_data
         ).chart
         
-        # Style chart
-        chart.has_legend = chart_type in ['line', 'bar', 'column']
-        if chart.has_legend:
+        # Style chart - ALWAYS enable legend for validation compliance
+        chart.has_legend = True
+        try:
             chart.legend.position = XL_LEGEND_POSITION.BOTTOM
+            chart.legend.font.size = Pt(11)
+            chart.legend.font.name = 'Segoe UI'
+        except Exception as e:
+            print(f"   ⚠️  Legend styling failed: {e}")
         
         # Set title
         if chart.chart_title:

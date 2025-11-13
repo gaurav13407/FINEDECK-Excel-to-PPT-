@@ -619,25 +619,33 @@ class AdvancedChartBuilder:
             title_para.font.color.rgb = RGBColor(25, 42, 86)  # Navy blue
         
         # ============ LEGEND STYLING ============
-        chart.has_legend = True
-        # Increase legend size and add breathing room
+        # ALWAYS enable legend for validation compliance
         try:
-            if chart_type not in ['pie', 'doughnut']:
-                chart.legend.position = XL_LEGEND_POSITION.BOTTOM
-                chart.legend.font.size = Pt(12)
-            else:
-                chart.legend.position = XL_LEGEND_POSITION.RIGHT
-                chart.legend.font.size = Pt(11)
+            chart.has_legend = True
+            
+            # Ensure legend exists before styling
+            if hasattr(chart, 'legend') and chart.legend is not None:
+                # Position based on chart type
+                if chart_type not in ['pie', 'doughnut']:
+                    chart.legend.position = XL_LEGEND_POSITION.BOTTOM
+                    chart.legend.font.size = Pt(12)
+                else:
+                    chart.legend.position = XL_LEGEND_POSITION.RIGHT
+                    chart.legend.font.size = Pt(11)
 
-            # Make legend text clearer
-            chart.legend.font.bold = False
-            # Do not force legend into layout so it doesn't squeeze the plot area
-            try:
-                chart.legend.include_in_layout = False
-            except Exception:
-                pass
+                # Make legend text clearer
+                chart.legend.font.bold = False
+                chart.legend.font.name = 'Segoe UI'
+                
+                # Do not force legend into layout so it doesn't squeeze the plot area
+                try:
+                    chart.legend.include_in_layout = False
+                except Exception:
+                    pass
+            else:
+                print(f"   ⚠️  Warning: Legend object not available for {chart_type} chart")
         except Exception as e:
-            print(f"   Note: Legend styling not fully supported: {e}")
+            print(f"   ⚠️  Legend styling failed: {e}")
         
         # ============ DATA LABELS ============
         try:
@@ -791,11 +799,21 @@ class AdvancedChartBuilder:
             chart_data.categories = ['No Data']
             chart_data.add_series('Values', [0])
         
-        return slide.shapes.add_chart(
+        chart = slide.shapes.add_chart(
             XL_CHART_TYPE.COLUMN_CLUSTERED,
             x, y, width, height,
             chart_data
         ).chart
+        
+        # Ensure fallback chart has legend for validation
+        try:
+            chart.has_legend = True
+            chart.legend.position = XL_LEGEND_POSITION.BOTTOM
+            chart.legend.font.size = Pt(11)
+        except Exception:
+            pass
+        
+        return chart
 
 
 # ============================================================================
