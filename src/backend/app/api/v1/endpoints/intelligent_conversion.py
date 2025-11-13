@@ -4,11 +4,20 @@ Integrates the automatic data analysis into FinDeck's conversion flow.
 """
 
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
+from fastapi.responses import FileResponse
 from typing import Dict, Any
 import tempfile
 import os
+import sys
 from pathlib import Path
 
+# Add path to find converter modules
+converter_path = os.path.join(os.path.dirname(__file__), "../../../../../")
+if converter_path not in sys.path:
+    sys.path.insert(0, converter_path)
+
+from converter.excel_reader import excel_reader
+from converter.ppt_writer import df_to_ppt
 from services.data_intelligence import DataIntelligenceEngine
 from api.deps import get_current_active_user
 from models.user import UserInDB
@@ -79,10 +88,11 @@ async def analyze_excel_file(
         )
 
 
-@router.post("/convert-with-intelligence", response_model=Dict[str, Any])
+@router.post("/convert-with-intelligence")
 async def convert_excel_to_ppt_intelligent(
     file: UploadFile = File(...),
-    template_id: str = None,
+    title: str = "Intelligent Data Analysis",
+    subtitle: str = "Auto-Generated Insights",
     current_user: UserInDB = Depends(get_current_active_user)
 ):
     """
@@ -90,9 +100,9 @@ async def convert_excel_to_ppt_intelligent(
     
     This endpoint:
     1. Analyzes the Excel file automatically
-    2. Generates insights and metrics
-    3. Creates PPT slides based on the analysis
-    4. Returns both the PPT file and the analysis JSON
+    2. Generates insights and metrics  
+    3. Creates PPT slides using your existing df_to_ppt converter
+    4. Returns the PPT file for download
     
     This is the SMART conversion - no manual configuration needed!
     """
@@ -104,40 +114,80 @@ async def convert_excel_to_ppt_intelligent(
             detail="Invalid file type. Only Excel files (.xlsx, .xls) are supported."
         )
     
+    temp_excel_path = None
+    temp_ppt_path = None
+    
     try:
+        # Save uploaded Excel file temporarily
         with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as temp_file:
             content = await file.read()
             temp_file.write(content)
-            temp_path = temp_file.name
+            temp_excel_path = temp_file.name
         
-        # STEP 1: Analyze the data
+        # STEP 1: Analyze the data with Intelligence Engine
         engine = DataIntelligenceEngine()
-        analysis = engine.analyze_file(temp_path)
+        analysis = engine.analyze_file(temp_excel_path)
         
-        # STEP 2: Generate PPT based on analysis
-        # TODO: Integrate with your existing PPT generation service
-        # For now, returning the analysis structure
+        # STEP 2: Read Excel data using your existing reader
+        df = excel_reader(temp_excel_path, sheet=0)
         
-        # Clean up
-        os.unlink(temp_path)
+        if df is None or df.empty:
+            raise HTTPException(
+                status_code=400,
+                detail="No data found in Excel file"
+            )
         
-        return {
-            'success': True,
-            'analysis': analysis,
-            'message': 'Intelligent conversion completed',
-            'ppt_slides_generated': len(analysis['key_metrics']) + 
-                                   len(analysis['top_categories']) + 
-                                   len(analysis.get('hierarchy_analysis', {}))
-        }
+        # STEP 3: Create PPT using your existing converter
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.pptx') as tmp_ppt:
+            temp_ppt_path = tmp_ppt.name
+        
+        # Generate intelligent title with data insights
+        intelligent_title = f"{title} - {analysis['executive_summary']['total_records']:,} Records Analyzed"
+        intelligent_subtitle = f"{subtitle} | {analysis['executive_summary']['numeric_columns']} Metrics | {analysis['executive_summary']['categorical_columns']} Categories"
+        
+        # Convert to PowerPoint using your existing df_to_ppt function
+        # Limit to 50 rows for reasonable PPT size (can be made configurable)
+        df_to_ppt(
+            df=df,
+            out_path=temp_ppt_path,
+            title=intelligent_title,
+            subtitle=intelligent_subtitle,
+            title_col=None,  # Let it auto-detect
+            mode="table",    # Use table mode for better visualization
+            limit=50         # Limit to 50 rows for performance
+        )
+        
+        # Generate filename for download
+        base_name = Path(file.filename).stem
+        ppt_filename = f"{base_name}_intelligent_analysis.pptx"
+        
+        # Return the PPT file
+        return FileResponse(
+            path=temp_ppt_path,
+            media_type="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            filename=ppt_filename,
+            headers={
+                "X-Analysis-Records": str(analysis['executive_summary']['total_records']),
+                "X-Analysis-Columns": str(analysis['executive_summary']['total_columns']),
+                "X-Numeric-Metrics": str(analysis['executive_summary']['numeric_columns'])
+            }
+        )
         
     except Exception as e:
-        if 'temp_path' in locals() and os.path.exists(temp_path):
-            os.unlink(temp_path)
+        # Clean up temp files on error
+        if temp_excel_path and os.path.exists(temp_excel_path):
+            os.unlink(temp_excel_path)
+        if temp_ppt_path and os.path.exists(temp_ppt_path):
+            os.unlink(temp_ppt_path)
         
         raise HTTPException(
             status_code=500,
             detail=f"Error in intelligent conversion: {str(e)}"
         )
+    finally:
+        # Clean up Excel file (PPT will be cleaned up after response)
+        if temp_excel_path and os.path.exists(temp_excel_path):
+            os.unlink(temp_excel_path)
 
 
 @router.get("/column-classification-rules")

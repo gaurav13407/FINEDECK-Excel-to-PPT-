@@ -32,6 +32,10 @@ def detect_chart_type(df:pd.DataFrame,x_col:Optional[str]=None,y_cols:Optional[s
     numeric_cols = [str(col) for col in df.select_dtypes(include=['int64','float64']).columns.tolist()]
     categotical_cols = [str(col) for col in df.select_dtypes(include=['object','string']).columns.tolist()]
 
+    # Initialize variables
+    cat_col = None
+    val_col = None
+
     # CAse 1 : Pie Chart - Part-to-whole with one categgory and one value 
     #Example:Assests Allocation
     if len(categotical_cols)>=1 and len(numeric_cols)>=1 and df.shape[0]<=10:
@@ -42,7 +46,7 @@ def detect_chart_type(df:pd.DataFrame,x_col:Optional[str]=None,y_cols:Optional[s
     # KeyWord
     keywords=['allocation','distribution','composition','breakdown','share','percentage','porfolio','sector','country','category','region']
     column_text=''.join(df.columns).lower()
-    if any(keyword in column_text for keyword in keywords):
+    if any(keyword in column_text for keyword in keywords) and cat_col and val_col:
         return 'pie',{
             'category_col':cat_col,
             'value_col':val_col,

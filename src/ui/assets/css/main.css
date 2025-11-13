@@ -1121,6 +1121,7 @@ section,
   color: var(--contrast-color);
 }
 
+/* COMMENTED FOR SAAS FOCUS - About section mobile styles
 @media (max-width: 992px) {
   .about .image-wrapper {
     margin-bottom: 2rem;
@@ -1147,6 +1148,7 @@ section,
     margin-bottom: 1.5rem;
   }
 }
+*/
 
 /*--------------------------------------------------------------
 # Features Section
@@ -1995,6 +1997,7 @@ section,
   margin-bottom: 0;
 }
 
+/* COMMENTED FOR SAAS FOCUS - Services section mobile styles
 @media (max-width: 768px) {
   .services {
     padding: 60px 0;
@@ -2009,6 +2012,7 @@ section,
     padding: 1.5rem;
   }
 }
+*/
 
 /*--------------------------------------------------------------
 # Call To Action Section

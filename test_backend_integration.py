@@ -1,7 +1,60 @@
 """
-Test Backend Integration of Enhancement Features
-Tests that enhanced features work through the actual backend converter
+Test Backend Integration - Data Intelligence Engine
+Tests the full flow: Analysis → Excel Reader → PPT Writer
 """
+
+import sys
+sys.path.insert(0, r'c:\Users\gaura\OneDrive\Desktop\Big Projects\FinDeck(Excel to PPT Project)\src')
+sys.path.insert(0, r'c:\Users\gaura\OneDrive\Desktop\Big Projects\FinDeck(Excel to PPT Project)\src\backend\app')
+
+from converter.excel_reader import excel_reader
+from converter.ppt_writer import df_to_ppt
+from services.data_intelligence import DataIntelligenceEngine
+import tempfile
+import os
+
+# File to test
+excel_file = r'c:\Users\gaura\OneDrive\Desktop\Big Projects\FinDeck(Excel to PPT Project)\DV+Sales+Data.xlsx'
+
+print("🔍 Step 1: Analyzing Excel file with Data Intelligence Engine...")
+engine = DataIntelligenceEngine()
+analysis = engine.analyze_file(excel_file)
+
+print(f"✅ Analysis Complete!")
+print(f"   Records: {analysis['executive_summary']['total_records']:,}")
+print(f"   Columns: {analysis['executive_summary']['total_columns']}")
+print(f"   Numeric Metrics: {analysis['executive_summary']['numeric_columns']}")
+
+print("\n📖 Step 2: Reading Excel data with excel_reader...")
+df = excel_reader(excel_file, sheet=0)
+print(f"✅ Data loaded: {len(df)} rows x {len(df.columns)} columns")
+
+print("\n🎨 Step 3: Creating PowerPoint with df_to_ppt...")
+output_ppt = 'DV_Sales_Backend_Test.pptx'
+
+# Create intelligent title
+intelligent_title = f"Intelligent Data Analysis - {analysis['executive_summary']['total_records']:,} Records"
+intelligent_subtitle = f"Auto-Generated | {analysis['executive_summary']['numeric_columns']} Metrics | {analysis['executive_summary']['categorical_columns']} Categories"
+
+df_to_ppt(
+    df=df,
+    out_path=output_ppt,
+    title=intelligent_title,
+    subtitle=intelligent_subtitle,
+    title_col=None,
+    mode="table",
+    limit=50  # Limit to 50 rows for reasonable PPT size
+)
+
+print(f"✅ PowerPoint Created: {output_ppt}")
+print("\n" + "="*80)
+print("🎯 BACKEND INTEGRATION TEST SUCCESSFUL!")
+print("="*80)
+print("The intelligent conversion endpoint will:")
+print("  1. ✅ Analyze data with Intelligence Engine")
+print("  2. ✅ Read Excel with excel_reader")  
+print("  3. ✅ Generate PPT with df_to_ppt")
+print("  4. ✅ Return downloadable file")
 
 import sys
 import os

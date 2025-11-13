@@ -11,6 +11,58 @@
     -webkit-touch-callout: none;
   }
   
+  /* Fix overlapping animations and spacing */
+  [data-aos] {
+    transition-duration: 0.4s !important;
+  }
+  
+  /* Disable animations on mobile to prevent overlap */
+  .hero .floating-card {
+    animation: none !important;
+    transform: none !important;
+  }
+  
+  /* Fix hero section spacing */
+  .hero {
+    padding-top: 100px !important;
+    padding-bottom: 40px !important;
+    min-height: auto !important;
+  }
+  
+  .hero .hero-wrapper {
+    padding: 0 20px;
+  }
+  
+  .hero .hero-title {
+    margin-bottom: 20px !important;
+    line-height: 1.2 !important;
+  }
+  
+  .hero .hero-description {
+    margin-bottom: 30px !important;
+    padding: 0 10px;
+  }
+  
+  .hero .hero-actions {
+    margin-bottom: 30px !important;
+  }
+  
+  /* Fix section spacing to prevent overlap */
+  section {
+    padding: 50px 0 !important;
+    overflow-x: hidden;
+  }
+  
+  /* Ensure proper z-index stacking */
+  .header {
+    z-index: 1000 !important;
+  }
+  
+  .hero {
+    z-index: 1 !important;
+    position: relative;
+  }
+  
   /* Ensure all buttons are touch-friendly */
   button,
   .btn,
@@ -66,7 +118,19 @@
   
   /* Reduce padding on sections for mobile */
   section {
-    padding: 40px 0 !important;
+    padding: 50px 0 !important;
+    margin-top: 0 !important;
+  }
+  
+  /* Prevent section overlap */
+  section + section {
+    margin-top: 0 !important;
+  }
+  
+  /* Fix container spacing */
+  .container {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
   }
   
   /* Make cards more compact */
@@ -100,9 +164,30 @@
 
 /* Extra small devices (phones in portrait) */
 @media (max-width: 576px) {
+  /* Reduce AOS animation distance to prevent overflow */
+  [data-aos="fade-up"] {
+    transform: translate3d(0, 20px, 0) !important;
+  }
+  
+  [data-aos="fade-right"],
+  [data-aos="fade-left"] {
+    transform: translate3d(0, 0, 0) !important;
+  }
+  
   /* Even smaller hero text */
   .hero-title {
     font-size: 1.5rem !important;
+    line-height: 1.3 !important;
+  }
+  
+  .hero {
+    padding-top: 80px !important;
+    padding-bottom: 30px !important;
+  }
+  
+  .hero .hero-description {
+    font-size: 0.95rem !important;
+    padding: 0 5px !important;
   }
   
   /* Reduce font sizes slightly */
@@ -119,6 +204,21 @@
   .btn,
   .action-btn {
     width: 100%;
+  }
+  
+  /* Prevent feature cards from overlapping */
+  .features .feature-item,
+  .info-item {
+    margin-bottom: 25px !important;
+  }
+  
+  /* Fix grid layouts on small screens */
+  .row > * {
+    margin-bottom: 20px;
+  }
+  
+  .row > *:last-child {
+    margin-bottom: 0;
   }
   
   /* Reduce section padding further */
@@ -172,6 +272,19 @@
 /* Better scrolling on iOS */
 body {
   -webkit-overflow-scrolling: touch;
+  overflow-x: hidden;
+}
+
+/* Prevent horizontal scroll */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Fix for elements that cause horizontal scroll */
+* {
+  max-width: 100%;
 }
 
 /* Prevent text size adjust on orientation change (iOS) */
