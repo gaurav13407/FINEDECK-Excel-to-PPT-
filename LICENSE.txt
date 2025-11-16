@@ -29,7 +29,7 @@ sell, rent, lease, or sublicense the Software
 
 build a competing or similar product using the Software
 
-share the Software with any third party
+share the Software with any third party 
 
 3. Restrictions
 

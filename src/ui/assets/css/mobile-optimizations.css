@@ -178,6 +178,65 @@
     min-height: 44px;
     font-size: 16px; /* Prevents zoom on iOS */
   }
+
+  /* Power BI Section Mobile Optimization */
+  #powerbi-integration .feature-stats {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  #powerbi-integration .feature-stats .stat-item {
+    width: 100%;
+    text-align: center;
+  }
+
+  #powerbi-integration .intro-content h2 {
+    font-size: 1.8rem !important;
+  }
+
+  #powerbi-integration .intro-content p {
+    font-size: 1rem !important;
+  }
+
+  #powerbi-integration .intro-image {
+    margin-top: 30px;
+  }
+
+  /* How It Works Flow - Vertical on Mobile */
+  #powerbi-integration .bi-arrow-right {
+    transform: rotate(90deg);
+    margin: 10px 0;
+  }
+
+  /* Perfect For Cards */
+  #powerbi-integration .col-lg-4,
+  #powerbi-integration .col-md-6 {
+    margin-bottom: 20px;
+  }
+
+  /* Feature Tags */
+  .feature-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 15px;
+  }
+
+  .feature-tags .tag {
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  /* CTA Buttons */
+  #powerbi-integration .btn {
+    width: 100%;
+    max-width: 300px;
+    margin: 10px auto;
+    display: block !important;
+  }
+
   
   /* Optimize hero section for mobile */
   .hero-title {
@@ -256,6 +315,42 @@
   /* Fix header on very small screens */
   .header .logo h1 {
     font-size: 20px !important;
+  }
+
+  /* Power BI Section - Extra Small Screens */
+  #powerbi-integration .intro-content h2 {
+    font-size: 1.5rem !important;
+  }
+
+  #powerbi-integration .intro-content p {
+    font-size: 0.9rem !important;
+  }
+
+  #powerbi-integration .feature-icon {
+    width: 50px !important;
+    height: 50px !important;
+  }
+
+  #powerbi-integration .feature-icon i {
+    font-size: 24px !important;
+  }
+
+  #powerbi-integration h4 {
+    font-size: 1.1rem !important;
+  }
+
+  #powerbi-integration h5 {
+    font-size: 1rem !important;
+  }
+
+  #powerbi-integration .badge {
+    font-size: 0.75rem !important;
+    padding: 6px 15px !important;
+  }
+
+  /* How It Works - Smaller on mobile */
+  #powerbi-integration .bi-arrow-right {
+    font-size: 1.5rem !important;
   }
   
   .header .btn-getstarted {
