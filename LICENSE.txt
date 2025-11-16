@@ -1,0 +1,90 @@
+Findeck – Proprietary Software License
+Copyright © 2025 Gaurav Joshi. All Rights Reserved.
+
+This software, including all source code, binaries, algorithms, data processing logic, models, scripts, and related materials (“Software”), is the exclusive property of Gaurav Joshi.
+
+By installing, accessing, downloading, or using the Software, you (“User”) agree to the following terms:
+
+1. Ownership
+
+The Software is fully owned by Gaurav Joshi.
+All intellectual property rights remain with the Owner.
+No ownership rights are transferred to the User.
+
+2. License to Use
+
+The User is granted a non-exclusive, non-transferable, revocable right to use the Software.
+
+The User is NOT allowed to:
+
+copy the source code
+
+modify or create derivative works
+
+reverse engineer, decompile, or decode the Software
+
+redistribute, publish, or upload the Software
+
+sell, rent, lease, or sublicense the Software
+
+build a competing or similar product using the Software
+
+share the Software with any third party
+
+3. Restrictions
+
+The User agrees not to:
+
+Attempt to access protected components or backend logic
+
+Circumvent any security or licensing mechanism
+
+Host, mirror, or expose the Software publicly
+
+Use the Software for illegal or competitive purposes
+
+4. Intellectual Property
+
+All algorithms, processing techniques, layouts, templates, conversion logic, modelling, and internal architecture are protected under Indian and International Copyright Laws.
+
+Unauthorized use may result in civil and criminal penalties.
+
+5. Confidentiality
+
+Any access to internal logic, backend systems, or private repositories is strictly confidential.
+User must not disclose any part of the Software to any third party.
+
+6. No Warranty
+
+The Software is provided “as is,” with no warranties of any kind, including but not limited to performance, accuracy, or fitness for a particular purpose.
+
+Use at your own risk.
+
+7. Limitation of Liability
+
+The Owner is not liable for:
+
+data loss
+
+financial loss
+
+downtime
+
+system damage
+
+business damages
+
+8. Termination
+
+The license may be terminated at any time for misuse.
+Upon termination, the User must immediately stop using the Software and delete all copies.
+
+9. Governing Law
+
+This license is governed by the laws of India, and applicable international IP laws.
+
+10. Contact
+
+For permissions or commercial licensing, contact:
+Gaurav Joshi
+Email: gaurav13407@outlook.com
