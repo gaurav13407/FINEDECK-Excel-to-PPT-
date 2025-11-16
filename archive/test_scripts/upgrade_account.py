@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Quick script to upgrade user account to premium plan
 Usage: python upgrade_account.py <email> <plan>

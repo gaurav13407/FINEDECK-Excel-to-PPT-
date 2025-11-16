@@ -1,0 +1,279 @@
+{
+  "model": {
+    "tables": {
+      "P&L_Statement": {
+        "name": "P&L_Statement",
+        "type": "Fact",
+        "columns": [
+          "P&L_StatementId",
+          "Month",
+          "Revenue",
+          "Costofgoodssold",
+          "Operatingexpenses",
+          "Marketingspend",
+          "Revenuebudget",
+          "Department",
+          "Grossprofit",
+          "Netprofit",
+          "Profitmargin"
+        ],
+        "row_count": 18,
+        "hierarchies": [
+          {
+            "name": "MonthHierarchy",
+            "levels": [
+              {
+                "name": "Year",
+                "expression": "YEAR(Month)"
+              },
+              {
+                "name": "Quarter",
+                "expression": "QUARTER(Month)"
+              },
+              {
+                "name": "Month",
+                "expression": "MONTH(Month)"
+              },
+              {
+                "name": "Day",
+                "expression": "DAY(Month)"
+              }
+            ]
+          }
+        ],
+        "data": "[18 rows]"
+      },
+      "Summary": {
+        "name": "Summary",
+        "type": "Fact",
+        "columns": [
+          "SummaryId",
+          "Metric",
+          "Value"
+        ],
+        "row_count": 4,
+        "hierarchies": [],
+        "data": "[4 rows]"
+      }
+    },
+    "relationships": [],
+    "measures": [
+      {
+        "name": "TotalRevenue",
+        "table": "P&L_Statement",
+        "expression": "SUM(P&L_Statement[Revenue])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageRevenue",
+        "table": "P&L_Statement",
+        "expression": "AVERAGE(P&L_Statement[Revenue])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountRevenue",
+        "table": "P&L_Statement",
+        "expression": "COUNT(P&L_Statement[Revenue])",
+        "format": "0"
+      },
+      {
+        "name": "RevenueYoY",
+        "table": "P&L_Statement",
+        "expression": "CALCULATE(SUM(P&L_Statement[Revenue]), SAMEPERIODLASTYEAR(P&L_Statement[Month]))",
+        "format": "0.00%"
+      },
+      {
+        "name": "TotalCostofgoodssold",
+        "table": "P&L_Statement",
+        "expression": "SUM(P&L_Statement[Costofgoodssold])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageCostofgoodssold",
+        "table": "P&L_Statement",
+        "expression": "AVERAGE(P&L_Statement[Costofgoodssold])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountCostofgoodssold",
+        "table": "P&L_Statement",
+        "expression": "COUNT(P&L_Statement[Costofgoodssold])",
+        "format": "0"
+      },
+      {
+        "name": "CostofgoodssoldYoY",
+        "table": "P&L_Statement",
+        "expression": "CALCULATE(SUM(P&L_Statement[Costofgoodssold]), SAMEPERIODLASTYEAR(P&L_Statement[Month]))",
+        "format": "0.00%"
+      },
+      {
+        "name": "TotalOperatingexpenses",
+        "table": "P&L_Statement",
+        "expression": "SUM(P&L_Statement[Operatingexpenses])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageOperatingexpenses",
+        "table": "P&L_Statement",
+        "expression": "AVERAGE(P&L_Statement[Operatingexpenses])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountOperatingexpenses",
+        "table": "P&L_Statement",
+        "expression": "COUNT(P&L_Statement[Operatingexpenses])",
+        "format": "0"
+      },
+      {
+        "name": "OperatingexpensesYoY",
+        "table": "P&L_Statement",
+        "expression": "CALCULATE(SUM(P&L_Statement[Operatingexpenses]), SAMEPERIODLASTYEAR(P&L_Statement[Month]))",
+        "format": "0.00%"
+      },
+      {
+        "name": "TotalMarketingspend",
+        "table": "P&L_Statement",
+        "expression": "SUM(P&L_Statement[Marketingspend])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageMarketingspend",
+        "table": "P&L_Statement",
+        "expression": "AVERAGE(P&L_Statement[Marketingspend])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountMarketingspend",
+        "table": "P&L_Statement",
+        "expression": "COUNT(P&L_Statement[Marketingspend])",
+        "format": "0"
+      },
+      {
+        "name": "MarketingspendYoY",
+        "table": "P&L_Statement",
+        "expression": "CALCULATE(SUM(P&L_Statement[Marketingspend]), SAMEPERIODLASTYEAR(P&L_Statement[Month]))",
+        "format": "0.00%"
+      },
+      {
+        "name": "TotalRevenuebudget",
+        "table": "P&L_Statement",
+        "expression": "SUM(P&L_Statement[Revenuebudget])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageRevenuebudget",
+        "table": "P&L_Statement",
+        "expression": "AVERAGE(P&L_Statement[Revenuebudget])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountRevenuebudget",
+        "table": "P&L_Statement",
+        "expression": "COUNT(P&L_Statement[Revenuebudget])",
+        "format": "0"
+      },
+      {
+        "name": "RevenuebudgetYoY",
+        "table": "P&L_Statement",
+        "expression": "CALCULATE(SUM(P&L_Statement[Revenuebudget]), SAMEPERIODLASTYEAR(P&L_Statement[Month]))",
+        "format": "0.00%"
+      },
+      {
+        "name": "TotalGrossprofit",
+        "table": "P&L_Statement",
+        "expression": "SUM(P&L_Statement[Grossprofit])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageGrossprofit",
+        "table": "P&L_Statement",
+        "expression": "AVERAGE(P&L_Statement[Grossprofit])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountGrossprofit",
+        "table": "P&L_Statement",
+        "expression": "COUNT(P&L_Statement[Grossprofit])",
+        "format": "0"
+      },
+      {
+        "name": "GrossprofitYoY",
+        "table": "P&L_Statement",
+        "expression": "CALCULATE(SUM(P&L_Statement[Grossprofit]), SAMEPERIODLASTYEAR(P&L_Statement[Month]))",
+        "format": "0.00%"
+      },
+      {
+        "name": "TotalNetprofit",
+        "table": "P&L_Statement",
+        "expression": "SUM(P&L_Statement[Netprofit])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageNetprofit",
+        "table": "P&L_Statement",
+        "expression": "AVERAGE(P&L_Statement[Netprofit])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountNetprofit",
+        "table": "P&L_Statement",
+        "expression": "COUNT(P&L_Statement[Netprofit])",
+        "format": "0"
+      },
+      {
+        "name": "NetprofitYoY",
+        "table": "P&L_Statement",
+        "expression": "CALCULATE(SUM(P&L_Statement[Netprofit]), SAMEPERIODLASTYEAR(P&L_Statement[Month]))",
+        "format": "0.00%"
+      },
+      {
+        "name": "TotalProfitmargin",
+        "table": "P&L_Statement",
+        "expression": "SUM(P&L_Statement[Profitmargin])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageProfitmargin",
+        "table": "P&L_Statement",
+        "expression": "AVERAGE(P&L_Statement[Profitmargin])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountProfitmargin",
+        "table": "P&L_Statement",
+        "expression": "COUNT(P&L_Statement[Profitmargin])",
+        "format": "0"
+      },
+      {
+        "name": "ProfitmarginYoY",
+        "table": "P&L_Statement",
+        "expression": "CALCULATE(SUM(P&L_Statement[Profitmargin]), SAMEPERIODLASTYEAR(P&L_Statement[Month]))",
+        "format": "0.00%"
+      },
+      {
+        "name": "TotalValue",
+        "table": "Summary",
+        "expression": "SUM(Summary[Value])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageValue",
+        "table": "Summary",
+        "expression": "AVERAGE(Summary[Value])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountValue",
+        "table": "Summary",
+        "expression": "COUNT(Summary[Value])",
+        "format": "0"
+      }
+    ]
+  },
+  "metadata": {
+    "tables_count": 2,
+    "relationships_count": 0,
+    "measures_count": 35,
+    "created_at": "2025-11-16T11:02:12.480366"
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "model": {
+    "tables": {
+      "Sales": {
+        "name": "Sales",
+        "type": "Fact",
+        "columns": [
+          "SalesId",
+          "Date",
+          "Region",
+          "Product",
+          "Sales",
+          "Quantity",
+          "Target"
+        ],
+        "row_count": 12,
+        "hierarchies": [
+          {
+            "name": "DateHierarchy",
+            "levels": [
+              {
+                "name": "Year",
+                "expression": "YEAR(Date)"
+              },
+              {
+                "name": "Quarter",
+                "expression": "QUARTER(Date)"
+              },
+              {
+                "name": "Month",
+                "expression": "MONTH(Date)"
+              },
+              {
+                "name": "Day",
+                "expression": "DAY(Date)"
+              }
+            ]
+          }
+        ],
+        "data": "[12 rows]"
+      }
+    },
+    "relationships": [],
+    "measures": [
+      {
+        "name": "TotalSales",
+        "table": "Sales",
+        "expression": "SUM(Sales[Sales])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageSales",
+        "table": "Sales",
+        "expression": "AVERAGE(Sales[Sales])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountSales",
+        "table": "Sales",
+        "expression": "COUNT(Sales[Sales])",
+        "format": "0"
+      },
+      {
+        "name": "SalesYoY",
+        "table": "Sales",
+        "expression": "CALCULATE(SUM(Sales[Sales]), SAMEPERIODLASTYEAR(Sales[Date]))",
+        "format": "0.00%"
+      },
+      {
+        "name": "TotalQuantity",
+        "table": "Sales",
+        "expression": "SUM(Sales[Quantity])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageQuantity",
+        "table": "Sales",
+        "expression": "AVERAGE(Sales[Quantity])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountQuantity",
+        "table": "Sales",
+        "expression": "COUNT(Sales[Quantity])",
+        "format": "0"
+      },
+      {
+        "name": "QuantityYoY",
+        "table": "Sales",
+        "expression": "CALCULATE(SUM(Sales[Quantity]), SAMEPERIODLASTYEAR(Sales[Date]))",
+        "format": "0.00%"
+      },
+      {
+        "name": "TotalTarget",
+        "table": "Sales",
+        "expression": "SUM(Sales[Target])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageTarget",
+        "table": "Sales",
+        "expression": "AVERAGE(Sales[Target])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountTarget",
+        "table": "Sales",
+        "expression": "COUNT(Sales[Target])",
+        "format": "0"
+      },
+      {
+        "name": "TargetYoY",
+        "table": "Sales",
+        "expression": "CALCULATE(SUM(Sales[Target]), SAMEPERIODLASTYEAR(Sales[Date]))",
+        "format": "0.00%"
+      }
+    ]
+  },
+  "metadata": {
+    "tables_count": 1,
+    "relationships_count": 0,
+    "measures_count": 12,
+    "created_at": "2025-11-16T10:47:36.444428"
+  }
+}

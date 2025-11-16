@@ -1,0 +1,149 @@
+{
+  "model": {
+    "tables": {
+      "Campaigns": {
+        "name": "Campaigns",
+        "type": "Fact",
+        "columns": [
+          "CampaignsId",
+          "Date",
+          "Campaign",
+          "Impressions",
+          "Clicks",
+          "Conversions",
+          "Spend"
+        ],
+        "row_count": 10,
+        "hierarchies": [
+          {
+            "name": "DateHierarchy",
+            "levels": [
+              {
+                "name": "Year",
+                "expression": "YEAR(Date)"
+              },
+              {
+                "name": "Quarter",
+                "expression": "QUARTER(Date)"
+              },
+              {
+                "name": "Month",
+                "expression": "MONTH(Date)"
+              },
+              {
+                "name": "Day",
+                "expression": "DAY(Date)"
+              }
+            ]
+          }
+        ],
+        "data": "[10 rows]"
+      }
+    },
+    "relationships": [],
+    "measures": [
+      {
+        "name": "TotalImpressions",
+        "table": "Campaigns",
+        "expression": "SUM(Campaigns[Impressions])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageImpressions",
+        "table": "Campaigns",
+        "expression": "AVERAGE(Campaigns[Impressions])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountImpressions",
+        "table": "Campaigns",
+        "expression": "COUNT(Campaigns[Impressions])",
+        "format": "0"
+      },
+      {
+        "name": "ImpressionsYoY",
+        "table": "Campaigns",
+        "expression": "CALCULATE(SUM(Campaigns[Impressions]), SAMEPERIODLASTYEAR(Campaigns[Date]))",
+        "format": "0.00%"
+      },
+      {
+        "name": "TotalClicks",
+        "table": "Campaigns",
+        "expression": "SUM(Campaigns[Clicks])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageClicks",
+        "table": "Campaigns",
+        "expression": "AVERAGE(Campaigns[Clicks])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountClicks",
+        "table": "Campaigns",
+        "expression": "COUNT(Campaigns[Clicks])",
+        "format": "0"
+      },
+      {
+        "name": "ClicksYoY",
+        "table": "Campaigns",
+        "expression": "CALCULATE(SUM(Campaigns[Clicks]), SAMEPERIODLASTYEAR(Campaigns[Date]))",
+        "format": "0.00%"
+      },
+      {
+        "name": "TotalConversions",
+        "table": "Campaigns",
+        "expression": "SUM(Campaigns[Conversions])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageConversions",
+        "table": "Campaigns",
+        "expression": "AVERAGE(Campaigns[Conversions])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountConversions",
+        "table": "Campaigns",
+        "expression": "COUNT(Campaigns[Conversions])",
+        "format": "0"
+      },
+      {
+        "name": "ConversionsYoY",
+        "table": "Campaigns",
+        "expression": "CALCULATE(SUM(Campaigns[Conversions]), SAMEPERIODLASTYEAR(Campaigns[Date]))",
+        "format": "0.00%"
+      },
+      {
+        "name": "TotalSpend",
+        "table": "Campaigns",
+        "expression": "SUM(Campaigns[Spend])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageSpend",
+        "table": "Campaigns",
+        "expression": "AVERAGE(Campaigns[Spend])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountSpend",
+        "table": "Campaigns",
+        "expression": "COUNT(Campaigns[Spend])",
+        "format": "0"
+      },
+      {
+        "name": "SpendYoY",
+        "table": "Campaigns",
+        "expression": "CALCULATE(SUM(Campaigns[Spend]), SAMEPERIODLASTYEAR(Campaigns[Date]))",
+        "format": "0.00%"
+      }
+    ]
+  },
+  "metadata": {
+    "tables_count": 1,
+    "relationships_count": 0,
+    "measures_count": 16,
+    "created_at": "2025-11-16T10:47:36.467714"
+  }
+}

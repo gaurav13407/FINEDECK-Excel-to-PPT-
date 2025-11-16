@@ -1,0 +1,13 @@
+Power BI DAX Measures
+============================================================
+
+Copy and paste these into Power BI Desktop:
+
+TotalSales = SUM(Sales[Sales])
+
+AverageSales = AVERAGE(Sales[Sales])
+
+CountSales = COUNT(Sales[Sales])
+
+SalesYoY = CALCULATE(SUM(Sales[Sales]), SAMEPERIODLASTYEAR(Sales[Date]))
+

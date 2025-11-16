@@ -1,0 +1,124 @@
+{
+  "model": {
+    "tables": {
+      "Revenue": {
+        "name": "Revenue",
+        "type": "Fact",
+        "columns": [
+          "RevenueId",
+          "Date",
+          "Category",
+          "Revenue",
+          "Cost",
+          "Unitssold"
+        ],
+        "row_count": 8,
+        "hierarchies": [
+          {
+            "name": "DateHierarchy",
+            "levels": [
+              {
+                "name": "Year",
+                "expression": "YEAR(Date)"
+              },
+              {
+                "name": "Quarter",
+                "expression": "QUARTER(Date)"
+              },
+              {
+                "name": "Month",
+                "expression": "MONTH(Date)"
+              },
+              {
+                "name": "Day",
+                "expression": "DAY(Date)"
+              }
+            ]
+          }
+        ],
+        "data": "[8 rows]"
+      }
+    },
+    "relationships": [],
+    "measures": [
+      {
+        "name": "TotalRevenue",
+        "table": "Revenue",
+        "expression": "SUM(Revenue[Revenue])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageRevenue",
+        "table": "Revenue",
+        "expression": "AVERAGE(Revenue[Revenue])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountRevenue",
+        "table": "Revenue",
+        "expression": "COUNT(Revenue[Revenue])",
+        "format": "0"
+      },
+      {
+        "name": "RevenueYoY",
+        "table": "Revenue",
+        "expression": "CALCULATE(SUM(Revenue[Revenue]), SAMEPERIODLASTYEAR(Revenue[Date]))",
+        "format": "0.00%"
+      },
+      {
+        "name": "TotalCost",
+        "table": "Revenue",
+        "expression": "SUM(Revenue[Cost])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageCost",
+        "table": "Revenue",
+        "expression": "AVERAGE(Revenue[Cost])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountCost",
+        "table": "Revenue",
+        "expression": "COUNT(Revenue[Cost])",
+        "format": "0"
+      },
+      {
+        "name": "CostYoY",
+        "table": "Revenue",
+        "expression": "CALCULATE(SUM(Revenue[Cost]), SAMEPERIODLASTYEAR(Revenue[Date]))",
+        "format": "0.00%"
+      },
+      {
+        "name": "TotalUnitssold",
+        "table": "Revenue",
+        "expression": "SUM(Revenue[Unitssold])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageUnitssold",
+        "table": "Revenue",
+        "expression": "AVERAGE(Revenue[Unitssold])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountUnitssold",
+        "table": "Revenue",
+        "expression": "COUNT(Revenue[Unitssold])",
+        "format": "0"
+      },
+      {
+        "name": "UnitssoldYoY",
+        "table": "Revenue",
+        "expression": "CALCULATE(SUM(Revenue[Unitssold]), SAMEPERIODLASTYEAR(Revenue[Date]))",
+        "format": "0.00%"
+      }
+    ]
+  },
+  "metadata": {
+    "tables_count": 1,
+    "relationships_count": 0,
+    "measures_count": 12,
+    "created_at": "2025-11-16T10:47:36.478674"
+  }
+}

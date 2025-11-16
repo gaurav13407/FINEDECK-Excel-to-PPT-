@@ -1,0 +1,127 @@
+{
+  "model": {
+    "tables": {
+      "Sales_Data": {
+        "name": "Sales_Data",
+        "type": "Dimension",
+        "columns": [
+          "Sales_DataId",
+          "Date",
+          "Region",
+          "Product",
+          "Salesamount",
+          "Quantitysold",
+          "Salestarget",
+          "Salesperson",
+          "Customersegment"
+        ],
+        "row_count": 100,
+        "hierarchies": [
+          {
+            "name": "DateHierarchy",
+            "levels": [
+              {
+                "name": "Year",
+                "expression": "YEAR(Date)"
+              },
+              {
+                "name": "Quarter",
+                "expression": "QUARTER(Date)"
+              },
+              {
+                "name": "Month",
+                "expression": "MONTH(Date)"
+              },
+              {
+                "name": "Day",
+                "expression": "DAY(Date)"
+              }
+            ]
+          }
+        ],
+        "data": "[100 rows]"
+      }
+    },
+    "relationships": [],
+    "measures": [
+      {
+        "name": "TotalSalesamount",
+        "table": "Sales_Data",
+        "expression": "SUM(Sales_Data[Salesamount])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageSalesamount",
+        "table": "Sales_Data",
+        "expression": "AVERAGE(Sales_Data[Salesamount])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountSalesamount",
+        "table": "Sales_Data",
+        "expression": "COUNT(Sales_Data[Salesamount])",
+        "format": "0"
+      },
+      {
+        "name": "SalesamountYoY",
+        "table": "Sales_Data",
+        "expression": "CALCULATE(SUM(Sales_Data[Salesamount]), SAMEPERIODLASTYEAR(Sales_Data[Date]))",
+        "format": "0.00%"
+      },
+      {
+        "name": "TotalQuantitysold",
+        "table": "Sales_Data",
+        "expression": "SUM(Sales_Data[Quantitysold])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageQuantitysold",
+        "table": "Sales_Data",
+        "expression": "AVERAGE(Sales_Data[Quantitysold])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountQuantitysold",
+        "table": "Sales_Data",
+        "expression": "COUNT(Sales_Data[Quantitysold])",
+        "format": "0"
+      },
+      {
+        "name": "QuantitysoldYoY",
+        "table": "Sales_Data",
+        "expression": "CALCULATE(SUM(Sales_Data[Quantitysold]), SAMEPERIODLASTYEAR(Sales_Data[Date]))",
+        "format": "0.00%"
+      },
+      {
+        "name": "TotalSalestarget",
+        "table": "Sales_Data",
+        "expression": "SUM(Sales_Data[Salestarget])",
+        "format": "0.00"
+      },
+      {
+        "name": "AverageSalestarget",
+        "table": "Sales_Data",
+        "expression": "AVERAGE(Sales_Data[Salestarget])",
+        "format": "0.00"
+      },
+      {
+        "name": "CountSalestarget",
+        "table": "Sales_Data",
+        "expression": "COUNT(Sales_Data[Salestarget])",
+        "format": "0"
+      },
+      {
+        "name": "SalestargetYoY",
+        "table": "Sales_Data",
+        "expression": "CALCULATE(SUM(Sales_Data[Salestarget]), SAMEPERIODLASTYEAR(Sales_Data[Date]))",
+        "format": "0.00%"
+      }
+    ]
+  },
+  "metadata": {
+    "tables_count": 1,
+    "relationships_count": 0,
+    "measures_count": 12,
+    "created_at": "2025-11-16T11:02:12.425321"
+  }
+}

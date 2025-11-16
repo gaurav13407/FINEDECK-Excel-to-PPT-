@@ -1,0 +1,29 @@
+Power BI DAX Measures - sales_performance
+============================================================
+
+Copy and paste these measures into Power BI Desktop:
+
+TotalSalesAmount = SUM(Sales Data[SalesAmount])
+
+AverageSalesAmount = AVERAGE(Sales Data[SalesAmount])
+
+CountSalesAmount = COUNT(Sales Data[SalesAmount])
+
+SalesAmountYoY = CALCULATE(SUM(Sales Data[SalesAmount]), SAMEPERIODLASTYEAR(Sales Data[Date]))
+
+TotalQuantitySold = SUM(Sales Data[QuantitySold])
+
+AverageQuantitySold = AVERAGE(Sales Data[QuantitySold])
+
+CountQuantitySold = COUNT(Sales Data[QuantitySold])
+
+QuantitySoldYoY = CALCULATE(SUM(Sales Data[QuantitySold]), SAMEPERIODLASTYEAR(Sales Data[Date]))
+
+TotalSalesTarget = SUM(Sales Data[SalesTarget])
+
+AverageSalesTarget = AVERAGE(Sales Data[SalesTarget])
+
+CountSalesTarget = COUNT(Sales Data[SalesTarget])
+
+SalesTargetYoY = CALCULATE(SUM(Sales Data[SalesTarget]), SAMEPERIODLASTYEAR(Sales Data[Date]))
+
