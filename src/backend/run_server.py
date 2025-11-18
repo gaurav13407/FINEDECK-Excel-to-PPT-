@@ -19,73 +19,84 @@ sys.path.insert(0, str(app_dir))
 # Load environment variables
 load_dotenv()  
 
-# Get Redis credentials
+# Get Redis credentials (optional for deployments without session management)
 UPSTASH_REDIS_URL = os.getenv("UPSTASH_REDIS_URL")
 SESSION_SECRET_KEY = os.getenv("SESSION_SECRET_KEY")
+ENABLE_REDIS_SESSIONS = os.getenv("ENABLE_REDIS_SESSIONS", "false").lower() == "true"
 
-# Validate required environment variables
-if not UPSTASH_REDIS_URL:
-    print("ERROR: UPSTASH_REDIS_URL not found in .env file")
-    print("Please add your Upstash Redis URL to the .env file")
-    exit(1)
+# Redis session setup (only if enabled and configured)
+redis_client = None
+session_middleware_enabled = False
 
-if not SESSION_SECRET_KEY:
-    print("ERROR: SESSION_SECRET_KEY not found in .env file")
-    print("Generate one with: python -c 'import secrets; print(secrets.token_hex(32))'")
-    exit(1)
-
-# Set up Redis client
-redis_client = redis.from_url(UPSTASH_REDIS_URL)
-
-# Test Redis connection
-try:
-    redis_client.ping()
-    print("✅ Connected to Redis successfully!")
-except Exception as e:
-    print(f"❌ Failed to connect to Redis: {e}")
-    print("Please check your UPSTASH_REDIS_URL in the .env file")
-    exit(1)
+if ENABLE_REDIS_SESSIONS:
+    if not UPSTASH_REDIS_URL:
+        print("⚠️  WARNING: ENABLE_REDIS_SESSIONS is true but UPSTASH_REDIS_URL not found")
+        print("   Session middleware will be disabled. Set UPSTASH_REDIS_URL in environment variables.")
+    elif not SESSION_SECRET_KEY:
+        print("⚠️  WARNING: ENABLE_REDIS_SESSIONS is true but SESSION_SECRET_KEY not found")
+        print("   Session middleware will be disabled. Set SESSION_SECRET_KEY in environment variables.")
+        print("   Generate one with: python -c 'import secrets; print(secrets.token_hex(32))'")
+    else:
+        # Set up Redis client
+        import redis
+        try:
+            redis_client = redis.from_url(UPSTASH_REDIS_URL)
+            redis_client.ping()
+            print("✅ Connected to Redis successfully!")
+            session_middleware_enabled = True
+        except Exception as e:
+            print(f"⚠️  WARNING: Failed to connect to Redis: {e}")
+            print("   Session middleware will be disabled.")
+            redis_client = None
+else:
+    print("ℹ️  Redis sessions disabled (ENABLE_REDIS_SESSIONS not set to 'true')")
 
 # Import FastAPI app (now that app_dir is in path, we can import directly from main)
 from main import app
-from middleware import SessionMiddleware
 
-# Store Redis client in app state for use in endpoints
+# Store Redis client in app state for use in endpoints (even if None)
 app.state.redis = redis_client
 app.state.session_secret = SESSION_SECRET_KEY
 
 # ============================================================================
-# MIDDLEWARE SETUP - SESSION SECURITY
+# MIDDLEWARE SETUP - SESSION SECURITY (Optional)
 # ============================================================================
 # This middleware ensures that users can't access your data by just sharing URLs
 # Each user needs their own valid session to access protected routes
+# Only enabled if Redis is configured
 
-# Strict authentication middleware (requires session for all routes)
-app.add_middleware(
-    SessionMiddleware,
-    redis_client=redis_client,
-    excluded_paths=[
-        "/",
-        "/docs",
-        "/redoc",
-        "/openapi.json",
-        "/auth/login",
-        "/auth/register",
-        "/health",
-        "/api/v1/auth/login",
-        "/api/v1/auth/register",
-        "/api/v1/users/register",
-        "/api/v1/users/login",
-        "/static/*",  # Exclude static files
-        "/css/*",
-        "/js/*",
-        "/images/*",
-        "/index.html",
-        "/login.html",
-        "/register.html",
-    ],
-    session_cookie_name="session_id"
-)
+if session_middleware_enabled and redis_client:
+    from middleware import SessionMiddleware
+    
+    # Strict authentication middleware (requires session for all routes)
+    app.add_middleware(
+        SessionMiddleware,
+        redis_client=redis_client,
+        excluded_paths=[
+            "/",
+            "/docs",
+            "/redoc",
+            "/openapi.json",
+            "/auth/login",
+            "/auth/register",
+            "/health",
+            "/api/v1/auth/login",
+            "/api/v1/auth/register",
+            "/api/v1/users/register",
+            "/api/v1/users/login",
+            "/static/*",  # Exclude static files
+            "/css/*",
+            "/js/*",
+            "/images/*",
+            "/index.html",
+            "/login.html",
+            "/register.html",
+        ],
+        session_cookie_name="session_id"
+    )
+    print("✅ Session middleware enabled - routes are protected")
+else:
+    print("ℹ️  Session middleware disabled - using existing auth methods")
 
 # ============================================================================
 # SECURITY: How it works

@@ -21,9 +21,9 @@ pydantic-settings==2.4.0
 email-validator==2.1.0
 python-dotenv==1.0.1
 
-# Background Jobs & Cache
-redis==5.0.8
-upstash-redis==0.15.0
+# Background Jobs & Cache (Session Management)
+redis==5.0.8          # Session storage with Upstash
+upstash-redis==0.15.0 # Upstash Redis client
 apscheduler==3.10.4
 
 # Cloud Storage
@@ -49,4 +49,3 @@ aiosmtplib==3.0.2
 # Utils
 requests==2.32.3
 python-dateutil==2.9.0
-redis

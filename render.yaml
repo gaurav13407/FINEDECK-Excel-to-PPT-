@@ -25,10 +25,16 @@ services:
         value: HS256
       - key: JWT_EXPIRATION_MINUTES
         value: "10080"
-      # Redis/Upstash
+      # Redis/Upstash (Optional - for session management)
+      - key: ENABLE_REDIS_SESSIONS
+        value: "false"
+      - key: UPSTASH_REDIS_URL
+        sync: false
       - key: UPSTASH_REDIS_REST_URL
         sync: false
       - key: UPSTASH_REDIS_REST_TOKEN
+        sync: false
+      - key: SESSION_SECRET_KEY
         sync: false
       # CORS
       - key: CORS_ORIGINS
