@@ -49,3 +49,4 @@ aiosmtplib==3.0.2
 # Utils
 requests==2.32.3
 python-dateutil==2.9.0
+redis

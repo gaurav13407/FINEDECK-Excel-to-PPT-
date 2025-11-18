@@ -46,3 +46,5 @@ azure-storage-blob==12.20.0
 b2sdk==1.17.4
 
 groq
+
+redis
