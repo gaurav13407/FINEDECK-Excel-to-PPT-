@@ -54,6 +54,14 @@ else:
 # Import FastAPI app (now that app_dir is in path, we can import directly from main)
 from main import app
 
+# Import middleware classes early (before conditional logic)
+try:
+    from middleware import SessionMiddleware
+    middleware_available = True
+except ImportError as e:
+    print(f"⚠️  WARNING: Could not import SessionMiddleware: {e}")
+    middleware_available = False
+
 # Store Redis client in app state for use in endpoints (even if None)
 app.state.redis = redis_client
 app.state.session_secret = SESSION_SECRET_KEY
@@ -65,8 +73,7 @@ app.state.session_secret = SESSION_SECRET_KEY
 # Each user needs their own valid session to access protected routes
 # Only enabled if Redis is configured
 
-if session_middleware_enabled and redis_client:
-    from middleware import SessionMiddleware
+if session_middleware_enabled and redis_client and middleware_available:
     
     # Strict authentication middleware (requires session for all routes)
     app.add_middleware(

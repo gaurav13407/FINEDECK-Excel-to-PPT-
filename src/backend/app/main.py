@@ -6,6 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from slowapi.errors import RateLimitExceeded
 from slowapi import _rate_limit_exceeded_handler
+import os
+import redis
 
 from core.config import settings
 from core.database import connect_to_mongo, close_mongo_connection
@@ -17,9 +19,34 @@ from api.v1.api import api_router
 async def lifespan(app: FastAPI):
     # Startup
     await connect_to_mongo()
+    
+    # Initialize Redis for session management (optional)
+    redis_client = None
+    enable_sessions = os.getenv("ENABLE_REDIS_SESSIONS", "false").lower() == "true"
+    
+    if enable_sessions:
+        redis_url = os.getenv("UPSTASH_REDIS_URL")
+        if redis_url:
+            try:
+                redis_client = redis.from_url(redis_url)
+                redis_client.ping()
+                print("✅ Connected to Redis successfully!")
+            except Exception as e:
+                print(f"⚠️  WARNING: Failed to connect to Redis: {e}")
+                redis_client = None
+        else:
+            print("⚠️  WARNING: ENABLE_REDIS_SESSIONS is true but UPSTASH_REDIS_URL not found")
+    
+    # Store Redis client and session secret in app state
+    app.state.redis = redis_client
+    app.state.session_secret = os.getenv("SESSION_SECRET_KEY")
+    
     yield
+    
     # Shutdown
     await close_mongo_connection()
+    if redis_client:
+        redis_client.close()
 
 
 # Create FastAPI application
@@ -75,6 +102,10 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["X-Slides-Created", "X-Template-Used", "X-AI-Features", "X-AI-Tokens", "X-AI-Cost"]  # Expose custom headers to frontend
 )
+
+# Add Session Middleware (optional - only if Redis is configured)
+# This middleware will be added after app startup when Redis is initialized
+# Check app.state.redis in lifespan function
 
 # Register rate limiter
 app.state.limiter = limiter

@@ -17,7 +17,7 @@ if str(utils_path) not in sys.path:
 from utils.session import SessionManager
 
 
-router = APIRouter(prefix="/auth", tags=["authentication"])
+router = APIRouter()  # No prefix here - it's set in api.py
 
 
 class LoginRequest(BaseModel):
@@ -39,6 +39,12 @@ class UserResponse(BaseModel):
 
 def get_session_manager(request: Request) -> SessionManager:
     """Dependency to get SessionManager from app state."""
+    if not hasattr(request.app.state, 'redis') or request.app.state.redis is None:
+        from fastapi import HTTPException
+        raise HTTPException(
+            status_code=503, 
+            detail="Session management not available. Redis not configured."
+        )
     return SessionManager(request.app.state.redis)
 
 
