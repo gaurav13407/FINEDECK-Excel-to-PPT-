@@ -10,7 +10,7 @@ from fastapi import APIRouter
 
 # Import all v1 endpoint modules (including codes and templates)
 from api.v1.endpoints import auth, users, files, conversions, codes, templates, tiered_conversions, plan_upgrades
-from api.v1.endpoints import oauth, intelligent_conversion, powerbi, auth_example
+from api.v1.endpoints import oauth, intelligent_conversion, auth_example
 
 api_router = APIRouter()
 
@@ -70,12 +70,6 @@ api_router.include_router(
     intelligent_conversion.router,
     prefix="/intelligence",
     tags=["intelligent-conversion"]
-)
-
-api_router.include_router(
-    powerbi.router,
-    prefix="/powerbi",
-    tags=["power-bi-dashboards"]
 )
 
 # Redis Session Auth Example (for testing session middleware)

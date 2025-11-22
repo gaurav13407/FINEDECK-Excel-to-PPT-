@@ -17,7 +17,7 @@ import json
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.backend.app.services.powerbi_etl import ExcelToPowerBIProcessor
+from src.PoweBI_converter.powerbi_etl import ExcelToPowerBIProcessor
 
 
 def create_sales_dashboard_demo():

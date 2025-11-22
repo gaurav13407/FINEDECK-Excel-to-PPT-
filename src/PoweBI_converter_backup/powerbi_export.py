@@ -103,7 +103,7 @@ def export_simple_package(excel_path: str, output_dir: str = None) -> Path:
         package = export_simple_package("sales.xlsx")
         # User downloads ZIP, extracts, imports CSV to Power BI
     """
-    from app.services.powerbi_etl import ExcelToPowerBIProcessor
+    from src.PoweBI_converter.powerbi_etl import ExcelToPowerBIProcessor
     
     # Process Excel
     processor = ExcelToPowerBIProcessor()

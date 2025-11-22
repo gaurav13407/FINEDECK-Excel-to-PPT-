@@ -9,7 +9,7 @@ from pathlib import Path
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.backend.app.services.powerbi_etl import ExcelToPowerBIProcessor, convert_excel_to_powerbi_model
+from src.PoweBI_converter.powerbi_etl import ExcelToPowerBIProcessor, convert_excel_to_powerbi_model
 import json
 
 

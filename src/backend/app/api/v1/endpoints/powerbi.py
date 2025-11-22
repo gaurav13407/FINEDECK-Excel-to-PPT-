@@ -11,8 +11,8 @@ import shutil
 import os
 from datetime import datetime
 
-from app.services.powerbi_etl import ExcelToPowerBIProcessor
-from app.services.powerbi_export import export_simple_package
+from src.PoweBI_converter.powerbi_etl import ExcelToPowerBIProcessor
+from src.PoweBI_converter.powerbi_export import export_simple_package
 from app.models.user import UserInDB
 from app.api.deps import get_current_active_user
 from app.core.config import settings

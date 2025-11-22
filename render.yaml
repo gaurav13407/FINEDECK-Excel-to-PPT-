@@ -27,7 +27,7 @@ services:
         value: "10080"
       # Redis/Upstash (Optional - for session management)
       - key: ENABLE_REDIS_SESSIONS
-        value: "false"
+        value: "true"
       - key: UPSTASH_REDIS_URL
         sync: false
       - key: UPSTASH_REDIS_REST_URL
